@@ -1,0 +1,56 @@
+{
+ "schema": "r629-negform/1",
+ "round": "R629",
+ "kind": "disclosed-negative-control",
+ "rule": "新机检器首上线：修前窗口必判红、修后窗口必判绿；负控形态转正须有牙。阈值**不变**（判据 v3 主判据阈值 −0.34 与 R628 一致）；R628 已落盘判决**不翻案**。",
+ "steps": {
+  "STEP1_prefix_window": {
+   "expect": "rc=2 ∧ D1,D1b,D2b,D3 全命中 ∧ teeth=true",
+   "rc": 2,
+   "defect_ids": [
+    "D1",
+    "D1b",
+    "D2b",
+    "D3"
+   ],
+   "teeth": true,
+   "pass": true,
+   "stdout_tail": [
+    "声明件缺失        : ['eval/rover/r628/taskface-pool-r628.json']",
+    "成对控制          : {\"NEG_A_corrected_form\": {\"primary_present\": true, \"verdict_source_is_primary\": true, \"defect_ids\": [\"D2b\", \"D3\"]}, \"NEG_B_pointer_missing\": {\"iron11_exists\": false, \"defect_ids\": [\"D1\", \"D1b\", \"D2\", \"D2b\", \"D3\"]}, \"POS_B_pointer_present\": {\"iron11_exists\": true, \"defect_ids\": [\"D1\", \"D1b\", \"D2b\", \"D3\"]}, \"teeth\": true, \"rule\": \"成对四面：POS(现盘) 判红 D1/D1b/D2/D3 ∧ NEG-A(正确形态副本) 判绿 D1 ∧ NEG-B(指针缺失) 判红 D2 ∧ POS-B(指针存在) D2 消失 ⇒ 非恒真门\"}",
+    "rc=2（器具缺陷（判决面/指针/声明件））"
+   ]
+  },
+  "STEP2_fixed_window": {
+   "expect": "rc=0 ∧ 主判据落盘 ∧ 判决来源==主判据 ∧ 指针存在 ∧ 无缺陷",
+   "rc": 0,
+   "primary_present": [
+    "C7_judge_v3_primary"
+   ],
+   "verdict_source_is_primary": true,
+   "iron11_exists": true,
+   "defect_ids": [],
+   "pass": true,
+   "stdout_tail": [
+    "铁律11 指针       : exists=True pointer=/home/agentuser/AgentFramework/eval/rover/r629/precond-r629.json",
+    "声明件缺失        : -",
+    "rc=0（判决面成立）"
+   ]
+  },
+  "STEP3_nc_form": {
+   "expect": "rc=0 ∧ teeth=true（旧形态在门上判红 / 差异量平化判红 / 真盘判绿）",
+   "rc": 0,
+   "teeth": true,
+   "pass": true,
+   "stdout_tail": [
+    "正控逐例复现      : True",
+    "成对控制          : {\"NEG_A_old_form_on_gate\": {\"old_form_on_gate\": true, \"defect_ids\": [\"E1\"], \"rc\": 2}, \"NEG_B_flat_diff_form\": {\"diff_form_monotone\": false, \"defect_ids\": [\"E2\"], \"rc\": 1}, \"POS_B_true_readings\": {\"rc\": 0, \"monotone\": true}, \"teeth\": true}",
+    "rc=0（形态已转正（差异量单调可辨 ∧ 旧形态离门；旧形态无牙读数原样留档））"
+   ]
+  }
+ },
+ "verdict": {
+  "rc": 0,
+  "judge": "三步全按预期（修前红 / 修后绿 / 负控有牙）"
+ }
+}

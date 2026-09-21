@@ -1,0 +1,67 @@
+{
+ "schema": "r629-nc-metric-form/1",
+ "round": "R629",
+ "candidate": "④ 负控指标形态转正",
+ "baseline_ref": "eval/capability/baselines.json#rerank-oracle-form",
+ "baseline_source_sha12": "899f3d21461f",
+ "rule": "负控门只许用**臂间差异量**；`agreement(臂, 产品)` 形态禁用（R627 实测无牙：N2=0.8333 ≫ 0.25）",
+ "POS_readings": {
+  "old_form_on_gate": false,
+  "banned_hits": [],
+  "old_form_reading_min": 0.7583333333333333,
+  "old_form_spread": 0.2416666666666667,
+  "old_form_toothless": true,
+  "recorded_history": {
+   "quotes_old_form": true,
+   "role": "留档（R627 实测旧形态无牙）—— 不参与 K3 扫描作用域，禁作门"
+  },
+  "gate_scan_scope": "本轮新判据集合（prereg criteria + 器具 gate 行），不含历史留档文本",
+  "diff_form_monotone": true,
+  "diff_form_evidence": {
+   "symdiff_seq": [
+    0,
+    15,
+    20,
+    29
+   ],
+   "hits_delta_seq": [
+    0,
+    -13,
+    -20,
+    -29
+   ],
+   "symdiff_strict_inc": true,
+   "delta_strict_dec": true
+  },
+  "pos_reproduces_exactly": true,
+  "single_arm_not_better_than_pos": true,
+  "defects": [],
+  "rc": 0,
+  "judge": "形态已转正（差异量单调可辨 ∧ 旧形态离门；旧形态无牙读数原样留档）"
+ },
+ "paired_controls": {
+  "NEG_A_old_form_on_gate": {
+   "old_form_on_gate": true,
+   "defect_ids": [
+    "E1"
+   ],
+   "rc": 2
+  },
+  "NEG_B_flat_diff_form": {
+   "diff_form_monotone": false,
+   "defect_ids": [
+    "E2"
+   ],
+   "rc": 1
+  },
+  "POS_B_true_readings": {
+   "rc": 0,
+   "monotone": true
+  },
+  "teeth": true
+ },
+ "verdict": {
+  "rc": 0,
+  "judge": "形态已转正（差异量单调可辨 ∧ 旧形态离门；旧形态无牙读数原样留档）"
+ }
+}

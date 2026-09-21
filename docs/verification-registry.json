@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R628",
+ "updated_round": "R629",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7746,6 +7746,36 @@
    "runs": 9,
    "verdict": "器具缺陷（测量层）：主判据键缺失 ⇒ 判决面 ≠ 预注册主判据面；质量面按主判据不可判，成本/质量降幅标「参考（未可验收）」（铁律 11 rc=1，9 跑次中 7 blocked，失败用例 100% 集中 wythoff 族；w221 真值臂 56/58 自败 ⇒ 该窗 unreliable 单列）",
    "aot": "未跑（对照读轮：产品源码零改动、未构建未发布新产物）⇒ 证据阶梯按实定级 **L2**，不升级；AOT 校验按 registry `aot_check_policy` 仅在【发布 tag】时执行。"
+  },
+  {
+   "id": "r629.verdict-face-and-nc-metric-form",
+   "owner_round": "R629",
+   "level": "L2",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "031528e6a2e4",
+    "instrument": "eval/rover/r629/negform_r629.py",
+    "instrument_sha12": "413a7e17eee3",
+    "binding": "audit-pin",
+    "audited_by_round": "R629"
+   },
+   "capability": "R628 自捕缺陷 ①（判决面 ≠ 预注册主判据面）的**器件面修法** + 候选④ 负控指标形态转正 + 候选⑤ 归并/截断次序轴定案关闭。**修前四项**：D1 主判据读数未落判决件顶层（顶层无 C7 键）；D1b 记录判决来源 `C1_quality_paired` ≠ 主判据（C1 预注册自述「仅作同向参照、不出判决」）；D2b `verdict.iron11` 指向不存在的硬编码路径 `eval/rover/r507pre/precondition-r628.json`；D3 声明件 `eval/rover/r628/taskface-pool-r628.json` 从未写出且**未登记**。**修法（换判据形态，不放宽判据）**：主判据键名改由**机读字段** `primary_criterion_key` 绑定（原为扫描中文字面「主判据」）；判决来源改**显式 `verdict_source` 字段**（原从 `blocked` 反解 ⇒ 全过时为空、来源不可读，本轮自捕第二处）；铁律 11 指针随 `--out` **同源派生** + 记录指针**本身**存在性/一致性双检；声明件缺失 fail-closed 或显式登记 `declared_absent`。**读数**：披露式负控三步（阈值**不变** = 主判据 −0.34）—— 修前窗口 rc=2（D1/D1b/D2b/D3 全中）· 修后窗口 rc=0（四项全清）· 候选④ rc=0（teeth=true）。**候选④**：旧形态 `agreement(臂,产品)` 实测 0.8750/0.8333/0.7583 挤在窄带（spread 0.2417），最低档 0.8333 ≫ 旧门阈 0.25 ⇒ **恒过、无牙**（R627 FAIL 读数**原样留档、不翻案**）；新形态 = 臂间差异量 `symdiff_hits_vs_产品` 0/15/20/29（严格递增）与 `hits_delta` 0/−13/−20/−29（严格递减），正控 `POS=0` 逐例复现。K3 禁用旧形态的扫描作用域 = 本轮新门清单 + 预注册 `criteria`，**不含**历史留档文本与本器具禁用常量（防「记录缺陷的文本被当活判据」的自指假红）。**候选⑤**：次序轴按 `merge_order_gain_hits=0`（early/late 各 88）定案关闭，写入 `eval/rover/r629/closed-axes-r629.json`（含重开条件 + 违规守卫）。同轮只读归因：独立 oracle（按 `a+b` 升序递推 DP，非 φ 闭式）15/15 复现冻结期望 ∧ 独立重放 12/12 臂窗失败集逐字相同 ∧ 最小修复在副本上 2→0 失败零回归 ∧ 同字节空写负控证明「凡改即绿」被排除。",
+   "evidence_path": "eval/rover/r629/negform-r629.json",
+   "evidence_cmd": "python3 eval/rover/r629/negform_r629.py; python3 eval/rover/r629/judge_r629.py --out eval/rover/r629/evidence/judge-prefix-r628.json --round-tag r628; python3 eval/rover/r629/nc_metric_r629.py --out eval/rover/r629/nc-form-r629.json --controls",
+   "negative_control": "成对四面（`negform_r629.py` STEP1/STEP2 + `judge_r629.py --controls` + `nc_metric_r629.py --controls`）：① 修前窗口（R628 在盘判决件）**必判红** rc=2 且 D1/D1b/D2b/D3 全命中；② 修后窗口（R629 修正形态判决件）**必判绿** rc=0；③ 正确形态副本（注入主判据键 + 来源改主判据）⇒ D1/D1b 消失、仅余 D2/D3；④ 指针存在/缺失成对（--out 同目录有 precond ⇒ D2 消失，无 ⇒ 命中）⇒ 证明 D2 非恒真门；⑤ 候选④：注入「旧形态作门」⇒ 判红 E1；差异量平化 ⇒ 判红 E2；真盘 ⇒ 判绿（teeth=true）。",
+   "covers": [
+    "判决来源可机判（判决面 == 预注册主判据面；主判据键由机读字段绑定）",
+    "铁律 11 证据指针同源派生与记录指针存在性一致性可复核",
+    "声明件缺失 fail-closed 或显式登记（禁静默）",
+    "负控门形态可机判（禁 agreement(臂,产品)，须臂间差异量且单调可辨）",
+    "新机检器首上线的披露式负控三步（修前红、修后绿、负控有牙）",
+    "已证伪轴的定案关闭登记（含重开条件与违规守卫）"
+   ],
+   "runs": 3,
+   "verdict": "器件面 PASS（修前红/修后绿成对 ∧ 负控有牙）；**能力面未测**（只读轮、零产品源码改动、零真机臂）⇒ 主判据读数 median_D_task −0.3333（阈值 −0.34，valid 窗 2）取自 R628 冻结快照，**禁当 R629 能力结论**（R628 判决不翻案）。",
+   "aot": "未跑（只读归因轮：产品源码零改动、未构建未发布新产物）⇒ 证据阶梯按实定级 **L2**，不升级；AOT 校验按 registry `aot_check_policy` 仅在【发布 tag】时执行。"
   }
  ],
  "aot_check_policy": "release_tag_only",

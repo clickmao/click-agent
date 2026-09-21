@@ -1,0 +1,133 @@
+{
+ "round": "R629",
+ "written_before_run": true,
+ "author": "cron tick · 常驻能力自检循环执行体",
+ "claim": "R628 遗留候选 ①②④⑤ **并轮**：① 器具面修法（判决面 == 预注册主判据面：主判据键落盘 + `verdict_source` 机检 + 铁律 11 指针随 `--out` 同源派生）· ② `wythoff` 族**逐例归因（只读定因，行号级证据）** · ④ 负控指标形态转正（禁 `agreement(臂, 产品)`，改**臂间差异量**）· ⑤ 归并/截断次序轴关闭 + R628 判决叙述错误登记。零 `src/` 改动 · 零新臂 · 零远端 LLM · 零新增夹具 · 零新增开关 · 零构建。R628 候选 ③（面 4 达标路径处置裁定）**待用户放行**（三类升级之一）⇒ 本轮不动。",
+ "round_type": "器具/判据面修法轮 + 只读逐例归因轮（无真机臂、无构建、零产品源码改动）",
+ "single_variable": "本轮自变量 = **判据/器具的判决来源形态**（主判据键是否落盘 + `verdict_source` 是否等于预注册主判据 + 铁律 11 指针是否与 `--out` 同源派生；负控判据是否取臂间差异量）。臂 = 正控（现盘 R628 判据件）vs 负控（注入 `C7` 键 / 指向不存在 `--out` 的副本）。产品源码在本轮全部读数间**恒等**（`git diff --stat src/` 空）。",
+ "跳步": {
+  "§1.2 三臂表 T/C/C1": "本轮为器具/只读轮（无 env 轴 ⇒ 无「轴关 = 旧行为」臂）；替代物 = 正控/负控成对副本 + 同源数据逐字节复算。与 R627（器具轮）、R626/R622（只读定因轮）同处置。",
+  "§2 步 7 真机跑": "本轮不引入新臂 ⇒ 真机跑复用 R628 在盘冻结快照（`eval/rover/r628/snapshots/**`）与 `~/.agentframework/harness/runs/r628/**`，逐字节只读。"
+ },
+ "arms": {
+  "POS": {
+   "name": "正控 = 现盘 R628 判据件",
+   "inputs": [
+    "eval/rover/r628/verdict-r628.json",
+    "eval/rover/r628/kpi-table-r628.json",
+    "~/.agentframework/harness/runs/r628/precond-r628.json"
+   ],
+   "expect": "主判据键（C7）**不在** verdict 顶层 ⇒ `verdict_source` 必须判「主判据未落盘」并 fail-closed 记**器具缺陷 rc=2**（禁把 C1 参照面当判决面）"
+  },
+  "NEG": {
+   "name": "负控 = 注入 `C7` 键的副本",
+   "inputs": [
+    "/tmp/r629-nc/verdict-r628-c7.json（正控件 + 顶层注入 C7 读数，其余逐字节不变）"
+   ],
+   "expect": "`verdict_source == \"C7\"` ∧ rc 由主判据出 ⇒ 机检器**有牙**（正控判红 / 负控判绿，成对）"
+  },
+  "NEG2": {
+   "name": "负控 2 = 铁律 11 指针源",
+   "inputs": [
+    "--out 指向不存在路径的副本"
+   ],
+   "expect": "指针 = 与 `--out` 同源派生 ∧ 指针存在性判红（旧形态硬编码 `eval/rover/r507pre/precondition-r628.json` ⇒ 存在性恒假）"
+  }
+ },
+ "criteria": {
+  "K1 判决面 == 主判据面": {
+   "metric": "主判据键存在性 + `verdict_source`",
+   "threshold": "正控 ⇒ 器具缺陷 rc=2（`primary_missing=true`）；负控 ⇒ `verdict_source==\"C7\"` 且 rc 由主判据出",
+   "baselines": [
+    "F_merge.gate.precondition_rc"
+   ],
+   "可证伪": "负控仍判「主判据键缺失」⇒ 机检器无牙"
+  },
+  "K2 铁律 11 指针同源派生": {
+   "metric": "指针路径 == `os.path.join(os.path.dirname(--out), basename(--out))` 派生 ∧ 指针文件存在性",
+   "threshold": "正控（现盘 precond 存在）⇒ 指针存在 True；负控（--out 指向不存在）⇒ 指针存在 False 且**不静默**",
+   "baselines": [
+    "F_merge.gate.precondition_rc"
+   ],
+   "可证伪": "指针与 `--out` 不同源（硬编码）⇒ 本轮修法不成立"
+  },
+  "K3 负控指标形态 = 臂间差异量": {
+   "metric": "`symdiff_hits(臂, 产品B10)` 与 命中数差（**禁** `agreement(臂, 产品)` 形态）",
+   "threshold": "POS 差异 == 0（逐例复现）∧ N1/N2/N3 差异 > 0 且命中数单调可辨（59 < 68 < 75 < 88）",
+   "baselines": [
+    "rerank-oracle-form"
+   ],
+   "可证伪": "POS 差异 > 0 或三档差异非单调 ⇒ 形态无牙"
+  },
+  "K4 wythoff 逐例归因（只读）": {
+   "metric": "独立 oracle vs 冻结期望；独立重放 vs R628 记录；最小修复 + null 重写",
+   "threshold": "oracle 15/15 ∧ 重放 12/12 臂窗失败集逐字相同 ∧ 最小修复命中目标例且**回归 0** ∧ null 重写失败集不变",
+   "baselines": [
+    "F_merge.quality.allpass",
+    "F_merge.quality.cases_median_truth"
+   ],
+   "可证伪": "oracle ≠ 15/15 ⇒ 夹具缺陷分支；最小修复有回归 ⇒ 归因不成立"
+  },
+  "K5 成本/质量降幅自称": {
+   "metric": "铁律 11 前置器 rc",
+   "threshold": "rc≠0 ⇒ 全部质量/成本读数标**参考（未可验收）**，禁作验收依据",
+   "baselines": [
+    "F_merge.gate.precondition_rc"
+   ]
+  }
+ },
+ "falsification": [
+  "F1: 独立 oracle 与冻结期望不一致（>0 条）⇒ **夹具缺陷分支成立** ⇒ 本轮 N2 结论作废（只重跑 N2）。",
+  "F2: 最小修复实验使**非目标用例**变动（回归 > 0）⇒ 机制归因不成立（改的不是该行）⇒ 只重启 N2 的机制段。",
+  "F3: 负控（注入 C7 键副本）仍被判「主判据键缺失」⇒ 机检器**无牙** ⇒ 器具修法不成立，禁下调判据凑绿。",
+  "F4: null 重写（同字节）后失败集发生变化 ⇒ 最小修复实验不成立（凡改即绿）⇒ 机制段作废。"
+ ],
+ "in_scope_rounds_prev": [
+  "r585",
+  "r586",
+  "r587",
+  "r588",
+  "r591",
+  "r595",
+  "r596",
+  "r628"
+ ],
+ "taskset_sha": "e0c667c2a313c04b",
+ "cases_per_run": 58,
+ "bin_sha12_expected": "a184d7317b6e",
+ "prior_window_sets_rule": "跨窗集**禁相减**，只并列（docs/external-reference-harness.md §12.3）。",
+ "declared_scope": [
+  "eval/rover/r629/dag-r629.md",
+  "eval/rover/r629/prereg-r629.json",
+  "eval/rover/r629/attr_wythoff_r629.py",
+  "eval/rover/r629/judge_r629.py",
+  "eval/rover/r629/negform_r629.py",
+  "eval/rover/r629/attribution-r629.json",
+  "eval/rover/r629/judge-r629.json",
+  "eval/rover/r629/negform-r629.json",
+  "eval/rover/r629/verdict-r629.json",
+  "eval/rover/r629/report-r629.md",
+  "eval/rover/r629/evidence/instrument-defects-r629.json",
+  "eval/rover/r629/closed-axes-r629.json",
+  "eval/rover/r629/nc_metric_r629.py",
+  "eval/rover/r629/close_r629.py"
+ ],
+ "upgrade_to_user": {
+  "needed": false,
+  "note": "本轮无三类升级（无方向裁定 / 无放行请求 / 外部真值可得）；R628 候选 ③（面 4 达标路径处置裁定）属**放行类** ⇒ 报告内以一行挂出待裁定，不进本轮范围。"
+ },
+ "primary_criterion_key": "C7_judge_v3_primary",
+ "nc_metric_form": {
+  "gate_forms": [
+   "symdiff_hits_vs_product（臂间差异量）",
+   "hits_delta_vs_product（臂间差异量）",
+   "差异量单调可辨：POS=0 ∧ N1<N2<N3 ∧ 正控逐例复现"
+  ],
+  "banned_forms": [
+   "agreement(臂, 产品)",
+   "agreement ≤ 0.25"
+  ],
+  "basis": "eval/capability/baselines.json#rerank-oracle-form（R627 实测：旧形态三档 0.8750/0.8333/0.7583 挤在窄带，最低档 0.8333 ≫ 旧门阈 0.25 ⇒ 恒过、无牙）",
+  "history_scope_note": "历史基准 threshold 文本逐字留档旧形态，不入 K3 扫描作用域（防自指假红）"
+ }
+}

@@ -1,0 +1,48 @@
+{
+ "schema": "closed-axes/1",
+ "round": "R629",
+ "purpose": "已**证伪 ⇒ 定案关闭**的候选轴登记表。任何后续轮不得再开同类候选，除非给出「重开条件」全部满足的证据。",
+ "ledger": [
+  {
+   "axis_id": "AX-merge-truncate-order",
+   "title": "归并/截断**次序**轴（先归并后截断 vs 先截断后归并）",
+   "status": "CLOSED_FALSIFIED",
+   "closed_by_round": "R627",
+   "registered_round": "R629",
+   "falsification_evidence": {
+    "source": "eval/capability/baselines.json#rerank-oracle-form",
+    "source_path": "eval/rover/r627/oracle-r627.json",
+    "source_sha12": "899f3d21461f",
+    "readings": {
+     "merge_order_early_hits": 88,
+     "merge_order_late_hits": 88,
+     "merge_order_gain_hits": 0,
+     "early_pool_lt_10_n": 23
+    },
+    "rule": "两序命中数**逐位相同**、增益 0 ⇒ 该轴在冻结语料上**非承重变量**（增益为 0 而非「未测到」）"
+   },
+   "reopen_conditions": [
+    "换检索器家族（非同形 RRF 融合）∧",
+    "新家族在该面能吃掉 ≥Δ_min 条（n=90 时 Δ_min=6，配对精确检验 p<0.05 反解）∧",
+    "扩样本至 n≥800 才有分辨率"
+   ],
+   "guard": "后续轮预注册若出现该轴作自变量且未逐条满足 reopen_conditions ⇒ 判**违规**（机检：本表 status == CLOSED_FALSIFIED 时该轴名不得出现在新预注册的 `single_variable`）"
+  }
+ ],
+ "deferred": [
+  {
+   "candidate_id": "R619-info-tool-receipt-order",
+   "title": "信息类工具回执 / 序依赖面",
+   "status": "DEFERRED_PRECONDITION",
+   "reason": "需产品侧改动（非只读轮作用域）；R629 硬约束 = 只读、零产品源码改动 ⇒ 本轮不动，随主线推进",
+   "not_silent": "本表显式登记，非静默跳过"
+  },
+  {
+   "candidate_id": "R628-face4-path-ruling",
+   "title": "面 4（上下文精排）达标路径处置：放行 src/agent.rag 融合/打分位 或 新信号族 或 改判据口径",
+   "status": "ESCALATED_USER",
+   "reason": "三选一均属「方向裁定/放行」= 宪法级三类升级用户事项 ⇒ 本轮零改动留痕，等用户裁定",
+   "evidence": "缺口未闭合：生产口径 R@N 0.7333 → 需 ≥0.9；并集天花板 0.7917"
+  }
+ ]
+}

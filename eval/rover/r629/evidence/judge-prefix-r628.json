@@ -1,0 +1,114 @@
+{
+ "schema": "r629-verdict-face/1",
+ "round": "R629",
+ "round_judged": "r628",
+ "instrument": {
+  "path": "eval/rover/r629/judge_r629.py",
+  "sha12": "ef1b2cdebac9"
+ },
+ "inputs": {
+  "prereg": "eval/rover/r628/prereg-r628.json",
+  "prereg_sha12": "2dfaef50f4b8",
+  "verdict": "eval/rover/r628/verdict-r628.json",
+  "verdict_sha12": "e37fd98429da",
+  "precond": ".agentframework/harness/runs/r628/precond-r628.json",
+  "precond_sha12": "b9aafe9f05c8"
+ },
+ "rule": "主判据键缺失 ⇒ fail-closed rc=2（禁把参照面当判决面）；指针缺失 ⇒ 出声记 null；声明件缺失 ⇒ fail-closed",
+ "POS_recorded": {
+  "primary_declared_keys": [
+   "C7 判据 v3 第五窗集（**主判据**）"
+  ],
+  "primary_name": "C7",
+  "primary_present_in_verdict_toplevel": [],
+  "recorded_verdict_source": [
+   "C1_quality_paired"
+  ],
+  "recorded_verdict_source_raw": [
+   "C1_quality_paired:R628D"
+  ],
+  "recorded_iron11_string": "见 eval/rover/r507pre/precondition-r628.json",
+  "verdict_source_is_primary": false,
+  "recorded_rc": 1,
+  "iron11": {
+   "pointer": "/home/agentuser/AgentFramework/eval/rover/r629/evidence/precond-r628.json",
+   "derived_from": "--out",
+   "exists": true,
+   "candidates_checked": [
+    "/home/agentuser/AgentFramework/eval/rover/r629/evidence/precond-r628.json",
+    "/home/agentuser/AgentFramework/eval/rover/r629/evidence/precondition-r628.json"
+   ],
+   "recorded_pointer": "见 eval/rover/r507pre/precondition-r628.json",
+   "recorded_pointer_exists": false,
+   "recorded_pointer_matches_derived": false
+  },
+  "declared_artifacts_missing": [
+   "eval/rover/r628/taskface-pool-r628.json"
+  ],
+  "defects": [
+   {
+    "id": "D1",
+    "what": "主判据键未落盘进 verdict 顶层",
+    "consequence": "判决面 ≠ 预注册主判据面"
+   },
+   {
+    "id": "D1b",
+    "what": "记录判决的来源 ≠ 主判据",
+    "recorded_source": [
+     "C1_quality_paired"
+    ],
+    "declared_primary": "C7"
+   },
+   {
+    "id": "D2b",
+    "what": "记录件里的 iron11 指针指向不存在的路径",
+    "recorded_pointer": "见 eval/rover/r507pre/precondition-r628.json"
+   },
+   {
+    "id": "D3",
+    "what": "声明件缺失未登记",
+    "missing": [
+     "eval/rover/r628/taskface-pool-r628.json"
+    ]
+   }
+  ],
+  "rc": 2,
+  "judge": "器具缺陷（判决面/指针/声明件）"
+ },
+ "paired_controls": {
+  "NEG_A_corrected_form": {
+   "primary_present": true,
+   "verdict_source_is_primary": true,
+   "defect_ids": [
+    "D2b",
+    "D3"
+   ]
+  },
+  "NEG_B_pointer_missing": {
+   "iron11_exists": false,
+   "defect_ids": [
+    "D1",
+    "D1b",
+    "D2",
+    "D2b",
+    "D3"
+   ]
+  },
+  "POS_B_pointer_present": {
+   "iron11_exists": true,
+   "defect_ids": [
+    "D1",
+    "D1b",
+    "D2b",
+    "D3"
+   ]
+  },
+  "teeth": true,
+  "rule": "成对四面：POS(现盘) 判红 D1/D1b/D2/D3 ∧ NEG-A(正确形态副本) 判绿 D1 ∧ NEG-B(指针缺失) 判红 D2 ∧ POS-B(指针存在) D2 消失 ⇒ 非恒真门"
+ },
+ "verdict": {
+  "rc": 2,
+  "judge": "器具缺陷（判决面/指针/声明件）",
+  "note": "rc=2 表**器具缺陷**（R628 记录判决的来源不可信）⇒ 主判据已由 R629 参数化池化器补齐，见 primary-pool-r629.json（`set5_primary_criterion.C1_primary`）"
+ }
+}

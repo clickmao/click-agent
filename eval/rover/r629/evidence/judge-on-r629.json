@@ -1,0 +1,77 @@
+{
+ "schema": "r629-verdict-face/1",
+ "round": "R629",
+ "round_judged": "r629",
+ "instrument": {
+  "path": "eval/rover/r629/judge_r629.py",
+  "sha12": "a593d0401f8e"
+ },
+ "inputs": {
+  "prereg": "eval/rover/r629/prereg-r629.json",
+  "prereg_sha12": "3c0174b5ef40",
+  "verdict": "eval/rover/r629/verdict-r629.json",
+  "verdict_sha12": "258c9558d29e",
+  "precond": null,
+  "precond_sha12": null
+ },
+ "rule": "主判据键缺失 ⇒ fail-closed rc=2（禁把参照面当判决面）；指针缺失 ⇒ 出声记 null；声明件缺失 ⇒ fail-closed",
+ "POS_recorded": {
+  "primary_declared_keys": [
+   "C7_judge_v3_primary"
+  ],
+  "primary_name": "C7",
+  "primary_present_in_verdict_toplevel": [
+   "C7_judge_v3_primary"
+  ],
+  "recorded_verdict_source": [
+   "C7_judge_v3_primary"
+  ],
+  "recorded_verdict_source_raw": [],
+  "recorded_iron11_string": "/home/agentuser/AgentFramework/eval/rover/r629/precond-r629.json",
+  "verdict_source_is_primary": true,
+  "recorded_rc": 0,
+  "iron11": {
+   "pointer": null,
+   "derived_from": "--out",
+   "exists": false,
+   "candidates_checked": [
+    "/home/agentuser/AgentFramework/eval/rover/r629/evidence/precond-r629.json",
+    "/home/agentuser/AgentFramework/eval/rover/r629/evidence/precondition-r629.json"
+   ],
+   "note": "指针缺失 ⇒ 出声记 null（禁回退到硬编码历史路径）"
+  },
+  "declared_artifacts_missing": [
+   "eval/rover/r629/judge-r629.json",
+   "eval/rover/r629/negform-r629.json",
+   "eval/rover/r629/negform_r629.py",
+   "eval/rover/r629/report-r629.md"
+  ],
+  "defects": [
+   {
+    "id": "D2",
+    "what": "铁律 11 指针不可达（与 --out 不同源）",
+    "candidates": [
+     "/home/agentuser/AgentFramework/eval/rover/r629/evidence/precond-r629.json",
+     "/home/agentuser/AgentFramework/eval/rover/r629/evidence/precondition-r629.json"
+    ]
+   },
+   {
+    "id": "D3",
+    "what": "声明件缺失未登记",
+    "missing": [
+     "eval/rover/r629/judge-r629.json",
+     "eval/rover/r629/negform-r629.json",
+     "eval/rover/r629/negform_r629.py",
+     "eval/rover/r629/report-r629.md"
+    ]
+   }
+  ],
+  "rc": 2,
+  "judge": "器具缺陷（判决面/指针/声明件）"
+ },
+ "verdict": {
+  "rc": 2,
+  "judge": "器具缺陷（判决面/指针/声明件）",
+  "note": "rc=2 表**器具缺陷**（R628 记录判决的来源不可信）⇒ 主判据已由 R629 参数化池化器补齐，见 primary-pool-r629.json（`set5_primary_criterion.C1_primary`）"
+ }
+}

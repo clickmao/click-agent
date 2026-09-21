@@ -542,3 +542,21 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 - 本轮**采信 0 条**（3 式：1 式 0 命中已交叉复核、2 式 top-6 全不相关 ⇒ **未取到可采信原文**，按反幻觉硬闸不采信）；**观察 1 条**。连续 0 采信计数 = **1**（§24 已归零后重新起算；累计 3 轮 0 采信则检索降频为每 3 轮一次，**本轮不降频**）。
 - 近月预印本 `cited_by_count`：Semantic Scholar 无 key ⇒ **不可用，不编造**。
 - **口径诚实**：本轮检索面（组合/博弈判定 + 执行自检）与**主线当前唯一未闭合缺口**（`wythoff` 族冷点谓词/胜负态判定，R622 定因 90.6%）**未能取到直接可采信原文** ⇒ 该缺口的处置仍走**本仓实测**（R628 真机臂轮族分列读数），**不得**以文献机制假设替代实测。
+
+## 22. R629 文献小步（2026-09-22；检索面 = 「判据/门控的可预测失败子群与弃权」；预算 = 3 query / 2 摘要取件，未开子 agent · 出口前置探针 HTTP 200）
+
+**检索式（预算 3/3 用尽；间隔 ≥4s）**：
+1. `"LLM agent evaluation harness negative control"` + `--category cs.CL` ⇒ **0 命中**；按纪律先交叉复核（出口 `HTTP 200` ⇒ 出口可达，**非**网络故障）再做下一式。
+2. `"negative control" "evaluation"` + `cat:cs.CL` ⇒ 46,773 命中；top-6 逐条读标题/摘要。
+3. `agent harness "false negative" evaluation` + `cat:cs.AI` ⇒ 143,268 命中（**检索式过宽**）；top-6 多为视觉 agent / 支付授权 / 图形设计 ⇒ 按「结果数不是判据」纪律**不作候选**。
+
+**台账（8 列，本轮追加 2 行：1 采信 + 1 观察）**
+
+| 日期 | 检索式 | 出处（含版本） | 逐字引文 | 机制假设 | 改哪一格 KPI | 单变量轴 + 判据 | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-22 | 式2 | arXiv **2609.22056v1**（cs.IR/cs.CL/cs.LG；`comment` 仅 8 pages/2 fig/4 tab；`journal-ref` NONE ⇒ **纯预印本，权威代理最低档**） | "Multi-hop retrieval failures are not uniformly distributed across queries: they cluster in structurally predictable subpopulations." · "no single ANN score feature achieves best predictive performance across all failure regimes" · "computes a Retrieval Confidence Score (RCS), a logistic function of up to nine query-ANN structural features, all available without any additional LLM call" · "≥ RCS reduces CWAR from 39.5% to 20.6% at 50% coverage (47.8% relative reduction)" | 失败**聚在结构可预测子群**、且**无单一特征跨 regime 全能** ⇒ 门控/弃权应在**免调用结构特征**上做，而非加信号族；子群先分类再定杠杆 | 质量（「自信错」率 = 本仓「假跳 / 必胜判负」的同类量）+ tokens（零额外调用） | 轴 = 「结构特征置信度 → 弃权门」开关（单变量）；判据 = 自信错率相对降幅 ∧ **覆盖率**达标 ∧ **假阴性族**（必答轮不得被弃权，弃权率单列）；**前置** = 可分性预检（须先证特征携带关于成功的信息） | **采信（机制侧）** ⇒ 候选队列；**首步 = 可分性预检**（本仓 R444 实测 99 次问模型仅 71.7% 可规则化 ⇒ **前提存疑**，未过预检不得上轴） |
+| 2026-09-22 | 式2 | arXiv **2609.22043v1**（cs.CL；17 pages/6 fig/10 tab；`journal-ref` NONE ⇒ 纯预印本） | "MDL explicitly decouples confidence from consistency and introduces risk inversion and explicit abstention." · "requires no trained parameters, and adds only about 0.14 ms per decision -- roughly 50x faster than the embedding-retrieval step that precedes it" | 零参数、**显式解耦置信与一致性** + 风险反转 + 显式弃权：与铁律 14④「置信度不得单独作放行依据」**同向**（一致性/风险须入判据） | 质量（弃权/风险门） | 无（**观察项**，本轮不设轴） | **观察**（同向旁证，不作新候选） |
+
+- **口径纪律（本轮关键）**：该文 "roughly **50x faster** than the embedding-retrieval step" 是**相对嵌入检索步**的加速，**不是**相对 LLM 调用的加速 ⇒ **禁直引为本仓结论**、**禁**用于支撑铁律 14② 的「快 50×」（那条的口径是终局目标读数、外部出处 TabAgent）。本仓对照读数另列。
+- 本轮**采信 1 条**（机制侧候选）· **观察 1 条**；连续 0 采信计数**归零**（前一轮 = 1）⇒ **不降频**。近月预印本 `cited_by_count`：Semantic Scholar 无 key ⇒ **不可用，不编造**。
+- **与本仓现状对照（代码证据）**：采信项的「子群分类先行」与本仓 R629 候选② 归因结果**同向**——`wythoff` 族失败**非单一机理**（`APPROX_COLD_SET` 3 / `TERMINAL_EXCLUDED` 1 / `CRASH_NONE` 2 / `ILLEGAL_MOVE` 1，`eval/rover/r629/attribution-r629.json`）⇒ 主族 = 冷点集近似构造。**但**该文只提供**机制假设**，**不得当收益证据**（R629 零真机跑次 ⇒ 无新 KPI 读数）。

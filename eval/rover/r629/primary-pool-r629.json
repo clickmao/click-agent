@@ -1,0 +1,192 @@
+{
+ "schema": "r629-primary-pool/1",
+ "round": "R629",
+ "single_variable": "窗名枚举 = legacy 硬编码 `w1*` vs derived 目录派生",
+ "instrument_logic_source": {
+  "path": "eval/rover/r589/pool_taskface_r589.py",
+  "sha12": "d07b92e11b81",
+  "driver_sha12": "0e5c201f8944"
+ },
+ "runs_root": "/home/agentuser/.agentframework/harness/runs",
+ "C_A_enumeration_equivalence": {
+  "rounds": [
+   "r585",
+   "r586",
+   "r587",
+   "r588"
+  ],
+  "legacy": [
+   12,
+   9,
+   -0.6667
+  ],
+  "derived": [
+   12,
+   9,
+   -0.6667
+  ],
+  "identical": true,
+  "legacy_C0_runs": 48,
+  "derived_C0_runs": 48,
+  "rule": "该集窗名全部形如 w1xx ⇒ 两枚举本应读到同一批窗；不同即本轮夹带了读法改动"
+ },
+ "C_B_enumeration_teeth": {
+  "legacy": {
+   "windows": 0,
+   "runs_seen": 0,
+   "data_scope_windows": 0,
+   "valid_windows": 0,
+   "median": null
+  },
+  "derived": {
+   "windows": 3,
+   "runs_seen": 12,
+   "valid_windows": 2,
+   "median": -0.3333
+  },
+  "teeth": true,
+  "rule": "同一冻结数据、只换窗名枚举；legacy 必须 0 窗（复现 R628 静默弃权），derived 必须 3 窗 12 跑次",
+  "C7_primary_negative_control": {
+   "mutation": "w221 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w221",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "has_teeth": true
+  }
+ },
+ "set5_primary_criterion": {
+  "criterion": "判据 v3（整题全对率 + 按族分列）—— R628 预注册声明的**主判据**",
+  "windows": [
+   "w220",
+   "w221",
+   "w222"
+  ],
+  "per_window": [
+   {
+    "round": "r628",
+    "win": "w220",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_rate_task": 0.6666666666666666,
+    "D_case": 0,
+    "D_task": -0.3333,
+    "valid_task": true
+   },
+   {
+    "round": "r628",
+    "win": "w221",
+    "truth_pass": 56,
+    "truth_all_pass": 0,
+    "truth_rc": null,
+    "prod_rate_task": 0.3333333333333333,
+    "D_case": 0,
+    "D_task": 0.3333,
+    "valid_task": false
+   },
+   {
+    "round": "r628",
+    "win": "w222",
+    "truth_pass": 58,
+    "truth_all_pass": 1,
+    "truth_rc": null,
+    "prod_rate_task": 0.0,
+    "D_case": -9,
+    "D_task": -1.0,
+    "valid_task": true
+   }
+  ],
+  "summary": {
+   "valid_windows": 2,
+   "unreliable_windows_truth_self_fail": [
+    "w221"
+   ],
+   "all_windows": {
+    "n": 3
+   },
+   "case_face_valid": {
+    "n": 2,
+    "median": -4.5,
+    "min": -9,
+    "max": 0,
+    "range": 9,
+    "sign": {
+     "neg": 1,
+     "zero": 1,
+     "pos": 0
+    }
+   },
+   "case_face_all": {
+    "n": 3,
+    "median": 0,
+    "min": -9,
+    "max": 0,
+    "range": 9,
+    "sign": {
+     "neg": 1,
+     "zero": 2,
+     "pos": 0
+    }
+   },
+   "task_face_valid": {
+    "n": 2,
+    "median": -0.66665,
+    "min": -1.0,
+    "max": -0.3333,
+    "range": 0.6667,
+    "sign": {
+     "neg": 2,
+     "zero": 0,
+     "pos": 0
+    }
+   },
+   "task_face_all": {
+    "n": 3,
+    "median": -0.3333,
+    "min": -1.0,
+    "max": 0.3333,
+    "range": 1.3333,
+    "sign": {
+     "neg": 2,
+     "zero": 0,
+     "pos": 1
+    }
+   },
+   "case_face_all_median": 0,
+   "task_face_all_median": -0.3333
+  },
+  "C0": {
+   "runs_seen": 12,
+   "expected_runs": 12,
+   "windows": 3,
+   "expected_windows": 3,
+   "issues": [],
+   "pass": true
+  },
+  "C1_primary": {
+   "median_D_task": -0.66665,
+   "neg_windows": 2,
+   "valid_windows": 2,
+   "threshold_median": -0.34,
+   "threshold_sign": "neg >= ceil(valid/2)",
+   "pass": true,
+   "verdict": "整题面缺口成立"
+  },
+  "C7_negative_control": {
+   "mutation": "w221 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w221",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "has_teeth": true
+  },
+  "verdict": {
+   "rc": 0,
+   "judge": "可判"
+  }
+ },
+ "verdict": {
+  "rc": 0,
+  "enumeration_single_variable": true,
+  "note": "rc 仅表**器具读数是否成立**；质量面判定另见 verdict-r629.json（判决面 == 主判据面）"
+ }
+}

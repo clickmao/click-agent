@@ -1,0 +1,88 @@
+{
+ "schema": "r629-instrument-defects/1",
+ "round": "R629",
+ "defects": [
+  {
+   "id": "D1",
+   "what": "主判据键未落盘进 verdict 顶层",
+   "consequence": "判决面 ≠ 预注册主判据面"
+  },
+  {
+   "id": "D1b",
+   "what": "记录判决的来源 ≠ 主判据",
+   "recorded_source": [
+    "C1_quality_paired"
+   ],
+   "declared_primary": "C7"
+  },
+  {
+   "id": "D2",
+   "what": "铁律 11 指针不可达（与 --out 不同源）",
+   "candidates": [
+    "/home/agentuser/AgentFramework/eval/rover/r629/precond-r628.json",
+    "/home/agentuser/AgentFramework/eval/rover/r629/precondition-r628.json"
+   ]
+  },
+  {
+   "id": "D3",
+   "what": "声明件缺失未登记",
+   "missing": [
+    "eval/rover/r628/taskface-pool-r628.json"
+   ]
+  }
+ ],
+ "teeth": true,
+ "paired_controls": {
+  "NEG_A_corrected_form": {
+   "primary_present": true,
+   "verdict_source_is_primary": true,
+   "defect_ids": [
+    "D2",
+    "D3"
+   ]
+  },
+  "NEG_B_pointer_missing": {
+   "iron11_exists": false,
+   "defect_ids": [
+    "D1",
+    "D1b",
+    "D2",
+    "D3"
+   ]
+  },
+  "POS_B_pointer_present": {
+   "iron11_exists": true,
+   "defect_ids": [
+    "D1",
+    "D1b",
+    "D3"
+   ]
+  },
+  "teeth": true,
+  "rule": "成对四面：POS(现盘) 判红 D1/D1b/D2/D3 ∧ NEG-A(正确形态副本) 判绿 D1 ∧ NEG-B(指针缺失) 判红 D2 ∧ POS-B(指针存在) D2 消失 ⇒ 非恒真门"
+ },
+ "positive_control_on_disk_verdict": {
+  "primary_declared_keys": [
+   "C7 判据 v3 第五窗集（**主判据**）"
+  ],
+  "primary_present_in_verdict_toplevel": [],
+  "recorded_verdict_source": [
+   "C1_quality_paired"
+  ],
+  "verdict_source_is_primary": false,
+  "iron11": {
+   "pointer": null,
+   "derived_from": "--out",
+   "exists": false,
+   "candidates_checked": [
+    "/home/agentuser/AgentFramework/eval/rover/r629/precond-r628.json",
+    "/home/agentuser/AgentFramework/eval/rover/r629/precondition-r628.json"
+   ],
+   "note": "指针缺失 ⇒ 出声记 null（禁回退到硬编码历史路径）"
+  },
+  "declared_artifacts_missing": [
+   "eval/rover/r628/taskface-pool-r628.json"
+  ]
+ },
+ "rule": "正控 = 现盘 R628 判据件（须判红：判决面不成立）；负控 = 注入 C7 键副本 / 无 precond 目录（须判绿/出声）"
+}

@@ -1,0 +1,2520 @@
+{
+ "schema": "r629-wythoff-attribution/1",
+ "round": "R629",
+ "readonly": true,
+ "product_src_changed": false,
+ "inputs": {
+  "cases": "/home/agentuser/AgentFramework/eval/rover/r628/cases/cases-r521.json",
+  "cases_sha12": "270128eb85c7",
+  "snapshots": "/home/agentuser/AgentFramework/eval/rover/r628/snapshots",
+  "harness_precond": "/home/agentuser/.agentframework/harness/runs/r628/precond-r628.json"
+ },
+ "A_independent_oracle": {
+  "algorithm": "retrograde DP by ascending a+b (definition-level; NOT the phi closed form used by products/codex)",
+  "n_cases": 15,
+  "agree": 15,
+  "mismatches": [],
+  "rows": [
+   {
+    "case": "wythoff#43-public",
+    "stdin": "21 25",
+    "fixture": "WIN 15 15",
+    "independent_oracle": "WIN 15 15",
+    "agree": true
+   },
+   {
+    "case": "wythoff#44-public",
+    "stdin": "10 9",
+    "fixture": "WIN 0 3",
+    "independent_oracle": "WIN 0 3",
+    "agree": true
+   },
+   {
+    "case": "wythoff#45-hidden",
+    "stdin": "18 8",
+    "fixture": "WIN 5 0",
+    "independent_oracle": "WIN 5 0",
+    "agree": true
+   },
+   {
+    "case": "wythoff#46-hidden",
+    "stdin": "1 5",
+    "fixture": "WIN 0 3",
+    "independent_oracle": "WIN 0 3",
+    "agree": true
+   },
+   {
+    "case": "wythoff#47-hidden",
+    "stdin": "12 18",
+    "fixture": "WIN 1 0",
+    "independent_oracle": "WIN 1 0",
+    "agree": true
+   },
+   {
+    "case": "wythoff#48-hidden",
+    "stdin": "11 25",
+    "fixture": "WIN 0 7",
+    "independent_oracle": "WIN 0 7",
+    "agree": true
+   },
+   {
+    "case": "wythoff#49-hidden",
+    "stdin": "18 17",
+    "fixture": "WIN 0 6",
+    "independent_oracle": "WIN 0 6",
+    "agree": true
+   },
+   {
+    "case": "wythoff#50-hidden",
+    "stdin": "7 21",
+    "fixture": "WIN 0 17",
+    "independent_oracle": "WIN 0 17",
+    "agree": true
+   },
+   {
+    "case": "wythoff#51-hidden",
+    "stdin": "1 2",
+    "fixture": "LOSE",
+    "independent_oracle": "LOSE",
+    "agree": true
+   },
+   {
+    "case": "wythoff#52-hidden",
+    "stdin": "3 5",
+    "fixture": "LOSE",
+    "independent_oracle": "LOSE",
+    "agree": true
+   },
+   {
+    "case": "wythoff#53-hidden",
+    "stdin": "4 7",
+    "fixture": "LOSE",
+    "independent_oracle": "LOSE",
+    "agree": true
+   },
+   {
+    "case": "wythoff#54-hidden",
+    "stdin": "6 10",
+    "fixture": "LOSE",
+    "independent_oracle": "LOSE",
+    "agree": true
+   },
+   {
+    "case": "wythoff#55-hidden",
+    "stdin": "1 1",
+    "fixture": "WIN 1 1",
+    "independent_oracle": "WIN 1 1",
+    "agree": true
+   },
+   {
+    "case": "wythoff#56-hidden",
+    "stdin": "2 25",
+    "fixture": "WIN 0 24",
+    "independent_oracle": "WIN 0 24",
+    "agree": true
+   },
+   {
+    "case": "wythoff#57-hidden",
+    "stdin": "25 25",
+    "fixture": "WIN 25 25",
+    "independent_oracle": "WIN 25 25",
+    "agree": true
+   }
+  ],
+  "positive_control_pass": true
+ },
+ "B_independent_replay": {
+  "arms": [
+   {
+    "window": "w220",
+    "arm": "agentD-r1",
+    "replayed_failures": [],
+    "harness_recorded": [],
+    "identical": true,
+    "n_fail": 0,
+    "module_sha12": "205235927f28"
+   },
+   {
+    "window": "w220",
+    "arm": "agentD-r2",
+    "replayed_failures": [],
+    "harness_recorded": [],
+    "identical": true,
+    "n_fail": 0,
+    "module_sha12": "3139012a4a18"
+   },
+   {
+    "window": "w220",
+    "arm": "agentD-r3",
+    "replayed_failures": [
+     "wythoff#43-public",
+     "wythoff#44-public",
+     "wythoff#45-hidden",
+     "wythoff#46-hidden",
+     "wythoff#49-hidden",
+     "wythoff#50-hidden",
+     "wythoff#51-hidden",
+     "wythoff#53-hidden",
+     "wythoff#55-hidden",
+     "wythoff#56-hidden",
+     "wythoff#57-hidden"
+    ],
+    "harness_recorded": [
+     "wythoff#43-public",
+     "wythoff#44-public",
+     "wythoff#45-hidden",
+     "wythoff#46-hidden",
+     "wythoff#49-hidden",
+     "wythoff#50-hidden",
+     "wythoff#51-hidden",
+     "wythoff#53-hidden",
+     "wythoff#55-hidden",
+     "wythoff#56-hidden",
+     "wythoff#57-hidden"
+    ],
+    "identical": true,
+    "n_fail": 11,
+    "module_sha12": "81b7791377e6"
+   },
+   {
+    "window": "w220",
+    "arm": "codex",
+    "replayed_failures": [],
+    "harness_recorded": [],
+    "identical": true,
+    "n_fail": 0,
+    "module_sha12": "34bca7d047ac"
+   },
+   {
+    "window": "w221",
+    "arm": "agentD-r1",
+    "replayed_failures": [
+     "wythoff#55-hidden",
+     "wythoff#57-hidden"
+    ],
+    "harness_recorded": [
+     "wythoff#55-hidden",
+     "wythoff#57-hidden"
+    ],
+    "identical": true,
+    "n_fail": 2,
+    "module_sha12": "c1e8e5773d85"
+   },
+   {
+    "window": "w221",
+    "arm": "agentD-r2",
+    "replayed_failures": [
+     "wythoff#43-public",
+     "wythoff#44-public",
+     "wythoff#45-hidden",
+     "wythoff#47-hidden",
+     "wythoff#48-hidden",
+     "wythoff#49-hidden",
+     "wythoff#50-hidden",
+     "wythoff#52-hidden",
+     "wythoff#53-hidden",
+     "wythoff#54-hidden",
+     "wythoff#55-hidden",
+     "wythoff#57-hidden"
+    ],
+    "harness_recorded": [
+     "wythoff#43-public",
+     "wythoff#44-public",
+     "wythoff#45-hidden",
+     "wythoff#47-hidden",
+     "wythoff#48-hidden",
+     "wythoff#49-hidden",
+     "wythoff#50-hidden",
+     "wythoff#52-hidden",
+     "wythoff#53-hidden",
+     "wythoff#54-hidden",
+     "wythoff#55-hidden",
+     "wythoff#57-hidden"
+    ],
+    "identical": true,
+    "n_fail": 12,
+    "module_sha12": "b5c922377079"
+   },
+   {
+    "window": "w221",
+    "arm": "agentD-r3",
+    "replayed_failures": [],
+    "harness_recorded": [],
+    "identical": true,
+    "n_fail": 0,
+    "module_sha12": "a8b7610246c9"
+   },
+   {
+    "window": "w221",
+    "arm": "codex",
+    "replayed_failures": [
+     "wythoff#43-public",
+     "wythoff#57-hidden"
+    ],
+    "harness_recorded": [
+     "wythoff#43-public",
+     "wythoff#57-hidden"
+    ],
+    "identical": true,
+    "n_fail": 2,
+    "module_sha12": "5b63f8753b2c"
+   },
+   {
+    "window": "w222",
+    "arm": "agentD-r1",
+    "replayed_failures": [
+     "wythoff#43-public",
+     "wythoff#46-hidden",
+     "wythoff#51-hidden",
+     "wythoff#55-hidden",
+     "wythoff#56-hidden",
+     "wythoff#57-hidden"
+    ],
+    "harness_recorded": [
+     "wythoff#43-public",
+     "wythoff#46-hidden",
+     "wythoff#51-hidden",
+     "wythoff#55-hidden",
+     "wythoff#56-hidden",
+     "wythoff#57-hidden"
+    ],
+    "identical": true,
+    "n_fail": 6,
+    "module_sha12": "29c4f9536a5f"
+   },
+   {
+    "window": "w222",
+    "arm": "agentD-r2",
+    "replayed_failures": [
+     "wythoff#43-public",
+     "wythoff#44-public",
+     "wythoff#45-hidden",
+     "wythoff#47-hidden",
+     "wythoff#48-hidden",
+     "wythoff#49-hidden",
+     "wythoff#50-hidden",
+     "wythoff#52-hidden",
+     "wythoff#53-hidden",
+     "wythoff#54-hidden",
+     "wythoff#55-hidden",
+     "wythoff#56-hidden",
+     "wythoff#57-hidden"
+    ],
+    "harness_recorded": [
+     "wythoff#43-public",
+     "wythoff#44-public",
+     "wythoff#45-hidden",
+     "wythoff#47-hidden",
+     "wythoff#48-hidden",
+     "wythoff#49-hidden",
+     "wythoff#50-hidden",
+     "wythoff#52-hidden",
+     "wythoff#53-hidden",
+     "wythoff#54-hidden",
+     "wythoff#55-hidden",
+     "wythoff#56-hidden",
+     "wythoff#57-hidden"
+    ],
+    "identical": true,
+    "n_fail": 13,
+    "module_sha12": "16eee9beec73"
+   },
+   {
+    "window": "w222",
+    "arm": "agentD-r3",
+    "replayed_failures": [
+     "wythoff#43-public",
+     "wythoff#45-hidden",
+     "wythoff#47-hidden",
+     "wythoff#48-hidden",
+     "wythoff#49-hidden",
+     "wythoff#50-hidden",
+     "wythoff#52-hidden",
+     "wythoff#55-hidden",
+     "wythoff#57-hidden"
+    ],
+    "harness_recorded": [
+     "wythoff#43-public",
+     "wythoff#45-hidden",
+     "wythoff#47-hidden",
+     "wythoff#48-hidden",
+     "wythoff#49-hidden",
+     "wythoff#50-hidden",
+     "wythoff#52-hidden",
+     "wythoff#55-hidden",
+     "wythoff#57-hidden"
+    ],
+    "identical": true,
+    "n_fail": 9,
+    "module_sha12": "70438b5de0d7"
+   },
+   {
+    "window": "w222",
+    "arm": "codex",
+    "replayed_failures": [],
+    "harness_recorded": [],
+    "identical": true,
+    "n_fail": 0,
+    "module_sha12": "78ce26acf21c"
+   }
+  ],
+  "n_arms": 12,
+  "n_identical": 12,
+  "rule": "逐字节复现 R628 记录的失败集才算读数可用（判据器可复现性）",
+  "pass": true
+ },
+ "C_mechanism": {
+  "per_module": [
+   {
+    "window": "w220",
+    "arm": "agentD-r1",
+    "mechanism": "CANONICAL",
+    "n_exhaustive_errors": 0,
+    "error_positions": [],
+    "samples": [],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "\"\"\"Wythoff's game: win/lose and lexicographically smallest winning move.\"\"\""
+     },
+     {
+      "line": 2,
+      "text": ""
+     },
+     {
+      "line": 3,
+      "text": ""
+     },
+     {
+      "line": 4,
+      "text": "def solve(text: str) -> str:"
+     },
+     {
+      "line": 5,
+      "text": "    lines = text.split()"
+     },
+     {
+      "line": 6,
+      "text": "    a = int(lines[0])"
+     },
+     {
+      "line": 7,
+      "text": "    b = int(lines[1])"
+     },
+     {
+      "line": 8,
+      "text": "    # losing positions: (floor(k*phi), floor(k*phi^2))"
+     },
+     {
+      "line": 9,
+      "text": "    PHI = (1 + 5 ** 0.5) / 2"
+     },
+     {
+      "line": 10,
+      "text": "    losing = set()"
+     },
+     {
+      "line": 11,
+      "text": "    k = 0"
+     },
+     {
+      "line": 12,
+      "text": "    while True:"
+     },
+     {
+      "line": 13,
+      "text": "        x = int(k * PHI) + k  # floor(k*phi^2) == floor(k*phi) + k"
+     },
+     {
+      "line": 14,
+      "text": "        y = int(k * PHI)"
+     },
+     {
+      "line": 15,
+      "text": "        if x > 25 and y > 25:"
+     },
+     {
+      "line": 16,
+      "text": "            break"
+     },
+     {
+      "line": 17,
+      "text": "        losing.add((y, x))"
+     },
+     {
+      "line": 18,
+      "text": "        losing.add((x, y))"
+     },
+     {
+      "line": 19,
+      "text": "        k += 1"
+     },
+     {
+      "line": 20,
+      "text": "        if k > 1000:"
+     },
+     {
+      "line": 21,
+      "text": "            break"
+     },
+     {
+      "line": 22,
+      "text": "    if (a, b) in losing:"
+     },
+     {
+      "line": 23,
+      "text": "        return \"LOSE\""
+     },
+     {
+      "line": 24,
+      "text": "    best = None"
+     },
+     {
+      "line": 25,
+      "text": "    # moves type (i): remove from one pile"
+     },
+     {
+      "line": 26,
+      "text": "    for i in range(1, a + 1):"
+     },
+     {
+      "line": 27,
+      "text": "        cand = (i, 0)"
+     },
+     {
+      "line": 28,
+      "text": "        if (a - i, b) in losing:"
+     },
+     {
+      "line": 29,
+      "text": "            if best is None or cand < best:"
+     },
+     {
+      "line": 30,
+      "text": "                best = cand"
+     },
+     {
+      "line": 31,
+      "text": "    for j in range(1, b + 1):"
+     },
+     {
+      "line": 32,
+      "text": "        cand = (0, j)"
+     },
+     {
+      "line": 33,
+      "text": "        if (a, b - j) in losing:"
+     },
+     {
+      "line": 34,
+      "text": "            if best is None or cand < best:"
+     },
+     {
+      "line": 35,
+      "text": "                best = cand"
+     },
+     {
+      "line": 36,
+      "text": "    # moves type (ii): remove same positive from both"
+     },
+     {
+      "line": 37,
+      "text": "    for t in range(1, min(a, b) + 1):"
+     },
+     {
+      "line": 38,
+      "text": "        cand = (t, t)"
+     },
+     {
+      "line": 39,
+      "text": "        if (a - t, b - t) in losing:"
+     },
+     {
+      "line": 40,
+      "text": "            if best is None or cand < best:"
+     },
+     {
+      "line": 41,
+      "text": "                best = cand"
+     },
+     {
+      "line": 42,
+      "text": "    if best is None:"
+     },
+     {
+      "line": 43,
+      "text": "        return \"LOSE\""
+     },
+     {
+      "line": 44,
+      "text": "    return \"WIN {} {}\".format(best[0], best[1])"
+     }
+    ]
+   },
+   {
+    "window": "w220",
+    "arm": "agentD-r2",
+    "mechanism": "CANONICAL",
+    "n_exhaustive_errors": 0,
+    "error_positions": [],
+    "samples": [],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "\"\"\"Wythoff game: LOSE if cold position, else WIN i j lexicographically smallest.\"\"\""
+     },
+     {
+      "line": 2,
+      "text": ""
+     },
+     {
+      "line": 3,
+      "text": ""
+     },
+     {
+      "line": 4,
+      "text": "def _cold(a, b):"
+     },
+     {
+      "line": 5,
+      "text": "    \"\"\"True if (a, b) is a Wythoff cold (P) position.\"\"\""
+     },
+     {
+      "line": 6,
+      "text": "    if a > b:"
+     },
+     {
+      "line": 7,
+      "text": "        a, b = b, a"
+     },
+     {
+      "line": 8,
+      "text": "    # cold positions: (floor(t*phi), floor(t*phi*phi)) for t >= 0"
+     },
+     {
+      "line": 9,
+      "text": "    import math"
+     },
+     {
+      "line": 10,
+      "text": "    phi = (1 + math.sqrt(5)) / 2"
+     },
+     {
+      "line": 11,
+      "text": "    t = int(a / phi)"
+     },
+     {
+      "line": 12,
+      "text": "    for cand in (t - 1, t, t + 1):"
+     },
+     {
+      "line": 13,
+      "text": "        if cand < 0:"
+     },
+     {
+      "line": 14,
+      "text": "            continue"
+     },
+     {
+      "line": 15,
+      "text": "        ca = int(math.floor(cand * phi))"
+     },
+     {
+      "line": 16,
+      "text": "        cb = int(math.floor(cand * phi * phi))"
+     },
+     {
+      "line": 17,
+      "text": "        if ca == a and cb == b:"
+     },
+     {
+      "line": 18,
+      "text": "            return True"
+     },
+     {
+      "line": 19,
+      "text": "    return False"
+     },
+     {
+      "line": 20,
+      "text": ""
+     },
+     {
+      "line": 21,
+      "text": ""
+     },
+     {
+      "line": 22,
+      "text": "def solve(text: str) -> str:"
+     },
+     {
+      "line": 23,
+      "text": "    parts = text.split()"
+     },
+     {
+      "line": 24,
+      "text": "    a = int(parts[0])"
+     },
+     {
+      "line": 25,
+      "text": "    b = int(parts[1])"
+     },
+     {
+      "line": 26,
+      "text": "    if _cold(a, b):"
+     },
+     {
+      "line": 27,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 28,
+      "text": "    best = None"
+     },
+     {
+      "line": 29,
+      "text": "    # option (i): remove from a single pile"
+     },
+     {
+      "line": 30,
+      "text": "    for i in range(0, a + 1):"
+     },
+     {
+      "line": 31,
+      "text": "        for j in range(0, b + 1):"
+     },
+     {
+      "line": 32,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 33,
+      "text": "                continue"
+     },
+     {
+      "line": 34,
+      "text": "            if i > 0 and j > 0 and i != j:"
+     },
+     {
+      "line": 35,
+      "text": "                continue"
+     },
+     {
+      "line": 36,
+      "text": "            if i > 0 and j > 0 and i == j:"
+     },
+     {
+      "line": 37,
+      "text": "                pass"
+     },
+     {
+      "line": 38,
+      "text": "            elif i > 0 and j > 0:"
+     },
+     {
+      "line": 39,
+      "text": "                continue"
+     },
+     {
+      "line": 40,
+      "text": "            na, nb = a - i, b - j"
+     },
+     {
+      "line": 41,
+      "text": "            if _cold(na, nb):"
+     },
+     {
+      "line": 42,
+      "text": "                if best is None or (i, j) < best:"
+     },
+     {
+      "line": 43,
+      "text": "                    best = (i, j)"
+     },
+     {
+      "line": 44,
+      "text": "    if best is None:"
+     },
+     {
+      "line": 45,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 46,
+      "text": "    return 'WIN %d %d' % best"
+     }
+    ]
+   },
+   {
+    "window": "w220",
+    "arm": "agentD-r3",
+    "mechanism": "APPROX_COLD_SET",
+    "n_exhaustive_errors": 123,
+    "error_positions": [
+     "1,1",
+     "1,2",
+     "1,3",
+     "1,4",
+     "1,5",
+     "1,6",
+     "1,7",
+     "1,8",
+     "1,9",
+     "1,10",
+     "1,11",
+     "1,12",
+     "2,1",
+     "2,2",
+     "2,3",
+     "2,4",
+     "2,5",
+     "2,6",
+     "2,7",
+     "2,8",
+     "2,9",
+     "2,10",
+     "2,11",
+     "2,12"
+    ],
+    "samples": [
+     {
+      "in": "1 1",
+      "got": "LOSE",
+      "exp": "WIN 1 1"
+     },
+     {
+      "in": "1 2",
+      "got": "WIN 0 1",
+      "exp": "LOSE"
+     },
+     {
+      "in": "1 3",
+      "got": "WIN 0 2",
+      "exp": "WIN 0 1"
+     },
+     {
+      "in": "1 4",
+      "got": "WIN 0 3",
+      "exp": "WIN 0 2"
+     }
+    ],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "def solve(text: str) -> str:"
+     },
+     {
+      "line": 2,
+      "text": "    nums = text.split()"
+     },
+     {
+      "line": 3,
+      "text": "    n = int(nums[0])"
+     },
+     {
+      "line": 4,
+      "text": "    m = int(nums[1])"
+     },
+     {
+      "line": 5,
+      "text": "    if n > m:"
+     },
+     {
+      "line": 6,
+      "text": "        n, m = m, n"
+     },
+     {
+      "line": 7,
+      "text": "    zone = n * 2 // 3"
+     },
+     {
+      "line": 8,
+      "text": "    if m == n + zone:"
+     },
+     {
+      "line": 9,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 10,
+      "text": "    for i in range(n + 1):"
+     },
+     {
+      "line": 11,
+      "text": "        for j in range(m + 1):"
+     },
+     {
+      "line": 12,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 13,
+      "text": "                continue"
+     },
+     {
+      "line": 14,
+      "text": "            if i > 0 and j > 0 and i == j:"
+     },
+     {
+      "line": 15,
+      "text": "                x, y = n - i, m - j"
+     },
+     {
+      "line": 16,
+      "text": "            elif i == 0:"
+     },
+     {
+      "line": 17,
+      "text": "                x, y = n, m - j"
+     },
+     {
+      "line": 18,
+      "text": "            elif j == 0:"
+     },
+     {
+      "line": 19,
+      "text": "                x, y = n - i, m"
+     },
+     {
+      "line": 20,
+      "text": "            else:"
+     },
+     {
+      "line": 21,
+      "text": "                continue"
+     },
+     {
+      "line": 22,
+      "text": "            a, b = (x, y) if x <= y else (y, x)"
+     },
+     {
+      "line": 23,
+      "text": "            z = a * 2 // 3"
+     },
+     {
+      "line": 24,
+      "text": "            if b == a + z:"
+     },
+     {
+      "line": 25,
+      "text": "                return 'WIN %d %d' % (i, j)"
+     },
+     {
+      "line": 26,
+      "text": "    return 'LOSE'"
+     }
+    ]
+   },
+   {
+    "window": "w220",
+    "arm": "codex",
+    "mechanism": "CANONICAL",
+    "n_exhaustive_errors": 0,
+    "error_positions": [],
+    "samples": [],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "from math import isqrt"
+     },
+     {
+      "line": 2,
+      "text": ""
+     },
+     {
+      "line": 3,
+      "text": ""
+     },
+     {
+      "line": 4,
+      "text": "def _beatty(n: int) -> int:"
+     },
+     {
+      "line": 5,
+      "text": "    return (n + isqrt(5 * n * n)) // 2"
+     },
+     {
+      "line": 6,
+      "text": ""
+     },
+     {
+      "line": 7,
+      "text": ""
+     },
+     {
+      "line": 8,
+      "text": "def _losing(a: int, b: int) -> bool:"
+     },
+     {
+      "line": 9,
+      "text": "    x, y = (a, b) if a <= b else (b, a)"
+     },
+     {
+      "line": 10,
+      "text": "    for k in range(0, y - x + 2):"
+     },
+     {
+      "line": 11,
+      "text": "        if y == x + k and x == _beatty(k):"
+     },
+     {
+      "line": 12,
+      "text": "            return True"
+     },
+     {
+      "line": 13,
+      "text": "    return False"
+     },
+     {
+      "line": 14,
+      "text": ""
+     },
+     {
+      "line": 15,
+      "text": ""
+     },
+     {
+      "line": 16,
+      "text": "def solve(text: str) -> str:"
+     },
+     {
+      "line": 17,
+      "text": "    data = text.split()"
+     },
+     {
+      "line": 18,
+      "text": "    if not data:"
+     },
+     {
+      "line": 19,
+      "text": "        return \"\""
+     },
+     {
+      "line": 20,
+      "text": "    a, b = int(data[0]), int(data[1])"
+     },
+     {
+      "line": 21,
+      "text": "    if _losing(a, b):"
+     },
+     {
+      "line": 22,
+      "text": "        return \"LOSE\""
+     },
+     {
+      "line": 23,
+      "text": "    for i in range(0, a + 1):"
+     },
+     {
+      "line": 24,
+      "text": "        for j in range(0, b + 1):"
+     },
+     {
+      "line": 25,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 26,
+      "text": "                continue"
+     },
+     {
+      "line": 27,
+      "text": "            if i and j and i != j:"
+     },
+     {
+      "line": 28,
+      "text": "                continue"
+     },
+     {
+      "line": 29,
+      "text": "            if _losing(a - i, b - j):"
+     },
+     {
+      "line": 30,
+      "text": "                return \"WIN %d %d\" % (i, j)"
+     },
+     {
+      "line": 31,
+      "text": "    return \"LOSE\""
+     }
+    ]
+   },
+   {
+    "window": "w221",
+    "arm": "agentD-r1",
+    "mechanism": "TERMINAL_EXCLUDED",
+    "n_exhaustive_errors": 8,
+    "error_positions": [
+     "1,1",
+     "3,3",
+     "4,4",
+     "6,6",
+     "8,8",
+     "9,9",
+     "11,11",
+     "12,12"
+    ],
+    "samples": [
+     {
+      "in": "1 1",
+      "got": "LOSE",
+      "exp": "WIN 1 1"
+     },
+     {
+      "in": "3 3",
+      "got": "LOSE",
+      "exp": "WIN 3 3"
+     },
+     {
+      "in": "4 4",
+      "got": "LOSE",
+      "exp": "WIN 4 4"
+     },
+     {
+      "in": "6 6",
+      "got": "LOSE",
+      "exp": "WIN 6 6"
+     }
+    ],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "def solve(text):"
+     },
+     {
+      "line": 2,
+      "text": "    tokens = text.split()"
+     },
+     {
+      "line": 3,
+      "text": "    a = int(tokens[0])"
+     },
+     {
+      "line": 4,
+      "text": "    b = int(tokens[1])"
+     },
+     {
+      "line": 5,
+      "text": "    lose = set()"
+     },
+     {
+      "line": 6,
+      "text": "    r = 0"
+     },
+     {
+      "line": 7,
+      "text": "    while True:"
+     },
+     {
+      "line": 8,
+      "text": "        p = (r * (1 + 5 ** 0.5)) / 2"
+     },
+     {
+      "line": 9,
+      "text": "        x = int(p)"
+     },
+     {
+      "line": 10,
+      "text": "        y = x + r"
+     },
+     {
+      "line": 11,
+      "text": "        if x > max(a, b) or y > max(a, b):"
+     },
+     {
+      "line": 12,
+      "text": "            break"
+     },
+     {
+      "line": 13,
+      "text": "        lose.add((x, y))"
+     },
+     {
+      "line": 14,
+      "text": "        lose.add((y, x))"
+     },
+     {
+      "line": 15,
+      "text": "        r += 1"
+     },
+     {
+      "line": 16,
+      "text": "    if (a, b) in lose:"
+     },
+     {
+      "line": 17,
+      "text": "        return \"LOSE\""
+     },
+     {
+      "line": 18,
+      "text": "    best = None"
+     },
+     {
+      "line": 19,
+      "text": "    for i in range(a + 1):"
+     },
+     {
+      "line": 20,
+      "text": "        for j in range(b + 1):"
+     },
+     {
+      "line": 21,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 22,
+      "text": "                continue"
+     },
+     {
+      "line": 23,
+      "text": "            if (i > 0 and j > 0) and i != j:"
+     },
+     {
+      "line": 24,
+      "text": "                continue"
+     },
+     {
+      "line": 25,
+      "text": "            if i > a or j > b:"
+     },
+     {
+      "line": 26,
+      "text": "                continue"
+     },
+     {
+      "line": 27,
+      "text": "            if i == a and j == b:"
+     },
+     {
+      "line": 28,
+      "text": "                continue"
+     },
+     {
+      "line": 29,
+      "text": "            na = a - i"
+     },
+     {
+      "line": 30,
+      "text": "            nb = b - j"
+     },
+     {
+      "line": 31,
+      "text": "            if na < 0 or nb < 0:"
+     },
+     {
+      "line": 32,
+      "text": "                continue"
+     },
+     {
+      "line": 33,
+      "text": "            if (na, nb) in lose:"
+     },
+     {
+      "line": 34,
+      "text": "                if best is None or (i, j) < best:"
+     },
+     {
+      "line": 35,
+      "text": "                    best = (i, j)"
+     },
+     {
+      "line": 36,
+      "text": "    if best is None:"
+     },
+     {
+      "line": 37,
+      "text": "        return \"LOSE\""
+     },
+     {
+      "line": 38,
+      "text": "    return \"WIN \" + str(best[0]) + \" \" + str(best[1])"
+     }
+    ]
+   },
+   {
+    "window": "w221",
+    "arm": "agentD-r2",
+    "mechanism": "CRASH_NONE",
+    "n_exhaustive_errors": 123,
+    "error_positions": [
+     "1,1",
+     "2,2",
+     "2,3",
+     "3,1",
+     "3,2",
+     "3,3",
+     "3,4",
+     "3,5",
+     "3,6",
+     "3,7",
+     "3,8",
+     "3,9",
+     "3,10",
+     "3,11",
+     "3,12",
+     "4,1",
+     "4,2",
+     "4,3",
+     "4,4",
+     "4,5",
+     "4,6",
+     "4,7",
+     "4,8",
+     "4,9"
+    ],
+    "samples": [
+     {
+      "in": "1 1",
+      "got": "LOSE",
+      "exp": "WIN 1 1"
+     },
+     {
+      "in": "2 2",
+      "got": "LOSE",
+      "exp": "WIN 0 1"
+     },
+     {
+      "in": "2 3",
+      "got": "LOSE",
+      "exp": "WIN 0 2"
+     },
+     {
+      "in": "3 1",
+      "got": "WIN 0 1",
+      "exp": "WIN 1 0"
+     }
+    ],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "def solve(text: str) -> str:"
+     },
+     {
+      "line": 2,
+      "text": "    parts = text.split()"
+     },
+     {
+      "line": 3,
+      "text": "    a, b = int(parts[0]), int(parts[1])"
+     },
+     {
+      "line": 4,
+      "text": "    if a > b:"
+     },
+     {
+      "line": 5,
+      "text": "        a, b = b, a"
+     },
+     {
+      "line": 6,
+      "text": "    for t in range(0, min(a, b) + 1):"
+     },
+     {
+      "line": 7,
+      "text": "        if a - t == 0 and b - t == 0:"
+     },
+     {
+      "line": 8,
+      "text": "            return 'LOSE'"
+     },
+     {
+      "line": 9,
+      "text": "        x, y = a - t, b - t"
+     },
+     {
+      "line": 10,
+      "text": "        p = x * (5 ** 0.5 + 1) // 2"
+     },
+     {
+      "line": 11,
+      "text": "        if x == int(p) and y == x + int(p):"
+     },
+     {
+      "line": 12,
+      "text": "            return 'LOSE'"
+     },
+     {
+      "line": 13,
+      "text": "    best = None"
+     },
+     {
+      "line": 14,
+      "text": "    for i in range(a + 1):"
+     },
+     {
+      "line": 15,
+      "text": "        for j in range(b + 1):"
+     },
+     {
+      "line": 16,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 17,
+      "text": "                continue"
+     },
+     {
+      "line": 18,
+      "text": "            if i > 0 and j > 0 and i != j:"
+     },
+     {
+      "line": 19,
+      "text": "                continue"
+     },
+     {
+      "line": 20,
+      "text": "            x, y = a - i, b - j"
+     },
+     {
+      "line": 21,
+      "text": "            if x < 0 or y < 0:"
+     },
+     {
+      "line": 22,
+      "text": "                continue"
+     },
+     {
+      "line": 23,
+      "text": "            lo, hi = (x, y) if x <= y else (y, x)"
+     },
+     {
+      "line": 24,
+      "text": "            lose = False"
+     },
+     {
+      "line": 25,
+      "text": "            if lo == 0 and hi == 0:"
+     },
+     {
+      "line": 26,
+      "text": "                lose = True"
+     },
+     {
+      "line": 27,
+      "text": "            else:"
+     },
+     {
+      "line": 28,
+      "text": "                p = lo * (5 ** 0.5 + 1) // 2"
+     },
+     {
+      "line": 29,
+      "text": "                if lo == int(p) and hi == lo + int(p):"
+     },
+     {
+      "line": 30,
+      "text": "                    lose = True"
+     },
+     {
+      "line": 31,
+      "text": "            if lose:"
+     },
+     {
+      "line": 32,
+      "text": "                if best is None or (i, j) < best:"
+     },
+     {
+      "line": 33,
+      "text": "                    best = (i, j)"
+     },
+     {
+      "line": 34,
+      "text": "    return 'WIN ' + str(best[0]) + ' ' + str(best[1])"
+     }
+    ]
+   },
+   {
+    "window": "w221",
+    "arm": "agentD-r3",
+    "mechanism": "CANONICAL",
+    "n_exhaustive_errors": 0,
+    "error_positions": [],
+    "samples": [],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "def solve(text: str) -> str:"
+     },
+     {
+      "line": 2,
+      "text": "    parts = text.split()"
+     },
+     {
+      "line": 3,
+      "text": "    a = int(parts[0])"
+     },
+     {
+      "line": 4,
+      "text": "    b = int(parts[1])"
+     },
+     {
+      "line": 5,
+      "text": ""
+     },
+     {
+      "line": 6,
+      "text": "    def losing(x, y):"
+     },
+     {
+      "line": 7,
+      "text": "        return x == y == 0"
+     },
+     {
+      "line": 8,
+      "text": ""
+     },
+     {
+      "line": 9,
+      "text": "    golden = (1 + 5 ** 0.5) / 2"
+     },
+     {
+      "line": 10,
+      "text": "    cold = set()"
+     },
+     {
+      "line": 11,
+      "text": "    for n in range(0, 30):"
+     },
+     {
+      "line": 12,
+      "text": "        i = int(n * golden)"
+     },
+     {
+      "line": 13,
+      "text": "        j = i + n"
+     },
+     {
+      "line": 14,
+      "text": "        cold.add((i, j))"
+     },
+     {
+      "line": 15,
+      "text": "        cold.add((j, i))"
+     },
+     {
+      "line": 16,
+      "text": "    if (a, b) in cold:"
+     },
+     {
+      "line": 17,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 18,
+      "text": "    best = None"
+     },
+     {
+      "line": 19,
+      "text": "    for i in range(0, a + 1):"
+     },
+     {
+      "line": 20,
+      "text": "        for j in range(0, b + 1):"
+     },
+     {
+      "line": 21,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 22,
+      "text": "                continue"
+     },
+     {
+      "line": 23,
+      "text": "            na = a - i"
+     },
+     {
+      "line": 24,
+      "text": "            nb = b - j"
+     },
+     {
+      "line": 25,
+      "text": "            if na < 0 or nb < 0:"
+     },
+     {
+      "line": 26,
+      "text": "                continue"
+     },
+     {
+      "line": 27,
+      "text": "            if i > 0 and j > 0 and i != j:"
+     },
+     {
+      "line": 28,
+      "text": "                continue"
+     },
+     {
+      "line": 29,
+      "text": "            if i > 0 and j > 0 and i == j:"
+     },
+     {
+      "line": 30,
+      "text": "                pass"
+     },
+     {
+      "line": 31,
+      "text": "            elif i > 0 and j == 0:"
+     },
+     {
+      "line": 32,
+      "text": "                pass"
+     },
+     {
+      "line": 33,
+      "text": "            elif i == 0 and j > 0:"
+     },
+     {
+      "line": 34,
+      "text": "                pass"
+     },
+     {
+      "line": 35,
+      "text": "            else:"
+     },
+     {
+      "line": 36,
+      "text": "                continue"
+     },
+     {
+      "line": 37,
+      "text": "            if (na, nb) in cold:"
+     },
+     {
+      "line": 38,
+      "text": "                best = (i, j)"
+     },
+     {
+      "line": 39,
+      "text": "                break"
+     },
+     {
+      "line": 40,
+      "text": "        if best is not None:"
+     },
+     {
+      "line": 41,
+      "text": "            break"
+     },
+     {
+      "line": 42,
+      "text": "    if best is None:"
+     },
+     {
+      "line": 43,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 44,
+      "text": "    return 'WIN ' + str(best[0]) + ' ' + str(best[1])"
+     }
+    ]
+   },
+   {
+    "window": "w221",
+    "arm": "codex",
+    "mechanism": "ILLEGAL_MOVE",
+    "n_exhaustive_errors": 44,
+    "error_positions": [
+     "3,3",
+     "3,4",
+     "4,2",
+     "4,4",
+     "5,2",
+     "6,2",
+     "6,5",
+     "6,6",
+     "6,7",
+     "6,8",
+     "6,9",
+     "7,2",
+     "8,2",
+     "8,6",
+     "8,7",
+     "8,8",
+     "8,9",
+     "8,10",
+     "8,11",
+     "8,12",
+     "9,2",
+     "9,5",
+     "9,7",
+     "9,8"
+    ],
+    "samples": [
+     {
+      "in": "3 3",
+      "got": "WIN 1 2",
+      "exp": "WIN 3 3"
+     },
+     {
+      "in": "3 4",
+      "got": "WIN 1 3",
+      "exp": "WIN 2 2"
+     },
+     {
+      "in": "4 2",
+      "got": "WIN 2 1",
+      "exp": "WIN 3 0"
+     },
+     {
+      "in": "4 4",
+      "got": "WIN 2 3",
+      "exp": "WIN 4 4"
+     }
+    ],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "\"\"\"Wythoff's game: give the lexicographically smallest winning move.\"\"\""
+     },
+     {
+      "line": 2,
+      "text": ""
+     },
+     {
+      "line": 3,
+      "text": ""
+     },
+     {
+      "line": 4,
+      "text": "def solve(text: str) -> str:"
+     },
+     {
+      "line": 5,
+      "text": "    a, b = map(int, text.split()[0:2])"
+     },
+     {
+      "line": 6,
+      "text": ""
+     },
+     {
+      "line": 7,
+      "text": "    def losing(x, y):"
+     },
+     {
+      "line": 8,
+      "text": "        if x > y:"
+     },
+     {
+      "line": 9,
+      "text": "            x, y = y, x"
+     },
+     {
+      "line": 10,
+      "text": "        d = y - x"
+     },
+     {
+      "line": 11,
+      "text": "        p = (5 ** 0.5 + 1) / 2"
+     },
+     {
+      "line": 12,
+      "text": "        return x == int(d * p)"
+     },
+     {
+      "line": 13,
+      "text": ""
+     },
+     {
+      "line": 14,
+      "text": "    if losing(a, b):"
+     },
+     {
+      "line": 15,
+      "text": "        return \"LOSE\""
+     },
+     {
+      "line": 16,
+      "text": ""
+     },
+     {
+      "line": 17,
+      "text": "    best = None"
+     },
+     {
+      "line": 18,
+      "text": "    for i in range(a + 1):"
+     },
+     {
+      "line": 19,
+      "text": "        for j in range(b + 1):"
+     },
+     {
+      "line": 20,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 21,
+      "text": "                continue"
+     },
+     {
+      "line": 22,
+      "text": "            if losing(a - i, b - j):"
+     },
+     {
+      "line": 23,
+      "text": "                if best is None or (i, j) < best:"
+     },
+     {
+      "line": 24,
+      "text": "                    best = (i, j)"
+     },
+     {
+      "line": 25,
+      "text": "    return \"WIN %d %d\" % best"
+     }
+    ]
+   },
+   {
+    "window": "w222",
+    "arm": "agentD-r1",
+    "mechanism": "APPROX_COLD_SET",
+    "n_exhaustive_errors": 80,
+    "error_positions": [
+     "1,1",
+     "1,2",
+     "1,3",
+     "1,4",
+     "1,5",
+     "1,6",
+     "1,7",
+     "1,8",
+     "1,9",
+     "1,10",
+     "1,11",
+     "1,12",
+     "2,1",
+     "2,2",
+     "2,3",
+     "2,4",
+     "2,5",
+     "2,6",
+     "2,7",
+     "2,8",
+     "2,9",
+     "2,10",
+     "2,11",
+     "2,12"
+    ],
+    "samples": [
+     {
+      "in": "1 1",
+      "got": "WIN 0 1",
+      "exp": "WIN 1 1"
+     },
+     {
+      "in": "1 2",
+      "got": "WIN 0 2",
+      "exp": "LOSE"
+     },
+     {
+      "in": "1 3",
+      "got": "WIN 0 3",
+      "exp": "WIN 0 1"
+     },
+     {
+      "in": "1 4",
+      "got": "WIN 0 4",
+      "exp": "WIN 0 2"
+     }
+    ],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "def solve(text):"
+     },
+     {
+      "line": 2,
+      "text": "    a, b = map(int, text.split())"
+     },
+     {
+      "line": 3,
+      "text": "    LIM = 32"
+     },
+     {
+      "line": 4,
+      "text": "    bad = set()"
+     },
+     {
+      "line": 5,
+      "text": "    for i in range(LIM):"
+     },
+     {
+      "line": 6,
+      "text": "        for j in range(LIM):"
+     },
+     {
+      "line": 7,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 8,
+      "text": "                continue"
+     },
+     {
+      "line": 9,
+      "text": "            cur = (i, j)"
+     },
+     {
+      "line": 10,
+      "text": "            found = False"
+     },
+     {
+      "line": 11,
+      "text": "            for x in range(1, i + 1):"
+     },
+     {
+      "line": 12,
+      "text": "                if (i - x, j) in bad:"
+     },
+     {
+      "line": 13,
+      "text": "                    found = True"
+     },
+     {
+      "line": 14,
+      "text": "                    break"
+     },
+     {
+      "line": 15,
+      "text": "            if not found:"
+     },
+     {
+      "line": 16,
+      "text": "                for y in range(1, j + 1):"
+     },
+     {
+      "line": 17,
+      "text": "                    if (i, j - y) in bad:"
+     },
+     {
+      "line": 18,
+      "text": "                        found = True"
+     },
+     {
+      "line": 19,
+      "text": "                        break"
+     },
+     {
+      "line": 20,
+      "text": "            if not found:"
+     },
+     {
+      "line": 21,
+      "text": "                for d in range(1, min(i, j) + 1):"
+     },
+     {
+      "line": 22,
+      "text": "                    if (i - d, j - d) in bad:"
+     },
+     {
+      "line": 23,
+      "text": "                        found = True"
+     },
+     {
+      "line": 24,
+      "text": "                        break"
+     },
+     {
+      "line": 25,
+      "text": "            if not found:"
+     },
+     {
+      "line": 26,
+      "text": "                bad.add(cur)"
+     },
+     {
+      "line": 27,
+      "text": "    if (a, b) in bad:"
+     },
+     {
+      "line": 28,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 29,
+      "text": "    for i in range(0, a + 1):"
+     },
+     {
+      "line": 30,
+      "text": "        for j in range(0, b + 1):"
+     },
+     {
+      "line": 31,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 32,
+      "text": "                continue"
+     },
+     {
+      "line": 33,
+      "text": "            if i <= a and j <= b and (a - i, b - j) in bad:"
+     },
+     {
+      "line": 34,
+      "text": "                return 'WIN ' + str(i) + ' ' + str(j)"
+     },
+     {
+      "line": 35,
+      "text": "    return 'LOSE'"
+     }
+    ]
+   },
+   {
+    "window": "w222",
+    "arm": "agentD-r2",
+    "mechanism": "CRASH_NONE",
+    "n_exhaustive_errors": 124,
+    "error_positions": [
+     "1,1",
+     "2,1",
+     "2,2",
+     "2,3",
+     "2,4",
+     "2,5",
+     "2,6",
+     "2,7",
+     "2,8",
+     "2,9",
+     "2,10",
+     "2,11",
+     "2,12",
+     "3,1",
+     "3,2",
+     "3,3",
+     "3,4",
+     "3,5",
+     "3,6",
+     "3,7",
+     "3,8",
+     "3,9",
+     "3,10",
+     "3,11"
+    ],
+    "samples": [
+     {
+      "in": "1 1",
+      "got": "<EXC TypeError: cannot unpack non-iterable NoneType object>",
+      "exp": "WIN 1 1"
+     },
+     {
+      "in": "2 1",
+      "got": "<EXC TypeError: cannot unpack non-iterable NoneType object>",
+      "exp": "LOSE"
+     },
+     {
+      "in": "2 2",
+      "got": "WIN 1 0",
+      "exp": "WIN 0 1"
+     },
+     {
+      "in": "2 3",
+      "got": "LOSE",
+      "exp": "WIN 0 2"
+     }
+    ],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "def _cold(a, b):"
+     },
+     {
+      "line": 2,
+      "text": "    fa = int(a * 0.6180339887498949) + 1"
+     },
+     {
+      "line": 3,
+      "text": "    for n in range(max(0, fa - 3), fa + 4):"
+     },
+     {
+      "line": 4,
+      "text": "        if (a, b) == (n + int(n * 0.6180339887498949) + 1,"
+     },
+     {
+      "line": 5,
+      "text": "                      n + int(n * 0.6180339887498949) + 2):"
+     },
+     {
+      "line": 6,
+      "text": "            return True"
+     },
+     {
+      "line": 7,
+      "text": "    return False"
+     },
+     {
+      "line": 8,
+      "text": ""
+     },
+     {
+      "line": 9,
+      "text": ""
+     },
+     {
+      "line": 10,
+      "text": "def solve(text: str) -> str:"
+     },
+     {
+      "line": 11,
+      "text": "    a, b = map(int, text.split()[:2])"
+     },
+     {
+      "line": 12,
+      "text": "    if _cold(a, b):"
+     },
+     {
+      "line": 13,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 14,
+      "text": "    best = None"
+     },
+     {
+      "line": 15,
+      "text": "    for i in range(a + 1):"
+     },
+     {
+      "line": 16,
+      "text": "        for j in range(b + 1):"
+     },
+     {
+      "line": 17,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 18,
+      "text": "                continue"
+     },
+     {
+      "line": 19,
+      "text": "            if i != 0 and j != 0 and i != j:"
+     },
+     {
+      "line": 20,
+      "text": "                continue"
+     },
+     {
+      "line": 21,
+      "text": "            if _cold(a - i, b - j):"
+     },
+     {
+      "line": 22,
+      "text": "                if best is None or (i, j) < best:"
+     },
+     {
+      "line": 23,
+      "text": "                    best = (i, j)"
+     },
+     {
+      "line": 24,
+      "text": "    i, j = best"
+     },
+     {
+      "line": 25,
+      "text": "    return 'WIN %d %d' % (i, j)"
+     }
+    ]
+   },
+   {
+    "window": "w222",
+    "arm": "agentD-r3",
+    "mechanism": "APPROX_COLD_SET",
+    "n_exhaustive_errors": 34,
+    "error_positions": [
+     "1,1",
+     "3,3",
+     "3,4",
+     "3,5",
+     "4,3",
+     "4,4",
+     "4,6",
+     "6,4",
+     "6,6",
+     "6,8",
+     "6,9",
+     "8,5",
+     "8,7",
+     "8,8",
+     "8,9",
+     "8,11",
+     "8,12",
+     "9,6",
+     "9,7",
+     "9,8",
+     "9,9",
+     "9,11",
+     "9,12",
+     "11,5"
+    ],
+    "samples": [
+     {
+      "in": "1 1",
+      "got": "LOSE",
+      "exp": "WIN 1 1"
+     },
+     {
+      "in": "3 3",
+      "got": "WIN 1 2",
+      "exp": "WIN 3 3"
+     },
+     {
+      "in": "3 4",
+      "got": "WIN 1 3",
+      "exp": "WIN 2 2"
+     },
+     {
+      "in": "3 5",
+      "got": "WIN 1 4",
+      "exp": "LOSE"
+     }
+    ],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "def solve(text):"
+     },
+     {
+      "line": 2,
+      "text": "    a, b = map(int, text.split()[:2])"
+     },
+     {
+      "line": 3,
+      "text": "    if (a, b) == (0, 0):"
+     },
+     {
+      "line": 4,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 5,
+      "text": "    best = None"
+     },
+     {
+      "line": 6,
+      "text": "    for i in range(a + 1):"
+     },
+     {
+      "line": 7,
+      "text": "        nj = b - i"
+     },
+     {
+      "line": 8,
+      "text": "        if nj >= 0 and nj != b:"
+     },
+     {
+      "line": 9,
+      "text": "            pass"
+     },
+     {
+      "line": 10,
+      "text": "    for i in range(0, a + 1):"
+     },
+     {
+      "line": 11,
+      "text": "        j = b - i"
+     },
+     {
+      "line": 12,
+      "text": "        if j < 0:"
+     },
+     {
+      "line": 13,
+      "text": "            break"
+     },
+     {
+      "line": 14,
+      "text": "        if i == 0 and j == 0:"
+     },
+     {
+      "line": 15,
+      "text": "            continue"
+     },
+     {
+      "line": 16,
+      "text": "        if _lose(a - i, b - j):"
+     },
+     {
+      "line": 17,
+      "text": "            cand = (i, j)"
+     },
+     {
+      "line": 18,
+      "text": "            if best is None or cand < best:"
+     },
+     {
+      "line": 19,
+      "text": "                best = cand"
+     },
+     {
+      "line": 20,
+      "text": "            break"
+     },
+     {
+      "line": 21,
+      "text": "    for j in range(0, b + 1):"
+     },
+     {
+      "line": 22,
+      "text": "        if j == 0:"
+     },
+     {
+      "line": 23,
+      "text": "            continue"
+     },
+     {
+      "line": 24,
+      "text": "        if _lose(a, b - j):"
+     },
+     {
+      "line": 25,
+      "text": "            cand = (0, j)"
+     },
+     {
+      "line": 26,
+      "text": "            if best is None or cand < best:"
+     },
+     {
+      "line": 27,
+      "text": "                best = cand"
+     },
+     {
+      "line": 28,
+      "text": "            break"
+     },
+     {
+      "line": 29,
+      "text": "    for i in range(0, a + 1):"
+     },
+     {
+      "line": 30,
+      "text": "        if i == 0:"
+     },
+     {
+      "line": 31,
+      "text": "            continue"
+     },
+     {
+      "line": 32,
+      "text": "        if _lose(a - i, b):"
+     },
+     {
+      "line": 33,
+      "text": "            cand = (i, 0)"
+     },
+     {
+      "line": 34,
+      "text": "            if best is None or cand < best:"
+     },
+     {
+      "line": 35,
+      "text": "                best = cand"
+     },
+     {
+      "line": 36,
+      "text": "            break"
+     },
+     {
+      "line": 37,
+      "text": "    if best is None:"
+     },
+     {
+      "line": 38,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 39,
+      "text": "    return 'WIN ' + str(best[0]) + ' ' + str(best[1])"
+     },
+     {
+      "line": 40,
+      "text": ""
+     },
+     {
+      "line": 41,
+      "text": ""
+     },
+     {
+      "line": 42,
+      "text": "def _lose(a, b):"
+     },
+     {
+      "line": 43,
+      "text": "    if a > b:"
+     },
+     {
+      "line": 44,
+      "text": "        a, b = b, a"
+     },
+     {
+      "line": 45,
+      "text": "    n = b - a"
+     },
+     {
+      "line": 46,
+      "text": "    import math"
+     },
+     {
+      "line": 47,
+      "text": "    x = (1 + math.isqrt(5)) // 2"
+     },
+     {
+      "line": 48,
+      "text": "    return a == (n * x) // 2 + n"
+     }
+    ]
+   },
+   {
+    "window": "w222",
+    "arm": "codex",
+    "mechanism": "CANONICAL",
+    "n_exhaustive_errors": 0,
+    "error_positions": [],
+    "samples": [],
+    "src_lines": [
+     {
+      "line": 1,
+      "text": "def solve(text: str) -> str:"
+     },
+     {
+      "line": 2,
+      "text": "    a, b = map(int, text.split()[:2])"
+     },
+     {
+      "line": 3,
+      "text": ""
+     },
+     {
+      "line": 4,
+      "text": "    def is_losing(x, y):"
+     },
+     {
+      "line": 5,
+      "text": "        if x > y:"
+     },
+     {
+      "line": 6,
+      "text": "            x, y = y, x"
+     },
+     {
+      "line": 7,
+      "text": "        n = y - x"
+     },
+     {
+      "line": 8,
+      "text": "        return x == (n * (1 + 5 ** 0.5) / 2) // 1"
+     },
+     {
+      "line": 9,
+      "text": ""
+     },
+     {
+      "line": 10,
+      "text": "    if is_losing(a, b):"
+     },
+     {
+      "line": 11,
+      "text": "        return 'LOSE'"
+     },
+     {
+      "line": 12,
+      "text": ""
+     },
+     {
+      "line": 13,
+      "text": "    for i in range(0, a + 1):"
+     },
+     {
+      "line": 14,
+      "text": "        for j in range(0, b + 1):"
+     },
+     {
+      "line": 15,
+      "text": "            if i == 0 and j == 0:"
+     },
+     {
+      "line": 16,
+      "text": "                continue"
+     },
+     {
+      "line": 17,
+      "text": "            na, nb = a - i, b - j"
+     },
+     {
+      "line": 18,
+      "text": "            if not ((i == 0) or (j == 0) or (i == j)):"
+     },
+     {
+      "line": 19,
+      "text": "                continue"
+     },
+     {
+      "line": 20,
+      "text": "            if is_losing(na, nb):"
+     },
+     {
+      "line": 21,
+      "text": "                return 'WIN %d %d' % (i, j)"
+     }
+    ]
+   }
+  ],
+  "by_mechanism": {
+   "CANONICAL": [
+    "w220/agentD-r1",
+    "w220/agentD-r2",
+    "w220/codex",
+    "w221/agentD-r3",
+    "w222/codex"
+   ],
+   "APPROX_COLD_SET": [
+    "w220/agentD-r3",
+    "w222/agentD-r1",
+    "w222/agentD-r3"
+   ],
+   "TERMINAL_EXCLUDED": [
+    "w221/agentD-r1"
+   ],
+   "CRASH_NONE": [
+    "w221/agentD-r2",
+    "w222/agentD-r2"
+   ],
+   "ILLEGAL_MOVE": [
+    "w221/codex"
+   ]
+  },
+  "rule": "机制由 12x12 穷举错误集的结构机械判定（非读源码猜）"
+ },
+ "D_minimal_repair": {
+  "target_arm": "w221/agentD-r1",
+  "anchor_lines": [
+   "            if i == a and j == b:",
+   "                continue"
+  ],
+  "anchor_present": true,
+  "baseline_failures": [
+   "wythoff#55-hidden",
+   "wythoff#57-hidden"
+  ],
+  "minrepair_failures": [],
+  "fixed": [
+   "wythoff#55-hidden",
+   "wythoff#57-hidden"
+  ],
+  "regressed": [],
+  "nullrewrite_failures": [
+   "wythoff#55-hidden",
+   "wythoff#57-hidden"
+  ],
+  "nullrewrite_identical_to_baseline": true
+ },
+ "verdict": {
+  "rc": 0,
+  "K4_oracle_fixture_consistent": true,
+  "K4_replay_byte_identical": true,
+  "K4_minrepair_target_only": true,
+  "K4_nullrewrite_negative_control": true,
+  "conclusion": "夹具无缺陷（独立 oracle 15/15 复现冻结期望）∧ 判据器可复现（12/12 臂窗失败集逐字相同）"
+ }
+}

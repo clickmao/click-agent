@@ -1,0 +1,482 @@
+{
+ "schema": "r629-round-verdict/1",
+ "round": "R629",
+ "round_type": "器件/判据面修法轮 + wythoff 族逐例归因（只读定因）",
+ "primary_criterion": "判据 v3（整题全对率 + 按族分列）",
+ "C7_judge_v3_primary": {
+  "median_D_task": -0.3333,
+  "truth_median_task": 1.0,
+  "prod_median_task": 0.3333333333333333,
+  "threshold": -0.34,
+  "valid_windows": 2,
+  "windows": [
+   "w220",
+   "w221",
+   "w222"
+  ],
+  "pass": true,
+  "note": "主判据读数**落顶层**（修前只在参照面 C1 里，判决面读不到）"
+ },
+ "reference_criteria": {
+  "C1_quality_paired": {
+   "role": "同向参照（预注册自述：不出判决）"
+  },
+  "C_A_enumeration_equivalence": {
+   "rounds": [
+    "r585",
+    "r586",
+    "r587",
+    "r588"
+   ],
+   "legacy": [
+    12,
+    9,
+    -0.6667
+   ],
+   "derived": [
+    12,
+    9,
+    -0.6667
+   ],
+   "identical": true,
+   "legacy_C0_runs": 48,
+   "derived_C0_runs": 48,
+   "rule": "该集窗名全部形如 w1xx ⇒ 两枚举本应读到同一批窗；不同即本轮夹带了读法改动"
+  },
+  "C_B_enumeration_teeth": {
+   "legacy": {
+    "windows": 0,
+    "runs_seen": 0,
+    "data_scope_windows": 0,
+    "valid_windows": 0,
+    "median": null
+   },
+   "derived": {
+    "windows": 3,
+    "runs_seen": 12,
+    "valid_windows": 2,
+    "median": -0.3333
+   },
+   "teeth": true,
+   "rule": "同一冻结数据、只换窗名枚举；legacy 必须 0 窗（复现 R628 静默弃权），derived 必须 3 窗 12 跑次"
+  },
+  "C7_primary_negative_control": {
+   "mutation": "w221 产品侧任一失败例 FAIL->PASS (副本内, 单侧)",
+   "target_window": "w221",
+   "readings_changed": true,
+   "truth_side_untouched": true,
+   "has_teeth": true
+  },
+  "attribution": {
+   "A_independent_oracle": {
+    "algorithm": "retrograde DP by ascending a+b (definition-level; NOT the phi closed form used by products/codex)",
+    "n_cases": 15,
+    "agree": 15,
+    "mismatches": [],
+    "rows": [
+     {
+      "case": "wythoff#43-public",
+      "stdin": "21 25",
+      "fixture": "WIN 15 15",
+      "independent_oracle": "WIN 15 15",
+      "agree": true
+     },
+     {
+      "case": "wythoff#44-public",
+      "stdin": "10 9",
+      "fixture": "WIN 0 3",
+      "independent_oracle": "WIN 0 3",
+      "agree": true
+     },
+     {
+      "case": "wythoff#45-hidden",
+      "stdin": "18 8",
+      "fixture": "WIN 5 0",
+      "independent_oracle": "WIN 5 0",
+      "agree": true
+     },
+     {
+      "case": "wythoff#46-hidden",
+      "stdin": "1 5",
+      "fixture": "WIN 0 3",
+      "independent_oracle": "WIN 0 3",
+      "agree": true
+     },
+     {
+      "case": "wythoff#47-hidden",
+      "stdin": "12 18",
+      "fixture": "WIN 1 0",
+      "independent_oracle": "WIN 1 0",
+      "agree": true
+     },
+     {
+      "case": "wythoff#48-hidden",
+      "stdin": "11 25",
+      "fixture": "WIN 0 7",
+      "independent_oracle": "WIN 0 7",
+      "agree": true
+     },
+     {
+      "case": "wythoff#49-hidden",
+      "stdin": "18 17",
+      "fixture": "WIN 0 6",
+      "independent_oracle": "WIN 0 6",
+      "agree": true
+     },
+     {
+      "case": "wythoff#50-hidden",
+      "stdin": "7 21",
+      "fixture": "WIN 0 17",
+      "independent_oracle": "WIN 0 17",
+      "agree": true
+     },
+     {
+      "case": "wythoff#51-hidden",
+      "stdin": "1 2",
+      "fixture": "LOSE",
+      "independent_oracle": "LOSE",
+      "agree": true
+     },
+     {
+      "case": "wythoff#52-hidden",
+      "stdin": "3 5",
+      "fixture": "LOSE",
+      "independent_oracle": "LOSE",
+      "agree": true
+     },
+     {
+      "case": "wythoff#53-hidden",
+      "stdin": "4 7",
+      "fixture": "LOSE",
+      "independent_oracle": "LOSE",
+      "agree": true
+     },
+     {
+      "case": "wythoff#54-hidden",
+      "stdin": "6 10",
+      "fixture": "LOSE",
+      "independent_oracle": "LOSE",
+      "agree": true
+     },
+     {
+      "case": "wythoff#55-hidden",
+      "stdin": "1 1",
+      "fixture": "WIN 1 1",
+      "independent_oracle": "WIN 1 1",
+      "agree": true
+     },
+     {
+      "case": "wythoff#56-hidden",
+      "stdin": "2 25",
+      "fixture": "WIN 0 24",
+      "independent_oracle": "WIN 0 24",
+      "agree": true
+     },
+     {
+      "case": "wythoff#57-hidden",
+      "stdin": "25 25",
+      "fixture": "WIN 25 25",
+      "independent_oracle": "WIN 25 25",
+      "agree": true
+     }
+    ],
+    "positive_control_pass": true
+   },
+   "B_independent_replay": {
+    "arms": [
+     {
+      "window": "w220",
+      "arm": "agentD-r1",
+      "replayed_failures": [],
+      "harness_recorded": [],
+      "identical": true,
+      "n_fail": 0,
+      "module_sha12": "205235927f28"
+     },
+     {
+      "window": "w220",
+      "arm": "agentD-r2",
+      "replayed_failures": [],
+      "harness_recorded": [],
+      "identical": true,
+      "n_fail": 0,
+      "module_sha12": "3139012a4a18"
+     },
+     {
+      "window": "w220",
+      "arm": "agentD-r3",
+      "replayed_failures": [
+       "wythoff#43-public",
+       "wythoff#44-public",
+       "wythoff#45-hidden",
+       "wythoff#46-hidden",
+       "wythoff#49-hidden",
+       "wythoff#50-hidden",
+       "wythoff#51-hidden",
+       "wythoff#53-hidden",
+       "wythoff#55-hidden",
+       "wythoff#56-hidden",
+       "wythoff#57-hidden"
+      ],
+      "harness_recorded": [
+       "wythoff#43-public",
+       "wythoff#44-public",
+       "wythoff#45-hidden",
+       "wythoff#46-hidden",
+       "wythoff#49-hidden",
+       "wythoff#50-hidden",
+       "wythoff#51-hidden",
+       "wythoff#53-hidden",
+       "wythoff#55-hidden",
+       "wythoff#56-hidden",
+       "wythoff#57-hidden"
+      ],
+      "identical": true,
+      "n_fail": 11,
+      "module_sha12": "81b7791377e6"
+     },
+     {
+      "window": "w220",
+      "arm": "codex",
+      "replayed_failures": [],
+      "harness_recorded": [],
+      "identical": true,
+      "n_fail": 0,
+      "module_sha12": "34bca7d047ac"
+     },
+     {
+      "window": "w221",
+      "arm": "agentD-r1",
+      "replayed_failures": [
+       "wythoff#55-hidden",
+       "wythoff#57-hidden"
+      ],
+      "harness_recorded": [
+       "wythoff#55-hidden",
+       "wythoff#57-hidden"
+      ],
+      "identical": true,
+      "n_fail": 2,
+      "module_sha12": "c1e8e5773d85"
+     },
+     {
+      "window": "w221",
+      "arm": "agentD-r2",
+      "replayed_failures": [
+       "wythoff#43-public",
+       "wythoff#44-public",
+       "wythoff#45-hidden",
+       "wythoff#47-hidden",
+       "wythoff#48-hidden",
+       "wythoff#49-hidden",
+       "wythoff#50-hidden",
+       "wythoff#52-hidden",
+       "wythoff#53-hidden",
+       "wythoff#54-hidden",
+       "wythoff#55-hidden",
+       "wythoff#57-hidden"
+      ],
+      "harness_recorded": [
+       "wythoff#43-public",
+       "wythoff#44-public",
+       "wythoff#45-hidden",
+       "wythoff#47-hidden",
+       "wythoff#48-hidden",
+       "wythoff#49-hidden",
+       "wythoff#50-hidden",
+       "wythoff#52-hidden",
+       "wythoff#53-hidden",
+       "wythoff#54-hidden",
+       "wythoff#55-hidden",
+       "wythoff#57-hidden"
+      ],
+      "identical": true,
+      "n_fail": 12,
+      "module_sha12": "b5c922377079"
+     },
+     {
+      "window": "w221",
+      "arm": "agentD-r3",
+      "replayed_failures": [],
+      "harness_recorded": [],
+      "identical": true,
+      "n_fail": 0,
+      "module_sha12": "a8b7610246c9"
+     },
+     {
+      "window": "w221",
+      "arm": "codex",
+      "replayed_failures": [
+       "wythoff#43-public",
+       "wythoff#57-hidden"
+      ],
+      "harness_recorded": [
+       "wythoff#43-public",
+       "wythoff#57-hidden"
+      ],
+      "identical": true,
+      "n_fail": 2,
+      "module_sha12": "5b63f8753b2c"
+     },
+     {
+      "window": "w222",
+      "arm": "agentD-r1",
+      "replayed_failures": [
+       "wythoff#43-public",
+       "wythoff#46-hidden",
+       "wythoff#51-hidden",
+       "wythoff#55-hidden",
+       "wythoff#56-hidden",
+       "wythoff#57-hidden"
+      ],
+      "harness_recorded": [
+       "wythoff#43-public",
+       "wythoff#46-hidden",
+       "wythoff#51-hidden",
+       "wythoff#55-hidden",
+       "wythoff#56-hidden",
+       "wythoff#57-hidden"
+      ],
+      "identical": true,
+      "n_fail": 6,
+      "module_sha12": "29c4f9536a5f"
+     },
+     {
+      "window": "w222",
+      "arm": "agentD-r2",
+      "replayed_failures": [
+       "wythoff#43-public",
+       "wythoff#44-public",
+       "wythoff#45-hidden",
+       "wythoff#47-hidden",
+       "wythoff#48-hidden",
+       "wythoff#49-hidden",
+       "wythoff#50-hidden",
+       "wythoff#52-hidden",
+       "wythoff#53-hidden",
+       "wythoff#54-hidden",
+       "wythoff#55-hidden",
+       "wythoff#56-hidden",
+       "wythoff#57-hidden"
+      ],
+      "harness_recorded": [
+       "wythoff#43-public",
+       "wythoff#44-public",
+       "wythoff#45-hidden",
+       "wythoff#47-hidden",
+       "wythoff#48-hidden",
+       "wythoff#49-hidden",
+       "wythoff#50-hidden",
+       "wythoff#52-hidden",
+       "wythoff#53-hidden",
+       "wythoff#54-hidden",
+       "wythoff#55-hidden",
+       "wythoff#56-hidden",
+       "wythoff#57-hidden"
+      ],
+      "identical": true,
+      "n_fail": 13,
+      "module_sha12": "16eee9beec73"
+     },
+     {
+      "window": "w222",
+      "arm": "agentD-r3",
+      "replayed_failures": [
+       "wythoff#43-public",
+       "wythoff#45-hidden",
+       "wythoff#47-hidden",
+       "wythoff#48-hidden",
+       "wythoff#49-hidden",
+       "wythoff#50-hidden",
+       "wythoff#52-hidden",
+       "wythoff#55-hidden",
+       "wythoff#57-hidden"
+      ],
+      "harness_recorded": [
+       "wythoff#43-public",
+       "wythoff#45-hidden",
+       "wythoff#47-hidden",
+       "wythoff#48-hidden",
+       "wythoff#49-hidden",
+       "wythoff#50-hidden",
+       "wythoff#52-hidden",
+       "wythoff#55-hidden",
+       "wythoff#57-hidden"
+      ],
+      "identical": true,
+      "n_fail": 9,
+      "module_sha12": "70438b5de0d7"
+     },
+     {
+      "window": "w222",
+      "arm": "codex",
+      "replayed_failures": [],
+      "harness_recorded": [],
+      "identical": true,
+      "n_fail": 0,
+      "module_sha12": "78ce26acf21c"
+     }
+    ],
+    "n_arms": 12,
+    "n_identical": 12,
+    "rule": "逐字节复现 R628 记录的失败集才算读数可用（判据器可复现性）",
+    "pass": true
+   },
+   "D_minimal_repair": {
+    "target_arm": "w221/agentD-r1",
+    "anchor_lines": [
+     "            if i == a and j == b:",
+     "                continue"
+    ],
+    "anchor_present": true,
+    "baseline_failures": [
+     "wythoff#55-hidden",
+     "wythoff#57-hidden"
+    ],
+    "minrepair_failures": [],
+    "fixed": [
+     "wythoff#55-hidden",
+     "wythoff#57-hidden"
+    ],
+    "regressed": [],
+    "nullrewrite_failures": [
+     "wythoff#55-hidden",
+     "wythoff#57-hidden"
+    ],
+    "nullrewrite_identical_to_baseline": true
+   }
+  }
+ },
+ "declared_scope": [
+  "eval/rover/r629/primary-pool-r629.json",
+  "eval/rover/r629/attribution-r629.json",
+  "eval/rover/r629/prereg-r629.json",
+  "eval/rover/r629/evidence/instrument-defects-r629.json"
+ ],
+ "declared_absent": [],
+ "primary_criterion_key": "C7_judge_v3_primary",
+ "verdict": {
+  "rc": 0,
+  "verdict_source": "C7_judge_v3_primary",
+  "blocked": [],
+  "iron11": "/home/agentuser/AgentFramework/eval/rover/r629/precond-r629.json",
+  "iron11_derived_from": "--out（同目录 precond-r629.json）",
+  "iron11_exists": true,
+  "declared_artifacts_missing": [],
+  "judge": "判决面成立（主判据落盘 ∧ 判决来源 == 主判据 ∧ 指针同源 ∧ 声明件齐备）"
+ },
+ "instruments": {
+  "judge": {
+   "path": "eval/rover/r629/judge_r629.py",
+   "sha12": "a593d0401f8e"
+  },
+  "pool": {
+   "path": "eval/rover/r629/primary-pool-r629.json",
+   "sha12": "bfa88365e3d0"
+  },
+  "attribution": {
+   "path": "eval/rover/r629/attribution-r629.json",
+   "sha12": "9994b42a1326"
+  }
+ }
+}
