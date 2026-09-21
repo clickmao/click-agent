@@ -3500,6 +3500,8 @@ agent|F:agent.memory.MemoryType.Semantic:agent.memory.MemoryType
 agent|F:agent.memory.MemoryType.ShortTerm:agent.memory.MemoryType
 agent|F:agent.memory.MemoryType.Working:agent.memory.MemoryType
 agent|F:agent.memory.MemoryType.value__:System.Int32
+agent|F:agent.r1.ActionCandidates.Empty:agent.r1.ActionCandidates+Selection
+agent|F:agent.r1.ActionCandidates.EnvKey:System.String
 agent|F:agent.r1.ArtifactCarryover.PerFileBytes:System.Int32
 agent|F:agent.r1.ArtifactCarryover.TotalBytes:System.Int32
 agent|F:agent.r1.PublicExampleExtractor.MaxExamples:System.Int32
@@ -4059,6 +4061,10 @@ agent|M:agent.pipeline.TaskPipeline.EnqueueAsync(agent.pipeline.PipelineTask):Sy
 agent|M:agent.pipeline.TaskPipeline.FailAsync(System.String,System.String):System.Threading.Tasks.Task
 agent|M:agent.pipeline.TaskPipeline.GetCompletedTasks():System.Collections.Generic.IEnumerable<agent.pipeline.PipelineTask>
 agent|M:agent.pipeline.TaskPipeline.GetPendingTasks():System.Collections.Generic.IEnumerable<agent.pipeline.PipelineTask>
+agent|M:agent.r1.ActionCandidates.IsEnabled():System.Boolean
+agent|M:agent.r1.ActionCandidates.RequiredArgsOf(System.String):System.Collections.Generic.IReadOnlyList<System.String>
+agent|M:agent.r1.ActionCandidates.Select(System.String):agent.r1.ActionCandidates+Selection
+agent|M:agent.r1.ActionCandidates.Select(System.Text.Json.JsonElement):agent.r1.ActionCandidates+Selection
 agent|M:agent.r1.ArtifactCarryover.Render(System.String,System.Collections.Generic.IReadOnlyList<agent.r1.StepOutcome>):System.Collections.Generic.IReadOnlyList<System.String>
 agent|M:agent.r1.ArtifactCarryover.Render(System.String,System.Collections.Generic.IReadOnlyList<agent.r1.StepOutcome>,System.Int32,System.Int32):System.Collections.Generic.IReadOnlyList<System.String>
 agent|M:agent.r1.PlanExecutor.RunAsync(System.Collections.Generic.IReadOnlyList<agent.contract.PlanStep>,agent.r1.R1Options,System.Threading.CancellationToken):System.Threading.Tasks.Task<agent.r1.PlanExecutorResult>
@@ -5098,6 +5104,11 @@ agent|P:agent.pipeline.PipelineTask.Result:System.String
 agent|P:agent.pipeline.PipelineTask.StartedAt:System.Nullable<System.DateTime>
 agent|P:agent.pipeline.PipelineTask.Status:agent.core.TaskStatus
 agent|P:agent.pipeline.PipelineTask.Type:agent.core.TaskType
+agent|P:agent.r1.ActionCandidates+Selection.Accepted:System.Int32
+agent|P:agent.r1.ActionCandidates+Selection.AcceptedIds:System.Collections.Generic.IReadOnlyList<System.String>
+agent|P:agent.r1.ActionCandidates+Selection.Declared:System.Int32
+agent|P:agent.r1.ActionCandidates+Selection.RejectReasons:System.Collections.Generic.IReadOnlyList<System.String>
+agent|P:agent.r1.ActionCandidates+Selection.Rejected:System.Int32
 agent|P:agent.r1.PlanExecutorResult.Rc:System.Int32
 agent|P:agent.r1.PlanExecutorResult.Reason:System.String
 agent|P:agent.r1.PlanExecutorResult.Stage:System.String
@@ -5134,6 +5145,9 @@ agent|P:agent.r1.R1Options.SandboxRoot:System.String
 agent|P:agent.r1.R1Options.StepTimeoutSeconds:System.Int32
 agent|P:agent.r1.R1Options.Tag:System.String
 agent|P:agent.r1.R1Options.TranscriptPath:System.String
+agent|P:agent.r1.R1RunResult.ActionCandidatesAccepted:System.Int32
+agent|P:agent.r1.R1RunResult.ActionCandidatesDeclared:System.Int32
+agent|P:agent.r1.R1RunResult.ActionCandidatesRejected:System.Int32
 agent|P:agent.r1.R1RunResult.ArtifactCarryoverChars:System.Int32
 agent|P:agent.r1.R1RunResult.ArtifactCarryoverRounds:System.Int32
 agent|P:agent.r1.R1RunResult.EarlyStopSkipped:System.Int32
@@ -5903,6 +5917,8 @@ agent|T:agent.pipeline.PipelineContext
 agent|T:agent.pipeline.PipelineTask
 agent|T:agent.pipeline.TaskDecomposer
 agent|T:agent.pipeline.TaskPipeline
+agent|T:agent.r1.ActionCandidates
+agent|T:agent.r1.ActionCandidates+Selection
 agent|T:agent.r1.ArtifactCarryover
 agent|T:agent.r1.PlanExecutor
 agent|T:agent.r1.PlanExecutorResult

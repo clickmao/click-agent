@@ -1,0 +1,118 @@
+{
+ "round": "R610",
+ "written_before_run": true,
+ "written_at": "2026-09-21T10:05:00+08:00",
+ "author": "常驻会话执行体（cron 60min tick；RF0004.2「多轮工具编排」首轮 = M3 第一刀）",
+ "claim": "M3 第一刀：**动作候选进 R1 契约**（前缀只加厚：15291→15697 字符，sha f1280f71…→127fb301…）+ **本地机械裁选器**（`ActionCandidates.Select`：白名单取执行面 `ActionToolDecl.Names`、必填参数取声明面 JSON Schema、逐条给可机检原因码）+ 三计数落台账（`action_candidates_{declared,accepted,rejected}`，声明数 0 时字段缺席 = 旧行为逐字节）。单变量 = `AGENTFRAMEWORK_R1_ACTION_CANDIDATES`（缺省 on / 显式 0 = 旧行为逐位）。第十三窗集 w199..w201，同冻结题集（sha e0c667c2a313c04b，`cmp` 零差异）。被测件变更 ⇒ 与 R585–R606 冻结件轮**禁相减**。",
+ "why_now": "① RF0004 §1 里程碑表：M3「编排结构化：动作候选成为 R1 契约字段，编排决策由闸族系给出，**远端只做候选声明**」排期 R610–R612，本轮为其首轮；② RF0004 §4 出口闸对该里程碑的判据是「调用数 ≤ 旧臂 50%（按 request_id 去重）∧ 质量 ≥ 旧臂 ∧ 恒前缀命中 ≥97%」——本轮只落**声明面 + 本地裁选面**（机制面），执行接线属第二刀（R611）；③ 承 R604/R605 教训：远端『只声明不决定』这一条**必须先证声明真的到岸**（J1 机制面），否则后续所有调用面读数不可归因。",
+ "single_variable": "AGENTFRAMEWORK_R1_ACTION_CANDIDATES（`ActionCandidates.IsEnabled`：未设 ⇒ 开；`0`/`off`/`false` ⇒ 关；其余 = 开）。其余全同：题集（cases-r521 冻结件逐字节复制件，sha e0c667c2a313c04b）、剂量键 R1_CONTRACT=1 + R1_PUBLIC_SELFCHECK=1、其余剂量键两侧皆缺省（MAX_REPAIR / EARLY_STOP_PFAIL / MAX_EXEC_REPAIR / ARTIFACT_CARRYOVER / MAX_PROBE_REPAIR 全部显式 unset 防继承）。被测件 = 本改动 AOT 重发布件（bins-r610.json 记 sha）。",
+ "arms": {
+  "T": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r610/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1"
+   },
+   "reps": 3,
+   "role": "产品缺省档（轴键未设 ⇒ 动作候选 on）"
+  },
+  "C": {
+   "side": "agent",
+   "bin": "$HOME/.agentframework/artifacts/pub_r610/agenthost",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1",
+    "AGENTFRAMEWORK_R1_ACTION_CANDIDATES": "0"
+   },
+   "reps": 3,
+   "role": "对照档（动作候选轴关 ⇒ 台账三字段缺席、逐位旧行为）· 负控：声明面不得无差别触发"
+  },
+  "C1": {
+   "side": "codex",
+   "bin": "$HOME/.agentframework/tools/codex-env/node_modules/.bin/codex",
+   "model": "deepseek-flash",
+   "reps": 1,
+   "role": "外部真值（同环境·同输入·同模型）· 同窗配对基准"
+  }
+ },
+ "criterion_version": "v3",
+ "windows": ["w199", "w200", "w201"],
+ "window_set_index": 13,
+ "definitions": {
+  "declared_run": "该跑次 transcript 出现 `action_candidates_declared` > 0（字段缺席 ⇔ 0）",
+  "conserved_run": "declared>0 ⇒ accepted + rejected == declared（无未裁定项）",
+  "unreliable_window": "同窗 codex 真值自身失败（整题全对率 < 全例）⇒ 该窗不进配对（C0 条款；禁筛窗）",
+  "valid_window": "同窗 codex 真值 58/58 全过 ⇒ 该窗进入 v3 配对与有效窗计数",
+  "mechanism_face": "J1 ∧ J2b（声明到岸 + 逐条裁定守恒）；**不含**成本面与能力面",
+  "capability_face": "J4（欠功率）+ v3（对 codex 真值配对）—— 本轮只作并列"
+ },
+ "judge": {
+  "J1": {
+   "kind": "mechanism",
+   "assertion": "T 档 `declared>0` 的跑次 > 0 ∧ C 档 == 0（负控：轴关时字段缺席）",
+   "pass_if": "T声明跑次>0 ∧ C声明跑次==0"
+  },
+  "J2b": {
+   "kind": "mechanism",
+   "assertion": "T 档逐跑次 accepted + rejected == declared（declared>0 时）⇒ 逐条裁定、无未裁定项",
+   "pass_if": "守恒违规 == 0 ∧ T 声明跑次 > 0"
+  },
+  "J2": {
+   "kind": "inherited_report",
+   "assertion": "修复收敛面（探针 failed==0 ∧ rc==0）T ≥ C + 1 —— 承 R606 口径**一字未改**，本轮只并列、不进 mechanism_rc"
+  },
+  "J3": {
+   "kind": "cost",
+   "assertion": "v2 形态（Σcalls ∧ 逐窗 Σcalls ∧ 单位调用新算 prompt）+ v1 照原样并列",
+   "note": "M3 第一刀未接执行面 ⇒ 成本面按构造无分离；读数一律标「参考（未可验收）」"
+  },
+  "J4": {
+   "kind": "capability_secondary",
+   "assertion": "整题全对率 T ≥ C + 1 ∧ 无窗下降",
+   "power_note": "n=9/档 欠功率 ⇒ 只作并列，不作能力结论"
+  },
+  "J5": {
+   "kind": "cross_windowset_replication",
+   "assertion": "同向性：set13 的 sign(池化 T−C) 与 set12（R606 w196..w198）**并列**（禁相减）"
+  },
+  "J6": {
+   "kind": "zero_regression",
+   "assertion": "C 档（轴关）逐跑次台账不含三字段 ∧ C 档质量不劣于同窗 codex 真值（v3 配对差 ≥ −2 ∧ 无窗触底）",
+   "pass_if": "C 档三字段全缺席 ∧ C 档 v3 不劣"
+  }
+ },
+ "falsification": "① T 档声明跑次 == 0（声明面不生效/远端不按契约声明）⇒ 判 `mechanism-not-engaged`：轮次作废、如实登记、不改判据；② T 档声明到岸但守恒违规 > 0 ⇒ 判裁选器缺陷，撤回本轴（净产品改动退回声明面单列）；③ T 档恒前缀命中 < 97% 或 v3 配对中位 < −2 ⇒ 判「契约加厚破缓存/劣化质量」⇒ 回到 M3 的前缀加厚步（把新字段改走尾部载体块 `SupplementBlock` 形态）；④ 若 T 档调用数 ≥ C 档 + 1 且质量面无分离 ⇒ 按「成本不可接受」收窄（本轮不作此判：执行面未接）。",
+ "product_change": {
+  "src_touched": [
+   "tools/r1gen/contract.py",
+   "src/agent/contract/StructuredContract.cs",
+   "src/agent/contract/StructuredPrompt.cs",
+   "src/agent/r1/ActionCandidates.cs",
+   "src/agent/r1/R1Pipeline.cs",
+   "src/agent/r1/R1RunResult.cs",
+   "src/agent/r1/R1Transcript.cs",
+   "src/agent.tests/ActionCandidatesTests.cs",
+   "src/agent.tests/StructuredContractTests.cs"
+  ],
+  "statement": "契约面**只加厚**（新增可选字段 `action_candidates`，等价/互斥优先级一行由生成器派生；工具枚举与必填参数由执行面/声明面同源派生，禁另立表）+ 本地机械裁选器（纯函数，不改变 rc/stage 任何取值）+ 三计数落 transcript 与 R1_STATS 标记（声明数 0 ⇒ 字段缺席）。单测 6 条（正控 1 / 判别性负控 1 / 同源闸 1 / 零回归 1 / 边界 1 / 轴解析 1）。AOT 重发布（禁 -p:PublishAot）。"
+ },
+ "evidence_scope": {
+  "require": [
+   "eval/rover/r610/dag-r610.md",
+   "eval/rover/r610/prereg-r610.json",
+   "eval/rover/r610/taskset-r610.json",
+   "eval/rover/r610/report-r610.md",
+   "eval/rover/r610/verdict-r610.json",
+   "eval/rover/r610/kpi-table-r610.json",
+   "eval/rover/r610/gate-margin-r610.json"
+  ],
+  "note": "缺任一 ⇒ 该轮不得宣称「可验收」"
+ },
+ "gate_clause": {
+  "criterion": "C3 起手闸余量条款（R590 派生版）",
+  "prev_swing_source": "r606/logs/run-samples.jsonl（最近一次**洁净**同态在飞窗，n=98，min=2569 / max=2739 ⇒ swing=170MB）",
+  "prev_swing_mb": 170,
+  "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN；连续 2 次 + 极差 ≤50MB"
+ }
+}

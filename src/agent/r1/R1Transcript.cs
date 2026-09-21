@@ -66,6 +66,14 @@ public static class R1Transcript
             sb.Append(",\"artifact_carryover_rounds\":").Append(R1Json.Num(r.ArtifactCarryoverRounds));
             sb.Append(",\"artifact_carryover_chars\":").Append(R1Json.Num(r.ArtifactCarryoverChars));
         }
+        // R610 动作候选轴（AGENTFRAMEWORK_R1_ACTION_CANDIDATES，默认开）：声明数 0（含轴关）⇒
+        //   三字段不出现 ⇒ 与旧标记逐字节同（零回归由字段缺席机检；R546/R550/R600 同一纪律）。
+        if (r.ActionCandidatesDeclared > 0)
+        {
+            sb.Append(",\"action_candidates_declared\":").Append(R1Json.Num(r.ActionCandidatesDeclared));
+            sb.Append(",\"action_candidates_accepted\":").Append(R1Json.Num(r.ActionCandidatesAccepted));
+            sb.Append(",\"action_candidates_rejected\":").Append(R1Json.Num(r.ActionCandidatesRejected));
+        }
         sb.Append("}");
         return sb.ToString();
     }
@@ -101,6 +109,13 @@ public static class R1Transcript
             sb.Append("  \"artifact_carryover_enabled\": ").Append(opt.ArtifactCarryoverEnabled ? "1" : "0").Append(",\n");
             sb.Append("  \"artifact_carryover_rounds\": ").Append(R1Json.Num(r.ArtifactCarryoverRounds)).Append(",\n");
             sb.Append("  \"artifact_carryover_chars\": ").Append(R1Json.Num(r.ArtifactCarryoverChars)).Append(",\n");
+        }
+        // R610 动作候选轴：声明数 0（含轴关）⇒ 字段不出现 ⇒ 与旧台账逐字节同。
+        if (r.ActionCandidatesDeclared > 0)
+        {
+            sb.Append("  \"action_candidates_declared\": ").Append(R1Json.Num(r.ActionCandidatesDeclared)).Append(",\n");
+            sb.Append("  \"action_candidates_accepted\": ").Append(R1Json.Num(r.ActionCandidatesAccepted)).Append(",\n");
+            sb.Append("  \"action_candidates_rejected\": ").Append(R1Json.Num(r.ActionCandidatesRejected)).Append(",\n");
         }
         sb.Append("  \"step_timeout_s\": ").Append(R1Json.Num(opt.StepTimeoutSeconds)).Append(",\n");
         sb.Append("  \"rc\": ").Append(R1Json.Num(r.Rc)).Append(",\n");

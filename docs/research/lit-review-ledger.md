@@ -257,3 +257,22 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 
 | 2026-09-21 (R609) | `"prefix cache reuse"` (arxiv, --sort date, 7 命中/读 5) | arXiv 2606.17107v1（无 comment/journal-ref ⇒ 纯预印本，权威性代理=低） | 「Prefix caching reuses prefill only across an exactly shared prefix, so one changed field invalidates the entire downstream cache.」「the field's own key/value drives under 1% of the decision」 | 前缀缓存的**下游**失效不是「字段本身被缓存」，而是字段条件化的结论已在 prefill 写入下游 note ⇒ 任何**前缀内**可变块都会打掉整段下游复用 | 命中率（不改值，**支持既有纪律**） | 无新单变量轴（既有规则已要求「可变块尾置/加厚稳定前缀」）⇒ 只作外部机制支持 | 观察（非候选：远端 API 路径无 KV 编辑面；本仓策略已含该纪律） |
 | 2026-09-21 (R609) | `"prefix cache reuse"` | arXiv 2608.20732v1（cs.CR，纯预印本；权威性代理=低） | 「LLM API resellers have become an important access layer to modern LLM services.」+ 题名「…via Prefix-Cache Side Channels」 | 上游前缀缓存命中**可由外部探针独立判定**（同前缀 vs 变前缀的响应时间/计费差）⇒ 可用于**校验**中继上报的 `prompt_cache_hit/miss` 口径 | 命中率（口径校验；不改命中率本身） | 单变量轴 = 「探针形态」（同前缀对 vs 变前缀对）；判据 = 探针推断与 usage 上报**一致率 = 100%**，不一致先判器具/口径缺陷 | 候选（C1，需真实中继调用预算；**不得占用主线真机对照预算**） |
+
+### 11 R610 文献小步（M3 编排结构化：远端只做候选声明）
+
+| 日期 (轮) | 检索式 | 出处(含版本) | 逐字引文 | 机制假设 | 改哪一格 KPI | 单变量轴 + 判据 | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 (R610) | `all:"speculative tool execution"`（直连 API；见 §11.2 器具缺陷） | arXiv **2607.03333v1**（SPORK；cs.DC,cs.AI；comment 带公开代码 `github.com/baihuajun24/spork` ⇒ 权威性代理 = 预印本 + 公开代码，**无同行评审 venue**） | 「We observe that the model can be its own predictor: a probe forked at the start of generation predicts Qwen3-32B's upcoming tool name with 74.6-99.6% accuracy across five benchmarks.」「a confidence gate filters mispredictions」 | **模型自己就是预测器**：把「未来工具调用」从外部预测器/轨迹挖掘改成**模型在生成期一次声明**；再用**置信门**过滤误报（training-free、day-one） | 调用数（↓：提前派发省掉「等结果再发起」的往返）+ 轮数（↓） | 轴 = 动作候选声明面（`AGENTFRAMEWORK_R1_ACTION_CANDIDATES`，第一刀已落）＋第二刀「提前派发」；判据 = 声明到岸率 > 0 ∧ 逐跑次 `accepted+rejected==declared` ∧ 调用数（request_id 去重）≤ 旧臂 50% ∧ 质量不降 | **采信**（支持既有设计：契约面声明 = 自预测器；裁选器 = 置信门的确定性形态。第二刀须引其 **break-even 成本模型**作预注册判据，禁把论文当收益证据） |
+| 2026-09-21 (R610) | `all:"action space" AND all:"tool selection" AND all:"agent"`（直连 API） | arXiv **2604.16469v1**（B-PASTE；cs.DC,cs.AI；comment/journal-ref 皆 none ⇒ **纯预印本**，权威性代理 = 低） | 「B-PASTE maintains a bounded beam of future execution subgraphs, ranks them by expected critical-path reduction rather than raw execution probability, and schedules only high-value branch prefixes on transient slack resources.」「It explicitly models co-run interference, downstream unlock value, and state-safety constraints」 | 候选**排序**不按「执行概率」而按**关键路径缩减**；候选集合是**有界 beam**（非单条）；并把**状态安全约束**作为硬条件 | 调用数（↓）/ 质量（不降） | 轴 = 候选排序值（新增字段）+ 取前 k 派发；判据 = 前 k 派发的调用数对比 + 质量成对（fn=0 ∧ fp=0）；**未实施** | 候选（C2；须先有排序值字段，且不得抢占 R611 执行接线主线预算） |
+
+#### 11.1 本仓现状代码证据对照（「有代码行 ≠ 生效」）
+
+| 面 | 代码事实（现盘） | 判据 |
+|---|---|---|
+| 声明面（已接线） | `src/agent/r1/ActionCandidates.cs`（195 行，`Select` 纯函数 + `Selection`）+ 消费点 `src/agent/r1/R1Pipeline.cs`（三计数落 `R1RunResult`/transcript/`R1_STATS`，声明数 0 ⇒ 字段缺席） | 单测 6/6（正控 1 / 判别性负控 1 / 同源闸 1 / 零回归 1 / 边界 1 / 轴解析 1）；真机臂本轮**顺延**（同仓在飞写者 + 内存闸红）⇒ 声明到岸率**未测** |
+| 本地执行面（**未接线**） | `git grep -n 'ActionCandidates.Select'` 仅 `R1Pipeline.cs` 一处 = 只在**台账**消费；无执行器消费点 | 判「未接线」而非「已生效」——M3 出口闸（调用数 ≤ 旧臂 50%）在接线前**按构造不可达** |
+
+#### 11.2 器具缺陷（自捕，1 件）
+
+`~/.hermes/skills/research/arxiv/scripts/search_arxiv.py` 的**引号短语被退化**：同一检索式 `all:"speculative tool execution"`（引号短语）脚本报 **85,883** 条（返回通用 cs.CL 近期列表，非短语命中），直连 `export.arxiv.org` API 报 **total=2**（命中 SPORK/B-PASTE）⇒ 判**检索侧器具缺陷**（非「无文献」）。本轮检索改走**直连 curl**；该脚本修复归入工具面（不改本轮判据）。
+**对照记忆**：`lit-review-ledger` §历史条亦记「零命中多半是自写 grep 的解析错」——同族缺陷第二次出现 ⇒ 检索面凡「结果数异常大（≥10⁴）」先判**检索式退化**，禁据此下「无相关文献」。

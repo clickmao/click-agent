@@ -158,11 +158,18 @@ public static class R1Pipeline
                 return bad;
             }
 
+            // R610 (RF0004.2 · M3 第一刀): 动作候选 = 远端**只做声明** ⇒ 由本地机械裁选器逐条裁定。
+            //   轴关(显式 off) ⇒ 不解析 ⇒ 台账不出现候选字段(与旧台账逐字节同)。
+            //   本轴只落「声明/采纳/拒绝」三个**机制面**计数; 裁定本身不改变 rc/stage（能力面由后续窗集轮判）。
+            var ac = ActionCandidates.IsEnabled() ? ActionCandidates.Select(raw) : ActionCandidates.Empty;
+
             var gate = SemanticsPipeline.Gate(sem, opt.SandboxRoot);
             if (gate.Halted)
             {
                 var halted = new R1RunResult(gate.Rc, gate.Stage, gate.Reason, raw, statsAll,
-                    prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>());
+                    prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>(),
+                    ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
+                    ActionCandidatesRejected: ac.Rejected);
                 R1Transcript.Write(halted, opt, taskText ?? string.Empty);
                 return halted;
             }
@@ -170,7 +177,9 @@ public static class R1Pipeline
             if (sem.Plan.Count == 0)
             {
                 var noExec = new R1RunResult(0, gate.Stage, gate.Reason + " (plan 空 ⇒ 不执行)", raw, statsAll,
-                    prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>());
+                    prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>(),
+                    ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
+                    ActionCandidatesRejected: ac.Rejected);
                 R1Transcript.Write(noExec, opt, taskText ?? string.Empty);
                 return noExec;
             }
@@ -237,7 +246,9 @@ public static class R1Pipeline
                         + " 首例: " + (probe.Failures.Count > 0 ? probe.Failures[0] : "(无)"),
                         raw + "\nR1_PUBLIC_PROBE " + probe.MarkerJson(), statsAll,
                         prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars);
+                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
+                    ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
+                    ActionCandidatesRejected: ac.Rejected);
                     R1Transcript.Write(probeUnmet, opt, taskText ?? string.Empty);
                     return probeUnmet;
                 }
@@ -254,7 +265,9 @@ public static class R1Pipeline
                 var done = new R1RunResult(0, "done", reason,
                     raw + (probe is not null ? "\nR1_PUBLIC_PROBE " + probe.MarkerJson() : string.Empty), statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars);
+                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
+                    ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
+                    ActionCandidatesRejected: ac.Rejected);
                 R1Transcript.Write(done, opt, taskText ?? string.Empty);
                 return done;
             }
@@ -281,14 +294,18 @@ public static class R1Pipeline
                         + ",\"plan_steps_total\":" + sem.Plan.Count + ",\"detail\":\"expect_stdout 不符\""
                         + ",\"artifact\":\"suspect\",\"correctness_asserted\":0}" + probeMarker,
                         statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars);
+                        opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
+                    ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
+                    ActionCandidatesRejected: ac.Rejected);
                     R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
                     return unmet;
                 }
                 var stage = (execRepairs > 0 || probeRepairs > 0) ? exec.Stage + "_exhausted" : exec.Stage;
                 var stuck = new R1RunResult(exec.Rc, stage, exec.Reason, raw + probeMarker, statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
-                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars);
+                    opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
+                    ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
+                    ActionCandidatesRejected: ac.Rejected);
                 R1Transcript.Write(stuck, opt, taskText ?? string.Empty);
                 return stuck;
             }

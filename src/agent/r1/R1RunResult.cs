@@ -36,7 +36,13 @@ public sealed record R1RunResult(
     // R600 修复环「带现状」轴（AGENTFRAMEWORK_R1_ARTIFACT_CARRYOVER，默认开）：>0 表示该跑次实际
     //   随附过盘上产物原文的回灌修复轮数，Chars = 随附块字符数。轴关 ⇒ 恒 0 ⇒ 台账与旧逐字节同。
     int ArtifactCarryoverRounds = 0,
-    int ArtifactCarryoverChars = 0)
+    int ArtifactCarryoverChars = 0,
+    // R610（RF0004.2 · M3 第一刀）动作候选轴（AGENTFRAMEWORK_R1_ACTION_CANDIDATES，默认开）：
+    //   远端在契约面部声明 `action_candidates`，本地机械裁选后落这三枚**机制面**计数；
+    //   Declared==0（含轴关）⇒ 台账字段不出现 ⇒ 与旧台账逐字节同（零回归由字段缺席机检）。
+    int ActionCandidatesDeclared = 0,
+    int ActionCandidatesAccepted = 0,
+    int ActionCandidatesRejected = 0)
 {
     public bool Halted => Rc != 0;
 }

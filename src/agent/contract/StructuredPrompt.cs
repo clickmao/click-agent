@@ -15,10 +15,10 @@ public static class StructuredPrompt
     public const string Version = "r1.0";
 
     /// <summary>前缀字符数钉子（与生成器 tools/r1gen/r1prompt.py 同源）。</summary>
-    public const int PrefixChars = 15291;
+    public const int PrefixChars = 15675;
 
     /// <summary>前缀 UTF-8 sha256 钉子（小写 hex）。</summary>
-    public const string PrefixSha256Pinned = "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a";
+    public const string PrefixSha256Pinned = "a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e";
 
     /// <summary>97% 缓存命中所需的前缀厚度下限（deepseek-flash 实测点）。
     /// 规律：命中率 = 1 − L/P，固定损耗 L≈150–225 token 与厚度无关
@@ -307,6 +307,13 @@ N10 兄弟步骤互相 depends_on（a 依赖 b 且 b 依赖 a）⇒ 错在 DAG�
 12) 是否用自然语言宣称完成/解释（""我已经…""）——若有，删掉。
 </self_check>
 
+
+<action_candidates>
+**动作候选**（可选; **远端只做声明, 不决定执行**）: 任务需要多步工具动作时逐条声明你要做的动作;
+每条 = {id, tool, args, why}; tool ∈ delete_file|list_dir|read_file|run_command|write_file（与执行面声明同源）;
+args 取该工具的必填参数（write_file={path,content} / run_command={command} / read_file={path} / list_dir={path} / delete_file={path}）;
+why 一句话说明该动作在整条计划里的作用。声明**不得**含请求未要求的动作; 不声明 ⇒ 本地只按 plan 执行。
+</action_candidates>
 
 </prefix>";
 

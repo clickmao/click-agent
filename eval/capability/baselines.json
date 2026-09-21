@@ -3,17 +3,17 @@
   {
    "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r605/checks-r605.json'));print(d['L2_prefix_invariance']['prefix_chars_values'])\"",
    "face": "F_env",
-   "ground_rule": "跨轮禁相减；前缀是常量，只核对不变性",
+   "ground_rule": "跨轮禁相减; 加厚后必须重取 chars 并重钉 (旧'前 N 字符逐位不变'字面与历史实践不符, 见 prefix-r610.json:invariant_finding)",
    "id": "F_env.prefix.chars",
    "kind": "frozen_invariant",
    "metric": "冻结恒前缀字符数",
    "negative_control": "eval/rover/r603/checks-r603-negctl.json（负控：前缀被改写 ⇒ 该检查应判红）",
-   "source_path": "eval/rover/r605/checks-r605.json",
-   "source_sha12": "7daf4759f4fa",
-   "threshold": "前 15291 字符逐位不变（只许加厚，禁改写）∧ 缓存命中 ≥97%",
-   "threshold_source": "eval/rover/r605/checks-r605.json:L2_prefix_invariance",
+   "source_path": "eval/rover/r610/prefix-r610.json",
+   "source_sha12": "8bfe3aa936ce",
+   "threshold": "长度 ≥ 前一值（只许加厚）∧ 会话内逐字节恒定 ∧ 缓存命中 ≥97%",
+   "threshold_source": "eval/rover/r610/prefix-r610.json:prefix_chars",
    "unit": "chars",
-   "value": 15291
+   "value": 15675
   },
   {
    "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r566/fingerprint-r566.json'));print(sorted({w['transcript']['prefix_sha256'] for w in d['per_window'].values()}))\"",
@@ -23,12 +23,12 @@
    "kind": "frozen_invariant",
    "metric": "冻结恒前缀 sha256",
    "negative_control": "同上（改写前缀即应失配）",
-   "source_path": "eval/rover/r566/fingerprint-r566.json",
-   "source_sha12": "e6c070dd2326",
+   "source_path": "eval/rover/r610/prefix-r610.json",
+   "source_sha12": "8bfe3aa936ce",
    "threshold": "逐位相等（门 A1/A2/gate-disc 三处同值）",
-   "threshold_source": "eval/rover/r566/fingerprint-r566.json",
+   "threshold_source": "eval/rover/r610/prefix-r610.json:prefix_sha256",
    "unit": "hex",
-   "value": "f1280f71e6fc74c1f14f64adab5a54c6e06083acb18bbf51eb7fdbed30cc4d4a"
+   "value": "a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e"
   },
   {
    "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r606/gate-margin-r606.json'));print(d['prev_swing_effective'],d['ceiling_min_of_3'],d['margin'])\"",

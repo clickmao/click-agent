@@ -288,13 +288,24 @@ N10 兄弟步骤互相 depends_on（a 依赖 b 且 b 依赖 a）⇒ 错在 DAG�
 </self_check>
 """
 
+# R610（RF0004.2 · M3 第一刀）**动作候选**块 —— 恒前缀**尾部追加**块。
+# 硬约束（RF0004 §131「编排面反冲」）：动作候选**不得**塞进既有块内部（会改写前 N 字符 ⇒ 破「只加厚」不变量
+# 与跨轮冻结可比性）⇒ 一律以**尾部载体块**形态追加：既有 15291 字符逐位不变，仅在其后加厚。
+# 工具枚举与执行面同源（ActionToolDecl.Names，字母序），由 C# 单测逐名钉住本块字面量。
+ACTION_CANDIDATES = """<action_candidates>
+**动作候选**（可选; **远端只做声明, 不决定执行**）: 任务需要多步工具动作时逐条声明你要做的动作;
+每条 = {id, tool, args, why}; tool \u2208 delete_file|list_dir|read_file|run_command|write_file（与执行面声明同源）;
+args 取该工具的必填参数（write_file={path,content} / run_command={command} / read_file={path} / list_dir={path} / delete_file={path}）;
+why 一句话说明该动作在整条计划里的作用。声明**不得**含请求未要求的动作; 不声明 \u21d2 本地只按 plan 执行。
+</action_candidates>"""
+
 PREFIX = "\n\n".join([
     "<prefix version=\"%s\">" % R1_VERSION,
     # 段序（R536 与现盘逐字节对齐）：hard_gates 紧跟 role，位于契约段**之前** —— 安全前置优先，
     # 「该拒的」判定不被契约细节干扰。**字节事实**：现盘里 </hard_gates> 与 <output_contract> 之间
     # 无空行（3970 = 3972 − 2），本轮按现盘字节对齐、不顺手改格式（改格式会再动 pin，破坏可比性）。
     ROLE, HARD_GATES + OUTPUT_CONTRACT, SEMANTICS_DICT, TOOL_MENU, ENVIRONMENT, EXAMPLES,
-    SPEC_APPENDIX,
+    SPEC_APPENDIX, ACTION_CANDIDATES,
     "</prefix>",
 ])
 
