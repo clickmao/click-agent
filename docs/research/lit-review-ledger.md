@@ -388,3 +388,18 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 **对照本仓现状（代码证据，现盘）**：① **稳定前缀已是结构事实** —— 前缀为**编译期常量 + 逐位 pin**：`src/agent/contract/StructuredPrompt.cs:325-327`（`PrefixLegacyChars=15675` / `PrefixLegacySha256Pinned=a9792fdb…`）、`:616-618`（r615 档 15794 / `8b8be6b8…`），档位由 `AxisEnvKey`（`:909`）在 `:932` 选择 ⇒ 论文第三种策略（系统提示缓存 / 排除动态工具结果）≈ **本仓现状**，剩余空间只在**增量段占比**，故该候选降为「观察 + 先量天花板」。② **命中率格已有既有打点消费**（`src/agent.modelqueue/PromptCacheKpi.cs` · `PromptCacheRedline.cs` · `ModelQueueRouter.Call.cs` / `.Failure.cs` / `.Recovery.cs`）⇒ 若实施该轴，**不需新增夹具**（用户令：禁新增夹具）。
 
 **红线**：本采编 = 机制假设 + 证据面采编，不改 RF0004 三能力路径、不改铁律 10（外部真值对照）/ 铁律 14（器件路径）；零新增依赖（arXiv 检索为只读网络）；检索在主线臂轮在飞期间只读执行。
+
+## 18. R621 文献小步（2026-09-21；检索面 = 「评测读数的可靠性与聚合算子」；预算 = 3 query / 1 摘要取件，未开子 agent）
+
+采编口径：q1 `"agent evaluation non-determinism replicates"`（--category cs.CL）**命中 0 条**；q2 `"minimal detectable effect" evaluation` 命中 **317,223 条**、q3 `"equivalence testing" machine learning` 命中 **534,266 条** ⇒ **三条中有两条短语未收紧**，如实标注：本批实际等价于「宽面检索 + 逐条读标题/摘要筛」，只取与本面机制相关者（其余顶部命中为对撞机/官方统计等无关领域）。逐字摘要与 venue 经 `export.arxiv.org/api/query?id_list=` 取回（采集日 2026-09-21；首两次 curl 超时，第 3 次退避后成功）。**未编译/未复现任何外部实现 ⇒ 全为机制假设，非收益证据。**
+
+| 日期 | 检索式 | 出处（含版本/取件） | 逐字引文（≤2 句） | 机制假设 | 改哪一格 KPI（预期方向） | 单变量轴 + 判据（阈值/可证伪点） | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 | `"minimal detectable effect" evaluation`（max 6, sort=relevance；命中 317,223 ⇒ 短语未收紧） | arXiv **2607.26191v1** · comment = `7 pages, 1 figure, 1 table. Published at the Fifth Workshop on Generation, Evaluation and Metrics (GEM), ACL 2026, San Diego` · journal-ref = `Proceedings of the Fifth Workshop on Generation, Evaluation and Metrics (GEM), ACL 2026, pages 1029-1035`（**同行评审 workshop ⇒ 权威代理高**）· 采集日 2026-09-21 | `When these signals are aggregated via averaging, evaluation confidence can then substantially exceed the reliability of the weakest signal: a phenomenon we call trust inflation in evaluation.` ＋ `we propose that evaluation results carry explicit metadata (formality tier, scope declaration, and expiration date) to make their epistemic status transparent.` | 多信号评测的**聚合算子决定可信度上界**：均值聚合把最强信号伪装成整体可信（「信任通胀」）；保守端点 = **最弱环（weakest-link）**，且每条读数须带「形式层级 / 作用域声明 / 有效期」三类元数据（benchmark 结果会因污染与分布漂移**过期**） | ② 质量 + ⑤ 汇报口径（方向：禁单一均值分；每格读数带作用域/有效期） | 单变量轴 = **判据聚合算子（均值 vs 合取 / 最弱环）**；判据 = 现盘 PASS 条件为**合取**（`violations == 0 ∧ stale == 0 ∧ missing == 0`）+ 进度**无均值口径**；可证伪点 = 一旦汇报面出现「进度百分数」，该机制被违反 | 已实施（既存，零新增开发） |
+| 2026-09-21 | 同批（q1/q3） | **未取到原文 ⇒ 不采信**（q1 命中 0；q3 顶部 5 条为官方统计/学习曲线/主动学习，非本面机制） | — | — | — | — | 不采纳 |
+
+**反空转计数**：R621 = 采信 **0**（新）/ **已实施（既存）1** / 观察 0 / 不采纳 **1**（未取到原文/非同面） / 证伪 0 / 顺延 0 ⇒ **连续 0 采信第 2 轮**（未达「连续 3 轮 ⇒ 检索降频」门槛，阈值不动）。本轮检索 3 次（预算内），全文/摘要取件 1 次（上限 2）。
+
+**对照本仓现状（代码证据，现盘）**：① **合取（最弱环）判据已实施** —— `eval/capability/status_gen.py:41-69` 收集 `violations`（负控缺失 / covers 含冒号 / 缺 owner_round / 缺 evidence_path / 分号串联 / 路径不存在），`:103-122` 逐条以 `source_sha12` 核对现盘（漂移入 `stale`、缺源入 `missing`）⇒ 收口 PASS = 三项全 0，**无任何加权平均**；② **进度面无均值口径** —— `git grep -n "progress_pct\|score_avg\|mean_score" -- docs eval tools` **命中 0 条**进度聚合（旧「≈33%」均值口径按 §0 DoD 七面作废，见 iteration-master-plan.md §0）；③ 本轮 R621 判据本身即「最弱环 + 口径声明」落地 = 逐窗极差（摆动）作**分辨率下限**（效应 < 摆动 ⇒ `NO_RESOLUTION` 不可读作等价）、`delta_median_C_minus_T` **把符号约定写进字段名**（R620 影子自检抓到「比较变量写反」，本轮已修并新增两例控制，见 `eval/rover/r621/judge_r621.py` 的 J6 状态机）；④ 「有效期」形态 = 跨轮禁相减 / 只并列 + 口径断点登记（R620 §17 已采信为机制）。
+
+**红线**：本采编 = 机制假设 + 证据面采编，不改 RF0004 三能力路径、不改铁律 10（外部真值对照）/ 铁律 14（器件路径）；零新增依赖、零新增夹具；检索在主线臂轮在飞期间**只读**执行（网络只读，未占真机预算）。

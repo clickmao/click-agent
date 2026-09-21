@@ -1,0 +1,135 @@
+{
+ "round": "R621",
+ "written_before_run": true,
+ "written_at": "2026-09-21 22:02:00+0800",
+ "author": "cron 60min tick (capability self-check loop)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §1/§2/§3",
+ "claim": "RF0004.2 · M3 **第五刀 = 等价面分辨率取证（reps 3→6/窗）+ 判据分级**。R620（第四刀）已把「映射面为空 ∧ plan 非空 ⇒ 回退读 plan」的触发前提**造出来**并测到回退真机行使 9/9（J1 PASS / mechanism_rc=0），但其 J6「回退面 == 轴关面（零回归）」在**逐跑次用例数摆动 48..58**下判为**不成立且无分辨率**，且判据器把该机制面次级 FAIL 编码进 `instrument_defects`（`rc = 2 if defects else 0`）⇒ 整轮被标「禁作被测结论」。本轮只做 R620 自己登记的两件补救（C1 器具面分级 + C2 加 reps），**零产品源码改动**（复用 pub_r619 逐字节同件）⇒ 唯一变量与 R620 完全相同，只换窗集与 reps。",
+ "single_variable": {
+  "axis": "AGENTFRAMEWORK_R1_ACTION_EXEC",
+  "T": "1 ⇒ 执行面 = 采纳候选映射出的节点；映射面为空 ∧ plan 非空 ⇒ 回退读 plan（exec_source=plan_fallback）",
+  "C": "unset ⇒ 产品缺省 off（执行面 = plan，台账不出现执行面字段）＝ **轴关 = 旧行为**",
+  "C1": "codex-cli 外部真值（同题面/同夹具/同窗）",
+  "why_only_one": "与 R620 同轴同档位（连 held-constant 都同值）⇒ 本轮唯一变化的自由度是 **reps（3→6/窗）与判据分级**，二者均在器具面、不触产品面。",
+  "held_constant": {
+   "key": "AGENTFRAMEWORK_R1_ACTION_PROMPT",
+   "value": "legacy",
+   "why": "与 R620 同值 ⇒ 候选键恒定不到达 ⇒ 回退触发面确定性成立（R620 前提闸 rc=0 已证）⇒ 本轮读数与 R620 同语义可比（跨轮仍**禁相减**，只并列）",
+   "machine_check": "两臂 prefix_sha256 均须 == legacy 锚 a9792fdbe5b2…（chars 15675）",
+   "scope": "只影响输入面；不改判据阈值、不改执行面语义"
+  },
+  "third_anchor": "无第三档（本轴只有 on/off 两态）。"
+ },
+ "arms": {
+  "T": {"side": "agent", "env": {"AGENTFRAMEWORK_R1_ACTION_EXEC": "1", "AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy"}, "reps": 6},
+  "C": {"side": "agent", "env": {"AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy"}, "reps": 6},
+  "C1": {"side": "codex", "env": {}, "reps": 1}
+ },
+ "windows": {
+  "set": ["w217", "w218", "w219"],
+  "disjoint_from_history": true,
+  "history_up_to": "w216（R620 用 w214..w216；本轮起 w217，与历史窗集不相交）"
+ },
+ "criterion_version": "v4",
+ "criterion_revision": {
+  "from": "v3（R620）",
+  "what": "① J6 从 `instrument_defects` 移出 ⇒ **rc 分级** 0/1/2/3（C1 器具面）；② J6 结论**三态化**：EQUIVALENT / NON_REGRESSION_DETECTED / NO_RESOLUTION（另 DIFFERENCE_FAVOURABLE 信息项），阈值 = **同臂跨跑次用例数极差**（数据派生，非人为常数）。",
+  "why_not_retro": "**禁回溯改 R620 判据**：R620 的 rc=2 与 J6=不成立**照原样保留**（其读数不撤）；本轮只在预注册里声明新口径，前后两轮 **rc 列不可直接并列**（按 mechanism_rc / J6_state 对比）。",
+  "authorization": "R620 报告 §7 下轮候选 C1/C2（本轮执行）；RF0005 §3 R5「摆动 ≥ 效应 ⇒ 加 reps / 扩窗，禁调阈值」"
+ },
+ "thresholds_cite_baselines": [
+  "F_env.prefix.legacy_anchor",
+  "F_env.prefix.chars",
+  "F_env.prefix.sha256",
+  "F_merge.quality.cases_median_truth",
+  "F_merge.quality.allpass",
+  "F_merge.cache.hit_v_all",
+  "F_merge.cost.new_prompt_sum",
+  "F_orch.cost.calls_sum",
+  "F_env.gate.prev_swing_mb"
+ ],
+ "criteria": {
+  "J0_arm_axis_effective": {
+   "need": "T 逐跑次 exec_source ∈ {candidates, plan_fallback}（18/18）∧ C 五字段全缺席（18/18）∧ 两臂 prefix_sha256 同源 ∧ **两臂前缀 == legacy 锚**（held-constant 真生效）∧ 每臂非全缺席",
+   "kind": "mechanism",
+   "fail_action": "rc=2 整轮 VOID（先修臂/前提）"
+  },
+  "J1_fallback_exercised": {
+   "kind": "mechanism",
+   "primary": true,
+   "a1": "面覆盖: T 的 (exec_source==candidates)+(exec_source==plan_fallback) == 总跑次 18/18",
+   "a2": "回退跑次 ≥ 1",
+   "a3": "回退跑次 executed>0 **全部**",
+   "a4": "守恒: 仅 candidates 源跑次有定义；候选源为 0 ⇒ 记 N/A（不判红、不判 PASS）",
+   "pass": "a1 ∧ a2 ∧ a3 ∧ (a4 != FAIL)"
+  },
+  "J6_v4_resolution_three_state": {
+   "kind": "mechanism_secondary",
+   "primary_this_round": true,
+   "need": "逐窗 rc 多重集 ∧ 用例通过数 T == C（reps=6/窗）；不可判则按**同臂极差**三态化",
+   "delta_convention": "Δ := **C − T**（排序后配对），字段名 `delta_median_C_minus_T` —— **正值 = 轴关面 C 更好 = 回退劣化**；可分辨下限 = max(同臂跨跑次极差, 1)（极差 0 ⇒ 降为 1 例）",
+   "states": {
+    "EQUIVALENT": "逐位相等 ⇒ 零回归成立（唯一可读作等价之态）",
+    "NON_REGRESSION_DETECTED": "Δ中位 ≥ 可分辨下限 ∧ Δ > 0 ⇒ 回退使行为变劣 ⇒ **机制面次级红，rc=1**",
+    "DIFFERENCE_FAVOURABLE": "Δ中位 ≤ −可分辨下限 ⇒ 有差且方向有利（不可读作等价；信息项，不入 rc）",
+    "NO_RESOLUTION": "其余 ⇒ 摆动 ≥ 效应 ⇒ 判据不可判（**禁读作零回归、禁读作通过**；不入 rc）"
+   },
+   "pass": "state == EQUIVALENT",
+   "fail_action": "NON_REGRESSION_DETECTED ⇒ rc=1 且单列；NO_RESOLUTION ⇒ 按 RF0005 §3 R2/R5 判「本轴在此题集/模型下**非承重变量**」定案关闭（转报告列），并换杠杆（禁再为同一缺口加轮）",
+   "instrument_defects_scope": "J6 **不再**计入 instrument_defects（R620 C1 修法）"
+  },
+  "J2b_ledger_conservation": {
+   "kind": "mechanism",
+   "need": "T 档有声明跑次 > 0 ∧ 逐跑次 accepted+rejected==declared；legacy 档声明面结构性为空 ⇒ 记 N/A"
+  },
+  "J3_cost": {
+   "kind": "cost",
+   "need": "v1（max_calls T<=C）+ v2（Σ调用 ≤ ∧ 逐窗 ≤ ∧ 单位调用新算 ≤）逐字沿用 r604 模块（**阈值零改动**）"
+  },
+  "J4_capability_secondary": {
+   "kind": "capability_secondary",
+   "need": "整题全对 T vs C vs C1（并列）；n=18/档（较 R620 的 9 翻倍，仍不作能力结论，只作趋势）"
+  },
+  "W_floor_resolution_floor": {
+   "kind": "resolution",
+   "need": "有效窗 <2 ⇒ rc=3 停链（禁下调阈值）"
+  },
+  "J5_cross_windowset_same_direction": {
+   "kind": "diagnostic",
+   "need": "与 R620 面并列、**禁相减**（同件同题集、只换窗集与 reps）"
+  }
+ },
+ "rc_semantics_v4": {
+  "0": "器具可用 ∧ 主判据无红 ∧ 次级等价面未判劣（NO_RESOLUTION 不入 rc，但**须在判决件与报告里显式登记**）",
+  "1": "机制面次级红（J6 NON_REGRESSION_DETECTED）",
+  "2": "器具缺陷（禁作被测结论）",
+  "3": "输入缺失 / 有效窗不足（停链）"
+ },
+ "falsification": [
+  "① **前提闸未过**（legacy 档仍给出候选字段 / 前缀 ≠ legacy 锚）⇒ 零臂起跑（rc=5，起臂前机检），本轮不产生任何被测读数，如实记前提不成立。",
+  "② J0 未过（两臂 exec 面不可区分 或 前缀不同源）⇒ 整轮 VOID（rc=2，禁作被测结论）。",
+  "③ **J6 三态为 NO_RESOLUTION**（reps 6/窗下摆动仍 ≥ 效应）⇒ 判据**不可判**：不得读作零回归、不得读作通过；按 R2/R5 记「本轴非承重变量」定案关闭（转报告列）并换杠杆，**禁为同一缺口再加轮**。",
+  "④ J6 = NON_REGRESSION_DETECTED ⇒ 回退劣化 ⇒ rc=1 单列，且**禁宣称**「回退无副作用」（本轮零产品改动 ⇒ 只作登记，不改代码）。",
+  "⑤ J3 成本 v2 三条款任一不成立 ⇒ 成本面判 FAIL（阈值零改动，**禁为凑绿调阈值**）。",
+  "⑥ 有效窗 < 2（真值自败窗剔除后）⇒ rc=3 停链、先造窗集，**禁下调阈值**。",
+  "⑦ rc 分级生效的负控：本轮判据器的 J6 三态机由影子自检（selftest_judge_r621.py，零被测执行）行使，含「比较变量写反」翻转负控；自检未过 ⇒ 器具不可用（rc=2），**先修自检再谈读数**。"
+ ],
+ "evidence_scope": {
+  "require": [
+   "prereg-r621.json（先写后跑闸）",
+   "bins-r621.json（全臂同一枚二进制 + codex 指纹，与 R620 同件）",
+   "gate-margin-r621.json（起手闸余量条款；prev_swing 由 r620 在飞窗样本重派生）",
+   "logs/run-samples.jsonl（运行期内存采样，供下轮 swing 重派生）",
+   "kpi-table-r621.json（KPI 表）",
+   "verdict-r621.json（判决件，含 J6_state 与 mechanism_secondary_failures）",
+   "report-r621.md（轮志）"
+  ],
+  "note": "缺任一项 ⇒ 该轮不可收口（收口五件 = 轮工件/证据文档/registry 行/kpi 行带 baselines/逐名列名提交）"
+ },
+ "supersedes": "R620（第四刀）**不翻案**：其 J1 回退行使 9/9 与 rc=2 读数照原样保留；本轮只补「该等价面在 reps 翻倍后是否可判」这一未测面，并把 rc 分级作为器具面修正（预注册先行、禁回溯）。",
+ "revision": [
+  {"v": 1, "t": "2026-09-21 22:02", "why": "首版；written_before_run=true（先写后跑闸）"},
+  {"v": 2, "t": "2026-09-21 22:02", "why": "补 J6 三态定义 + rc 分级表 + 影子自检条目（起臂前）"},
+  {"v": 3, "t": "2026-09-21 22:06", "why": "**自捕器具缺陷（影子自检抓到，先修器具后起臂）**：J6 三态机初版把 Δ 符号取反（`d = T − C` 且把负向当劣化）⇒ 三态全部退化为 NO_RESOLUTION、交换 T/C 不翻转（自检 7/10）。修法 = Δ 口径改为 **C − T 并写进字段名** `delta_median_C_minus_T`、可分辨下限 = max(同臂极差, 1)；**不改任何断言、不放宽判据**（自检 11/11 过）。此处修正发生在**任何臂起跑之前**。"}
+ ]
+}

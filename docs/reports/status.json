@@ -103,12 +103,12 @@
   "latest": {
    "bin_sha": "",
    "grid": null,
-   "kind": "RF0004.2 · M3 **第四刀 = 回退分支真机行使**（触发面 = 提示尾块 legacy 档，held-constant 两臂同值）：真机 21 跑次（T×9 / C×9 / C1×3，窗集 w214..w216 与历史不相交）。**核心结论：回退分支首次真机行使 9/9**（exec_source=plan_fallback，原因码 candidates_absent，回退跑次 executed>0 9/9）、R619 的 J1e=NOT_EXERCISED 缺口闭合；J0 臂轴生效（两臂前缀 == legacy 锚 a9792fdb…，held-constant 真生效）；J1 主判据 PASS ∧ mechanism_rc=0。**但 rc=2（判据器把 J6 等价面不成立编码进 instrument_defects ⇒ 该规则下整轮标「禁作被测结论」）**：J6 逐窗 rc 多重集/用例数 T≠C（回退面 **不等于** 轴关面逐位）——在逐跑次摆动（用例 48..58）下该判据无分辨率 ⇒ 记「未判明」，下轮以加 reps/扩窗处置（禁调阈值）。成本面 v2 三条款全过（Σcalls 14 vs 16 ∧ 逐窗 ≤ ∧ 单位新算 667 vs 834）；铁律 11 rc=1 ⇒ 读数标参考（未可验收）。",
+   "kind": "RF0004.2 · M3 **第五刀 = 等价面分辨率取证（reps 3→6/窗）+ 判据分级**：R620 的 J6「回退面 == 轴关面」在逐跑次用例数摆动 48..58 下**无分辨率**，且被编码进 `instrument_defects` ⇒ 整轮标「禁作被测结论」。本轮只做 R620 登记的两件补救：① 判据分级（v4：J6 移出 instrument_defects ⇒ rc 0/1/2/3 分层）；② reps 3→6/窗。**零产品源码改动**（复用 pub_r619 逐字节同件，sha a184d731…），唯一变量与 R620 同轴同档位。真机 39 跑次（T×18 / C×18 / C1×3，窗集 w217..w219 与历史不相交）。读数：J0=True（两臂前缀 == legacy 锚）· J1=True（回退行使 18/18）· J6=False（state=NO_RESOLUTION）· rc=0 / mechanism_rc=0 · 铁律11 precond rc=1。",
    "readouts": null,
-   "ts": "2026-09-21T20:28:13+0800"
+   "ts": "2026-09-21T21:56:28+0800"
   },
-  "latest_round": "R620",
-  "lines": 154,
+  "latest_round": "R621",
+  "lines": 155,
   "non_round_rows": [
    "EXP1-Q1",
    "EXP1-Q10",
@@ -319,11 +319,12 @@
    "R618",
    "R619",
    "R620",
+   "R621",
    "loop-mechanism",
    "unknown"
   ],
   "rows_missing_kind": 19,
-  "sha12": "a2a5da584264"
+  "sha12": "b95ac08bf795"
  },
  "plans": [
   {
@@ -389,11 +390,11 @@
    "L1": 20,
    "L2": 138,
    "L3": 88,
-   "L4": 47
+   "L4": 48
   },
-  "rows": 295,
-  "sha12": "e1bebcd562f7",
-  "updated_round": "R620",
+  "rows": 296,
+  "sha12": "ca99004815dc",
+  "updated_round": "R621",
   "violations": [],
   "warnings": [
    {

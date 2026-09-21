@@ -1,0 +1,21 @@
+== R621 运行证据 ==
+[起手闸] {  "round": "R621",  "criterion": "C3 起手闸余量条款（R590 派生版；候选⑤ 余量源按 R591 在同一飞窗实测重派生）",  "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN",  "prev_swing_effective": 119,  "prev_swing_source": "前窗r620/logs/run-samples.jsonl (同态在飞窗, n=191, swing=78; 口径 = R620 起手闸 2769 − 产品门槛 2650)",  "ceiling_min_of_3": 2836,  "pre_sample_spread_mb": 6,  "spread_clause": "<
+[前提闸] rc=0 exec_source=plan_fallback exec_fallback=candidates_absent prefix==legacy_anchor=True plan_steps=10
+[run.txt] [21:37:37] 前提闸 PASS: 回退触发面成立 (plan_fallback / candidates_absent)
+[run.txt] [evidence] windows/w217 落盘 rows=13
+[run.txt] [evidence] windows/w218 落盘 rows=13
+[run.txt] [evidence] windows/w219 落盘 rows=13
+[run.txt] [21:54:38] 铁律 11 前置器: rc=1
+[run.txt] [21:54:38] R621 完成
+[判决] rc=0 mechanism_rc=0 label=机制达标（J0∧J1a∧J1b∧J1c∧J1d∧J1e ∧ J2b=N/A）· J6=NO_RESOLUTION
+[rc分级] "分层（R621 v4）：0 = 主判据无红（NO_RESOLUTION 不入 rc）/ 1 = 机制面次级红（J6 非零回归）/ 2 = 器具缺陷（禁作被测结论）/ 3 输入缺失；机制面结论见 mechanism_rc 与 label"
+[J0] pass=True faces_T=['plan_fallback'] prefix_shared=True legacy_block=True cross_round_pin=False
+[J1] pass=True runs_face_covered=18 runs_plan_fallback=18 runs_fallback_executed_positive=18 d1_zero=0 three_state=EXERCISED_OK
+[J6 · v4 三态] pass=False state=NO_RESOLUTION delta_median_C_minus_T=None swing=None per_window={"w217": {"rc_T": [0, 5, 5, 5, 5, 8], "rc_C": [0, 0, 5, 5, 5, 5], "cases_pass_T": [58, 58, 58, 58, 58, 58], "cases_pass_C": [43, 45, 46, 58, 58, 58], "rc_multiset_equal": false, "cases_equal": false, "swing": 15, "min_detectable_effect": 15, "delta_median_C_minus_T": -6.0, "delta_min": -15, "delta_max": 0, "n_T": 6, "n_C": 6, "state": "NO_RESOLUTION"}, "w218": {"rc_T": [0, 0, 5, 5, 8, 8], "rc_C": 
+[J6 原始逐窗] {"w217": {"rc_T": [0, 5, 5, 5, 5, 8], "rc_C": [0, 0, 5, 5, 5, 5], "cases_pass_T": [58, 58, 58, 58, 58, 58], "cases_pass_C": [43, 45, 46, 58, 58, 58], "rc_multiset_equal": false, "cases_equal": false, "swing": 15, "min_detectable_effect": 15, "delta_median_C_minus_T": -6.0, "delta_min": -15, "delta_max": 0, "n_T": 6, "n_C": 6, "state": "NO_RESOLUTION"}, "w218": {"rc_T": [0, 0, 5, 5, 8, 8], "rc_C": 
+[J3 成本] pass=False {"form": {"a1": false, "a2": false, "b1": false, "pass": false, "sum_calls": {"T": 35, "C": 34}, "sum_new_prompt": {"T": 29871, "C": 28939}, "unit_new_prompt_per_call": {"T": 853.4571, "C": 851.1471}, "per_window_calls": {"w217": {"T": 12, "C": 11, "ok": false}, "w218": {"T": 11, "C": 11, "ok": true}, "w219": {"T": 12, "C": 12, "ok": true}}, "failed_clauses": ["a1_pooled_calls", "a2_per_window_cal
+[J4 质量·并列] T_all_pass=12 C_all_pass=6 C1_all_pass=3 valid_windows=3 truth_self_fail=[]
+[铁律11] precond rc=1 failed={}
+[器具缺陷] []
+[次级红] []
+[臂rc] {"T": {"rc": [[5, "run_rc_exhausted"], [5, "expect_stdout_exhausted"], [5, "expect_stdout_exhausted"], [0, "done"], [8, "self_test_unmet"], [5, "expect_stdout_exhausted"], [0, "done"], [8, "self_test_unmet"], [8, "self_test_unmet"], [5, "expect_stdout_exhausted"], [5, "expect_stdout_exhausted"], [0, "done"], [0, "done"], [0, "done"], [5, "expect_stdout_exhausted"], [5, "expect_stdout_exhausted"], [5, "expect_stdout_exhausted"], [5, "expect_stdout_exhausted"]]}, "C": {"rc": [[5, "expect_stdout_exhausted"], [5, "expect_stdout_exhausted"], [5, "expect_stdout_exhausted"], [0, "done"], [5, "run_rc_exhausted"], [0, "done"], [8, "self_test_unmet"], [5, "expect_stdout_exhausted"], [5, "expect_stdout

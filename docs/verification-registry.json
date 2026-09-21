@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R620",
+ "updated_round": "R621",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7539,6 +7539,37 @@
     "binding": "audit-pin",
     "audited_by_round": "R620"
    }
+  },
+  {
+   "id": "r621.equivalence-resolution-and-rc-tiering",
+   "round": "R621",
+   "owner_round": "R621",
+   "level": "L4",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "a1e72f937c9d",
+    "instrument": "eval/rover/r621/judge_r621.py",
+    "instrument_sha12": "19d83d43223e",
+    "binding": "audit-pin",
+    "audited_by_round": "R621"
+   },
+   "capability": "RF0004.2 · M3 **第五刀 = 等价面分辨率取证 + 判据分级**。R620 已把「映射面为空 ∧ plan 非空 ⇒ 回退读 plan」的触发前提造出来并测到回退真机行使 9/9，但其等价面判据 J6（回退面 == 轴关面）在逐跑次用例数摆动（48..58）下**无分辨率**，且判据器把该机制面次级 FAIL 编码进 `instrument_defects`（`rc = 2 if defects else 0`）⇒ 整轮被标「禁作被测结论」。本轮**零产品源码改动**（复用 R619 AOT 件逐字节，sha a184d731…），只做两件器具面补救：① **rc 分级 v4**（J6 移出 instrument_defects ⇒ 0 = 主判据无红 / 1 = 机制面次级红 / 2 = 器具缺陷 / 3 = 输入缺失）；② **reps 3→6/窗** 并把 J6 三态化（EQUIVALENT / NON_REGRESSION_DETECTED / NO_RESOLUTION，阈值 = **同臂逐跑次用例数极差**，数据派生非人为常数）。真机 39 跑次（T×18 / C×18 / C1×3，窗集 w217..w219）。**读数**：J0=True（两臂前缀同源 ∧ == legacy 锚 ⇒ held-constant 真生效）· J1=True（回退行使 18/18，三态 EXERCISED_OK）· J6=False（state=NO_RESOLUTION，Δ中位(C−T)=None）· rc=0 / mechanism_rc=0；铁律 11 precond rc=1。**未成立/未判明**：见 `verdict-r621.json` 的 `honest_bounds` 与 `checks_posthoc`（NO_RESOLUTION 不得读作零回归、不得读作通过；质量轴 n=6/窗 仍欠功率，只作并列）。",
+   "evidence_path": "eval/rover/r621/report-r621.md",
+   "evidence_cmd": "python3 eval/rover/r621/closeout_r621.py --check && python3 eval/capability/status_gen.py --check",
+   "negative_control": "① **影子自检**（`selftest_judge_r621.py`，零被测执行、纯合成日志）：11 条逐条断言，含「Δ 符号写反」翻转负控（R620 的 J6 状态机首版即被它抓到比较变量写反 ⇒ 改代码不放宽断言），未过 ⇒ 器具不可用（rc=2）；② **前提闸**（起臂前 1 跑次）：legacy 档必须证「候选键未到达 ∧ exec_source=plan_fallback ∧ 前缀 == legacy 锚」，否则零臂起跑（rc=5，premise-r621.json）；③ **J6 内含对照组**（轴关面 C 逐窗 rc 多重集/用例数）⇒ 摆动可辨；④ 判据分级负控：J6 三态为 NO_RESOLUTION 时 rc **不得**变红（不可判 ≠ 未通过），有状态机单测覆盖。",
+   "covers": [
+    "F_env.gate.ceiling_mb",
+    "F_merge.gate.precondition_rc",
+    "F_orch.cost.calls_sum",
+    "F_merge.cost.new_prompt_sum",
+    "F_merge.cache.hit_v_all",
+    "F_merge.quality.allpass"
+   ],
+   "runs": 39,
+   "verdict": "机制面见 mechanism_rc=0 · rc=0（v4 分层：低 1 档于 R620 的 rc=2 码位不同，二者**不可直接并列**）· J6=NO_RESOLUTION · precond rc=1",
+   "aot": "未重发布（本轮零产品源码改动 ⇒ 复用 R619 AOT 件逐字节，bins-r621.json 钉 sha）"
   }
  ],
  "aot_check_policy": "release_tag_only",
