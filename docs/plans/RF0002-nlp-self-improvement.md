@@ -29,6 +29,6 @@
 
 ## 3. 约束与验收
 
-- 约束：AOT 可用（零反射、零 STJ 反射序列化）；单文件单类型（铁律 12）；恒前缀只加厚；不改产品分支语义；不作开发期预制。
+- 约束：AOT 可用（零反射、零 STJ 反射序列化）；单文件单类型（铁律 13）；恒前缀只加厚；不改产品分支语义；不作开发期预制；**器件形态按铁律 14 第①/②档选（树/线性打分器，或微调双向编码器；入 AOT 栈须可导出为纯 C# 打分器 / ONNX），禁以本地 LLM 当判别位**（现役本地 3B 判别位 R609-AB 真机 17.2 s/例 ⇒ 档位错，见 RF0004 §0.4）。
 - 验收：① 定向测试绿（含负控）② 生产链路出现 `learned-shape` 命中（非孤岛，遥测 `ShapeCounters.ShapeHits > 0`）③ 评分淘汰后可观测到形状存量下降 ④ 命中面不增加远端调用数（token 格不升）。
 - 可测化接线（**R579-tick**，判据/阈值**不变**，只补生产侧读数面）：②③④ 的通道级打点 = `nlp_shape`（8 键 `{route, shape, face, basis, hits, learned, shapes, msg_sha16}`，点位在既有回补点 `LearnOnSuccess` 之后；机检 `eval/rover/r579-tick/shape_kpi_face_check.py` **rc=0**，契约/零回归/边界见 `docs/evidence/RF0002/R579tick-shape-kpi-face.md`）。**全量 dump 未测到 ≥1 事件前，②③④ 一律记「未测」**，禁读成「无效应」或「已验收」。
