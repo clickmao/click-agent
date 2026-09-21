@@ -1,0 +1,37 @@
+{
+  "round": "R612",
+  "title": "判别位真实流量增量与分辨率复核（零臂只读轮）",
+  "tier": "read_only",
+  "registered_at_local": "2026-09-21T11:0x+08:00",
+  "src_changes": 0,
+  "new_fixtures": 0,
+  "new_development": 0,
+  "why_not_e2e": {
+    "gate": "起手闸需 MemAvailable >= REQ(2650 + margin 285 = 2935 MB)",
+    "measured": "MemAvailable = 2629 MB ⇒ 窗口不可开 (fail-closed, 不算轮)",
+    "therefore": "本轮降级为只读轮，不占主线轮次，不写产品台账"
+  },
+  "peek_disclosure": "数据在判据注册前被非正式窥视过一次（点分布/门判 basis）。因此本轮判据为**形式化复核**用途，不作确认性统计；读数以脚本重跑为准。",
+  "data_sources": [
+    "data/telemetry/host.jsonl （2026-09-14T09:05Z → 2026-09-21T02:02Z，28,682 行，session=host，含 eval 轮与演示轮，非第三方生产流量）",
+    "eval/rover/r462/corpus-r462-w.json （28 例手写夹具：14 ack / 14 real）",
+    "eval/rover/r462 四臂读数（R609-AB 已落）"
+  ],
+  "hypothesis": "H1: 现役产品缺省下，判别位（本地 LLM turn gate / relation judge）在真实流量上被机械族完全覆盖 ⇒ 调用面零命中。H2: 手写夹具已饱和 ⇒ 质量侧上向分辨率 = 0。",
+  "criteria": [
+    {"id": "J1_call_face", "version": "v2（轮内修订，见 amendments）", "claim": "真问本地的行数（gate_prompt_len>0）= 0 ∧ 正向 token 行数 = 0 ⇒ 判别位零调用；机械前缀占比降为读数（实测 39/42；余 3 行为 gate:repeat_no_replayable_prev→remote 守卫生效路径，代码核验 src/agent/IndustrialAgentV2.cs:1589-1613/1701 证实该分支无模型调用）", "falsified_if": "存在 gate_prompt_len>0 或正向 token 的行 ⇒ 判别位真被调用", "v1_原文": "门判行中 basis 以 mechanical 开头者占比 = 1.00 且 gate_prompt_len>0 的行数 = 0 —— 实测反例：3 行守卫族，故收窄"},
+    {"id": "J2_ledger_face", "claim": "local_decision_ledger 决策率（decided=true / 总行）< 0.15", "falsified_if": "决策率 >= 0.15 ⇒ 门介入面显著"},
+    {"id": "J3_local_channel_face", "claim": "llm_call 打点中本地族行数 = 0（全部为远端 deepseek-flash）", "falsified_if": "任一 llm_call 行属本地通道 ⇒ 本地被调"},
+    {"id": "J4_resolution_ceiling", "claim": "r462 夹具 28 例 ⇒ 最小可分辨差 = 1/14 = 7.14pt；现役 3B 读数 1.0000 / 假跳 0/14 ⇒ 天花板已达 ⇒ 上向分辨率 = 0", "falsified_if": "现役读数非满分 ⇒ 仍有上向分辨率"},
+    {"id": "J5_cost_face", "claim": "本窗本地判别位 token = 0；常驻面仅有 local_channel_warmup 1 条（warm_ms=3770）；RSS 未测 ⇒ 标未测，不猜"},
+    {"id": "J6_negative_control", "claim": "负控: 把 J1 的 mechanical 前缀判定反过来（把 mechanical 行计为「真调用」）⇒ J1 必须判红 ⇒ 判据有牙"}
+  ],
+  "non_goals": ["不评判别位质量（本窗无非机械残余样本，无外部真值）", "不跑 E2E/不构建/不 publish（同仓并发纪律 + 起手闸内存不足）", "不新增夹具、不动 src/、不写产品台账"],
+  "amendments": [
+    {"id": "J1_v1→v2", "when": "2026-09-21 轮内（正式读数定稿前）", "why": "v1 断言「basis 全 mechanical」过强：实测 39/42 机械 + 3 行守卫族", "effect": "收窄为可证伪核心（零调用）；负控 J6 按 v2 语义重跑 ⇒ has_teeth=true"}
+  ],
+  "next_candidates": [
+    "靶替换: 手写 28 例 → 真实流量「非机械残余带」× 远端回执标签（需新增夹具 ⇒ 待用户放行）",
+    "常驻成本实测: 本地通道 RSS（本轮未测；起手闸内存不足，且会与兄弟轮抢内存 ⇒ 顺延）"
+  ]
+}

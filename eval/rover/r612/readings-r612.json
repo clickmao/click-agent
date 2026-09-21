@@ -1,0 +1,212 @@
+{
+ "round": "R612",
+ "tier": "read_only",
+ "source": {
+  "telemetry": "data/telemetry/host.jsonl",
+  "telemetry_sha256_16": "7e1eb2829b0eb1c8",
+  "telemetry_lines": 28682,
+  "telemetry_unparsable": 2,
+  "ts_first": "2026-09-14T09:05:03.3092016Z",
+  "ts_last": "2026-09-21T02:02:34.3796045Z",
+  "sessions": [
+   "host"
+  ]
+ },
+ "criteria": {
+  "J1_call_face": {
+   "claim": "【修订 v2，见 amendments】真问本地行数（gate_prompt_len>0）=0 ∧ 正向 token 行数=0 ⇒ 判别位零调用；机械前缀占比仅为读数（39/42=0.9286，余 3 行为 gate:repeat_no_replayable_prev→remote 守卫拒绝路径，代码核验无模型调用）",
+   "reading": {
+    "asked_rows": 0,
+    "rows_with_positive_tokens": 0,
+    "gate_rows": 42,
+    "mechanical_share": 0.9285714285714286,
+    "nonmechanical_rows": 3
+   },
+   "verdict": "PASS"
+  },
+  "J2_ledger_face": {
+   "claim": "台账决策率 < 0.15",
+   "reading": {
+    "decision_rate": 0.11931818181818182,
+    "ledger_rows": 352
+   },
+   "verdict": "PASS"
+  },
+  "J3_local_channel_face": {
+   "claim": "llm_call 中本地族行数=0（全为远端）",
+   "reading": {
+    "llm_call_rows": 3407,
+    "local_family_rows": 0
+   },
+   "verdict": "PASS"
+  },
+  "J4_resolution_ceiling": {
+   "claim": "夹具 28 例（14 ack / 14 real）⇒ 最小可分辨差：准确率 3.57pt、假跳率/漏跳率 7.14pt；现役 3B = 1.0000 / 假跳 0/14 ⇒ 天花板 ⇒ 上向分辨率=0",
+   "reading": {
+    "n": 28,
+    "n_ack": 14,
+    "n_real": 14,
+    "min_delta_acc_pt": 3.57,
+    "min_delta_jumprate_pt": 7.14,
+    "lfm3b_acc": 1.0,
+    "lfm3b_false_skip_n": 0,
+    "mech_share_of_fixture": 0.0
+   },
+   "verdict": "PASS",
+   "note": "天花板 ⇒ 判「更好」不可测；下向分辨率：准确率 3.57pt / 假跳率 7.14pt"
+  },
+  "J5_cost_face": {
+   "claim": "本窗本地判别位 token=0；常驻仅 warmup 1 条；RSS 未测",
+   "reading": {
+    "local_tokens": 0,
+    "warm_ms": "3770"
+   },
+   "verdict": "PASS"
+  },
+  "J6_negative_control": {
+   "claim": "把 J1(v2) 的「零调用」反转（凡非 mechanical 前缀即计为真调用）⇒ J1(v2) 必须判红",
+   "reading_inverted": {
+    "non_mechanical_rows_treated_as_calls": 3,
+    "gate_rows": 42,
+    "asked_rows": 0
+   },
+   "verdict": "PASS",
+   "has_teeth": true
+  }
+ },
+ "raw": {
+  "J1": {
+   "gate_rows": 42,
+   "mechanical_rows": 39,
+   "asked_rows(gate_prompt_len>0)": 0,
+   "rows_with_positive_tokens": 0,
+   "mechanical_share": 0.9285714285714286,
+   "basis_dist": {
+    "mechanical:nonack→remote": 11,
+    "mechanical:pass→remote": 17,
+    "mechanical:repeat→local": 11,
+    "gate:repeat_no_replayable_prev→remote": 3
+   }
+  },
+  "J2": {
+   "ledger_rows": 352,
+   "decided_rows": 42,
+   "decision_rate": 0.11931818181818182,
+   "kind_dist": {
+    "undecided": 310,
+    "pass": 31,
+    "skip": 11
+   }
+  },
+  "J3": {
+   "llm_call_rows": 3407,
+   "model_family_dist": {
+    "deepseek-flash": 3407
+   },
+   "local_family_rows": 0
+  },
+  "J4": {
+   "corpus_present": true,
+   "n_ack": 14,
+   "n_real": 14,
+   "corpus_face": {
+    "n": 28,
+    "family_dist": {
+     "ack": 14,
+     "real": 14
+    },
+    "want_dist": {
+     "skip": 14,
+     "pass(real:rule)": 14
+    },
+    "mech_dist": {
+     "False": 14,
+     "None": 14
+    },
+    "mechanically_decidable_share": 0.0
+   },
+   "min_resolvable_delta_acc_pt": 3.57,
+   "min_resolvable_delta_jumprate_pt": 7.14,
+   "min_resolvable_delta_missrate_pt": 7.14,
+   "arms": {
+    "lfm3b-main": {
+     "n": 28,
+     "acc": 1.0,
+     "false_skip_n": 0,
+     "miss_skip_n": 0,
+     "unparsed_n": 0,
+     "undecided_n": 0,
+     "wall_s_sum": 868.8,
+     "wall_s_per_case": 31.0,
+     "model": "/home/agentuser/.agentframework/models/lfm25vl3b/LFM2.5-VL-3B-Q4_K_M.gguf",
+     "sha12_of_source": "见 docs/evidence/RF0006/probe-ab-r462.md §7.1"
+    },
+    "lfm3b-fork": {
+     "n": 28,
+     "acc": 1.0,
+     "false_skip_n": 0,
+     "miss_skip_n": 0,
+     "unparsed_n": 0,
+     "undecided_n": 0,
+     "wall_s_sum": 482.4,
+     "wall_s_per_case": 17.2,
+     "model": "/home/agentuser/.agentframework/models/lfm25vl3b/LFM2.5-VL-3B-Q4_K_M.gguf",
+     "sha12_of_source": "见 docs/evidence/RF0006/probe-ab-r462.md §7.1"
+    },
+    "bonsai8b-fork": {
+     "n": 28,
+     "acc": 1.0,
+     "false_skip_n": 0,
+     "miss_skip_n": 0,
+     "unparsed_n": 0,
+     "undecided_n": 0,
+     "wall_s_sum": 2476.4,
+     "wall_s_per_case": 88.4,
+     "model": "/tmp/llamatq/out/Ternary-Bonsai-8B-PQ2_0.gguf",
+     "sha12_of_source": "见 docs/evidence/RF0006/probe-ab-r462.md §7.1"
+    },
+    "bonsai4b-fork": {
+     "n": 28,
+     "acc": 0.5357,
+     "false_skip_n": 13,
+     "miss_skip_n": 0,
+     "unparsed_n": 0,
+     "undecided_n": 0,
+     "wall_s_sum": 1000.1,
+     "wall_s_per_case": 35.7,
+     "model": "/tmp/llamatq/out/Ternary-Bonsai-4B-PQ2_0.gguf",
+     "sha12_of_source": "见 docs/evidence/RF0006/probe-ab-r462.md §7.1"
+    }
+   }
+  },
+  "J5": {
+   "local_judge_tokens_window": 0,
+   "warmup_rows": 1,
+   "warmup_kv": {
+    "ok": "true",
+    "warm_ms": "3770",
+    "wall_ms": "3770",
+    "error": ""
+   },
+   "resident_rss": "UNMEASURED"
+  }
+ },
+ "amendments": [
+  {
+   "id": "J1_v1_to_v2",
+   "when": "2026-09-21 轮内（正式读数定稿前）",
+   "why": "v1 断言「basis 全为 mechanical」过强：实测 39/42 机械，另 3 行为 gate:repeat_no_replayable_prev→remote（守卫生效路径，gate_prompt_len=0、cache_n=0、无正向 token）。代码核验 src/agent/IndustrialAgentV2.cs:1589-1613/1701 ⇒ 该分支无模型调用。",
+   "effect": "判据收窄为可证伪核心：真问本地行数=0 ∧ 正向 token 行数=0；机械占比降为读数（不作判据）。负控 J6 已按 v2 语义重跑。",
+   "cross_round_safety": "同轮内改版，不与其它轮读数相减。"
+  }
+ ],
+ "unmeasured": [
+  "本地通道常驻 RSS（起手闸内存不足 + 与兄弟轮抢内存 ⇒ 顺延）",
+  "判别位质量（本窗非机械残余样本=0，且无外部真值）"
+ ],
+ "summary": {
+  "J_pass": 6,
+  "J_total": 6,
+  "headline": "真实流量窗内门判 42 次 / 机械前缀 2 / 守卫族 40 / 真问本地 0 ⇒ 判别位零调用"
+ }
+}
