@@ -105,6 +105,13 @@ J3 形态 v2（a1∧a2∧b1）= **FAIL**：`b1 单位调用新算 prompt` T 964 
 | **I2** | 铁律 11 首跑 **BLOCKED=材料缺口** | `eval/rover/r617/cases/` 缺 `run_cases_r521.py` ⇒ 21 臂全 `missing_case_script`（判 BLOCKED 而非 FAIL，fail-closed 正确） | 从 `eval/rover/r615/cases/` **逐字节**补齐（sha `d9aecf4d397550b8…` / `270128eb85c7afc0…`，与 r610 同值）⇒ 重跑后处理（**不重测**） | 重跑 rc 见 `precond-r617.json`；两次运行同路径 ⇒ 覆盖已披露（I3） |
 | **I3** | 首跑读数被同名覆盖（流程） | 两次 `--out precond-r617.json` 同路径 ⇒ 首跑 BLOCKED 明细仅存于会话记录与本节叙述 | 下轮起派生物名带 `-v1<原因>` 后缀（承 R587 纪律） | 本节即披露面 |
 
+## 5b. 门禁读数（本轮收口）
+
+- **build 读数**: `dotnet test` 构建 **0 error**（仅 NU1510 警告：System.Text.Json 显式引用）。
+- **形式门禁 14/14**（`VerificationForm|SkillGeneralization|DevPlanDocRef` 过滤集）· 承重面定向 **36/36**（`R524PrefixStability|ActionCandidates|Recognition`）· `Supplement` **10/10**。
+- `status_gen.py --check` **PASS**（违规 0 / 基准漂移 0 / 缺源 0）· `decl_sweep --check` **0 漂移** · `gen_csharp.py --check` **R1GEN_DRIFT_FILES=0**。
+- `roundcheck audit --round R617`：R1–R5/R7/R10–R12 PASS；**R6 FAIL（169 文件 > 40）= 归档轮代理判据**（与本轮 21 臂逐窗快照归档同源，与 R614 的 162 文件同形态）⇒ 按治理四件套登记为 R617 作用域例外（见 `tools/roundcheck/baseline.json`）；**R8** 首跑缺读数面 ⇒ 本段补档（真实缺档，非豁免）。R9 WARN = 提交后暂存面为空，expected。
+
 ## 6. 诚实边界
 
 1. 机制面只证「措辞决定**声明面**」；**不证能力/成本收益**（J5 方向翻号 ⇒ 能力面并列）。
