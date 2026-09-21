@@ -63,11 +63,16 @@
 ## 7 机检（本行的 evidence_cmd）
 
 ```
-python3 -c "import pathlib;p=['docs/reports/iteration-master-plan.md','docs/plans/RF0001-fable-aligned-development-plan.md','docs/plans/RF0004-three-capability-development-plan.md','docs/plans/RF0002-nlp-self-improvement.md'];n=[f for f in p if '铁律 14' in pathlib.Path(f).read_text(encoding='utf-8')];print(len(n),n);assert len(n)==4"
+python3 -c "import pathlib;p=['docs/reports/iteration-master-plan.md', 'docs/plans/RF0001-fable-aligned-development-plan.md', 'docs/plans/RF0004-three-capability-development-plan.md', 'docs/plans/RF0002-nlp-self-improvement.md'];n=[f for f in p if all(s in pathlib.Path(f).read_text(encoding='utf-8') for s in ('铁律 14','目标读数','不采用 Laya'))];print(len(n),n);assert len(n)==4"
 ```
 
-**负控（有牙证明）**：把任一文件中的「铁律 14」改一个字 ⇒ 命中数 4→3 ⇒ assert 失败、rc≠0 ⇒ 该行读数由文件内容派生、非恒真。
-**诚实边界（本行为的边界，不得越级表述）**：本行为 **L1 静态检查**（只证「条文已写进指定文件」），**不证任何器件已接入、更不证任何性能/成本达标**；条文语义是否已按修订令修正，由本节 §8 的逐项清单人工核。
+**判据形态**：四文件**逐文件三串合取** —— `铁律 14`（条文在位）∧ `目标读数`（修订语义在位）∧ `不采用 Laya`（修订因果在位）⇒ 只证「文本已改写」，**不证**任何器件/性能/成本。
+
+**负控（有牙证明，本轮实跑）**：
+① **首版判据无牙（如实留档）**：R611 版命令只查 `'铁律 14' in text`（单串、且是**存在性**判定）。R613 改写后 RF0002 出现**两处**「铁律 14」⇒ 负控「改一字」由 4→**4 未红** ⇒ 判据对该文件的单点变异失去分辨率 ⇒ 当轮即收紧为三串合取。
+② **收紧后实跑（两变体均判红）**：删任一文件的「目标读数」⇒ 命中 4→**3**（rc≠0）；把 RF0002 全部「铁律 14」→「铁律 15」⇒ 命中 4→**3**（rc≠0）。
+
+**诚实边界（本行为的边界，不得越级表述）**：本行为 **L1 静态检查**（只证「条文已写进指定文件且含修订语义」），**不证任何器件已接入、更不证任何性能/成本达标**；条文语义是否已按修订令逐项修正，由本节 §8 的逐项清单人工核。
 
 ## 8 R613 修订记录（逐项，可复核）
 
