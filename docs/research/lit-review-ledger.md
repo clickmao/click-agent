@@ -255,3 +255,5 @@
 R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 = 连续 0 采信第 1 轮**（反空转阈值：连续 3 轮 0 采信 ⇒ 检索降频为每 3 轮一次并登记）。
 **候选实施状态**：无新候选（本轮 0 采信）⇒ 无实施义务；RF0004.1 出口落地本身是上轮（R607 盘点）缺口的直接实施，非文献候选实施。
 
+| 2026-09-21 (R609) | `"prefix cache reuse"` (arxiv, --sort date, 7 命中/读 5) | arXiv 2606.17107v1（无 comment/journal-ref ⇒ 纯预印本，权威性代理=低） | 「Prefix caching reuses prefill only across an exactly shared prefix, so one changed field invalidates the entire downstream cache.」「the field's own key/value drives under 1% of the decision」 | 前缀缓存的**下游**失效不是「字段本身被缓存」，而是字段条件化的结论已在 prefill 写入下游 note ⇒ 任何**前缀内**可变块都会打掉整段下游复用 | 命中率（不改值，**支持既有纪律**） | 无新单变量轴（既有规则已要求「可变块尾置/加厚稳定前缀」）⇒ 只作外部机制支持 | 观察（非候选：远端 API 路径无 KV 编辑面；本仓策略已含该纪律） |
+| 2026-09-21 (R609) | `"prefix cache reuse"` | arXiv 2608.20732v1（cs.CR，纯预印本；权威性代理=低） | 「LLM API resellers have become an important access layer to modern LLM services.」+ 题名「…via Prefix-Cache Side Channels」 | 上游前缀缓存命中**可由外部探针独立判定**（同前缀 vs 变前缀的响应时间/计费差）⇒ 可用于**校验**中继上报的 `prompt_cache_hit/miss` 口径 | 命中率（口径校验；不改命中率本身） | 单变量轴 = 「探针形态」（同前缀对 vs 变前缀对）；判据 = 探针推断与 usage 上报**一致率 = 100%**，不一致先判器具/口径缺陷 | 候选（C1，需真实中继调用预算；**不得占用主线真机对照预算**） |
