@@ -151,4 +151,56 @@ public sealed class R524PrefixStabilityTests
         Assert.Contains("+ skillConst;", text, StringComparison.Ordinal);
         Assert.Contains("if (skillConst.Length > 0) _pendingSkillKnowledge = string.Empty;", text, StringComparison.Ordinal);
     }
+
+    // ---- R615 单变量轴 `AGENTFRAMEWORK_R1_ACTION_PROMPT`（**纯函数**判定，不写进程 env ⇒ 无并行污染）------
+    // 轴关 = 旧行为**逐位等价**：旧块前缀的 sha 必须逐字等于 R610–R614 的冻结 pin（baselines 里那一行）。
+    private const string R614FrozenPrefixSha =
+        "a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e";
+
+    [Fact]
+    public void R615_轴关档_旧块逐位等于R614冻结pin()
+    {
+        var legacy = agent.contract.StructuredPrompt.PrefixFor(true);
+        Assert.Equal(15675, legacy.Length);
+        Assert.Equal(agent.contract.StructuredPrompt.PrefixLegacyChars, legacy.Length);
+        Assert.Equal(R614FrozenPrefixSha, agent.contract.StructuredPrompt.Sha256Of(legacy));
+        Assert.Equal(R614FrozenPrefixSha, agent.contract.StructuredPrompt.PrefixLegacySha256Pinned);
+        Assert.Equal(agent.contract.StructuredPrompt.Sha256PinnedFor(true), agent.contract.StructuredPrompt.Sha256Of(legacy));
+    }
+
+    [Fact]
+    public void R615_轴开档_新块钉子自洽且与旧块互异()
+    {
+        var neu = agent.contract.StructuredPrompt.PrefixFor(false);
+        Assert.Equal(agent.contract.StructuredPrompt.PrefixChars, neu.Length);
+        Assert.Equal(agent.contract.StructuredPrompt.PrefixSha256Pinned, agent.contract.StructuredPrompt.Sha256Of(neu));
+        Assert.NotEqual(R614FrozenPrefixSha, agent.contract.StructuredPrompt.Sha256Of(neu));
+        Assert.True(neu.Length >= agent.contract.StructuredPrompt.PrefixMinCharsForCache97);
+        // 「只加厚」：两条前缀在**尾块起点之前逐位相同**（尾块整体置换，其后的 </prefix> 亦逐位同）。
+        var legacy = agent.contract.StructuredPrompt.PrefixFor(true);
+        var tailStart = legacy.IndexOf("<action_candidates>", StringComparison.Ordinal);
+        Assert.True(tailStart > 0);
+        Assert.Equal(legacy[..tailStart], neu[..tailStart]);
+        // 负控：尾块之后（</prefix> 收尾）也逐位相同 —— 证明改动**只**落在尾块内部。
+        var closeOld = legacy.IndexOf("\n\n</prefix>", tailStart, StringComparison.Ordinal);
+        var closeNew = neu.IndexOf("\n\n</prefix>", tailStart, StringComparison.Ordinal);
+        Assert.True(closeOld > 0 && closeNew > 0);
+        Assert.Equal(legacy[closeOld..], neu[closeNew..]);
+        // 且尾块确实变长（不是空改）
+        Assert.True(closeNew - tailStart > closeOld - tailStart);
+    }
+
+    [Fact]
+    public void R615_轴判定_仅legacy字样翻档_其余取值全落新块()
+    {
+        var f = agent.contract.StructuredPrompt.IsLegacyValue;
+        Assert.True(f("legacy"));
+        Assert.True(f(" legacy "));
+        Assert.True(f("LEGACY"));
+        // 负控：近似但不等于 ⇒ 缺省档（不得把拼写错误读成轴关臂）
+        Assert.False(f("legacy2"));
+        Assert.False(f("old"));
+        Assert.False(f(""));
+        Assert.False(f(null));
+    }
 }

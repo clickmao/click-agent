@@ -32,12 +32,13 @@ public static class R1Pipeline
 
     public static async Task<R1RunResult> RunAsync(ILLMCaller caller, string taskText, R1Options opt, CancellationToken ct, SupplementInbox? supplements = null)
     {
-        var prefixChars = StructuredPrompt.Prefix.Length;
-        var prefixSha = StructuredPrompt.PrefixSha256();
+        // R615: 生效前缀（轴 `AGENTFRAMEWORK_R1_ACTION_PROMPT` 缺省 = 新块 / `legacy` = 旧块逐位）。
+        var prefixChars = StructuredPrompt.EffectivePrefix().Length;
+        var prefixSha = StructuredPrompt.EffectiveSha256();
         var taskSha = R1Hash.OfText(taskText ?? string.Empty);
         var roleChars = opt.RoleNote is null ? 0 : opt.RoleNote.Length;
 
-        if (prefixChars != StructuredPrompt.PrefixChars || prefixSha != StructuredPrompt.PrefixSha256Pinned)
+        if (prefixChars != StructuredPrompt.EffectiveChars() || prefixSha != StructuredPrompt.EffectiveSha256Pinned())
         {
             return new R1RunResult(6, "prefix_drift",
                 "常量前缀漂移 (chars=" + prefixChars + " sha=" + prefixSha + ") ⇒ fail-closed 不起调用",
@@ -90,7 +91,7 @@ public static class R1Pipeline
                 }
                 var prompt = new Prompt
                 {
-                    SystemPrompt = StructuredPrompt.Prefix,
+                    SystemPrompt = StructuredPrompt.EffectivePrefix(),
                     UserMessage = R1RoleMount.AppendTo(
                         StructuredPrompt.BuildUserMessage(taskText ?? string.Empty, repairNote, injectedSupplements), opt.RoleNote),
                     SessionId = SessionTag,
@@ -169,7 +170,7 @@ public static class R1Pipeline
                 var halted = new R1RunResult(gate.Rc, gate.Stage, gate.Reason, raw, statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>(),
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
                 R1Transcript.Write(halted, opt, taskText ?? string.Empty);
                 return halted;
             }
@@ -179,7 +180,7 @@ public static class R1Pipeline
                 var noExec = new R1RunResult(0, gate.Stage, gate.Reason + " (plan 空 ⇒ 不执行)", raw, statsAll,
                     prefixChars, prefixSha, taskSha, sem, roleChars, null, new List<StepOutcome>(),
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
                 R1Transcript.Write(noExec, opt, taskText ?? string.Empty);
                 return noExec;
             }
@@ -248,7 +249,7 @@ public static class R1Pipeline
                         prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
                         opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
                     R1Transcript.Write(probeUnmet, opt, taskText ?? string.Empty);
                     return probeUnmet;
                 }
@@ -267,7 +268,7 @@ public static class R1Pipeline
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
                     opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
                 R1Transcript.Write(done, opt, taskText ?? string.Empty);
                 return done;
             }
@@ -296,7 +297,7 @@ public static class R1Pipeline
                         statsAll, prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
                         opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
                     R1Transcript.Write(unmet, opt, taskText ?? string.Empty);
                     return unmet;
                 }
@@ -305,7 +306,7 @@ public static class R1Pipeline
                     prefixChars, prefixSha, taskSha, sem, roleChars, opt.TranscriptPath, exec.Steps, probe,
                     opt.EarlyStopPfail, earlyStopSkips, probeRepairs, carryoverRounds, carryoverChars,
                     ActionCandidatesDeclared: ac.Declared, ActionCandidatesAccepted: ac.Accepted,
-                    ActionCandidatesRejected: ac.Rejected);
+                    ActionCandidatesRejected: ac.Rejected, ActionCandidatesPresent: ac.Present);
                 R1Transcript.Write(stuck, opt, taskText ?? string.Empty);
                 return stuck;
             }

@@ -1,0 +1,37 @@
+{
+ "round": "R615",
+ "instrument": "tools/r1gen/r1prompt.py + tools/r1gen/gen_csharp.py",
+ "source_sha12": {
+  "tools/r1gen/r1prompt.py": "ecdc01f47b89",
+  "tools/r1gen/gen_csharp.py": "76a81b019053",
+  "src/agent/contract/StructuredPrompt.cs": "a3a1cda28521"
+ },
+ "pin_current": {
+  "chars": 15794,
+  "sha256": "8b8be6b8070e92a9d5d5bef697759c186c93b8ccafe47d55540b3393d95d351b",
+  "role": "产品新缺省（重写后的 <action_candidates> 尾块）"
+ },
+ "pin_legacy_anchor": {
+  "chars": 15675,
+  "sha256": "a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e",
+  "role": "轴关档锚 = R610–R614 冻结 pin（与 baselines #F_env.prefix.sha256 同值）",
+  "equality_proof": "env AGENTFRAMEWORK_R1_ACTION_PROMPT=legacy ⇒ StructuredPrompt.PrefixFor(true) 逐字节 == 本常量（单测 R615_轴关档_旧块逐位等于R614冻结pin 断言 sha 相等）"
+ },
+ "block_analysis": {
+  "block_start_old": 15282,
+  "block_start_new": 15282,
+  "identical_before_block_start": true,
+  "block_chars_old": 382,
+  "block_chars_new": 501,
+  "suffix_after_block_identical": true,
+  "delta_chars": 119
+ },
+ "invariant_finding": "只加厚：chars 15675→15794（+119）；前 15282 字符逐位不变（= 尾块起点）；尾块整体置换 382→501 字符；尾块之后的收尾 `\\n\\n</prefix>` 逐位不变 ⇒ 冻结可比性成立（跨轮禁相减仍有效）",
+ "min_chars_gate": {
+  "PrefixMinCharsForCache97": 14863,
+  "gate_ok": true
+ },
+ "instrument_selfcatch": "本轮首版检查把 raw 源码里的尾块长度（392/506，含 4 位 \\uXXXX 转义的字面长）当作「前缀内的尾块长度」⇒ `append_only` 误判 False；真因 = \\uXXXX 转义在前缀内是**1 字符**（旧块含 2 处 ⇒ 382；新块 1 处 ⇒ 501）。修法 = 按**前缀字节**切块（本件即修后版），不放宽判据；首版读数无外泄风险（未落盘即修正）。",
+ "semantics": "尾块措辞是**唯一被测自由度**：轴关档逐位 = R614 冻结 pin（可机检）；键到达面遥测（StructuredPrompt 之外，R1Transcript.cs:75/122）两臂同开，属**器具**不是被测变量。",
+ "written_at": "2026-09-21T13:40:00+08:00"
+}

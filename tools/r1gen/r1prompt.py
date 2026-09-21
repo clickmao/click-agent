@@ -293,10 +293,22 @@ N10 兄弟步骤互相 depends_on（a 依赖 b 且 b 依赖 a）⇒ 错在 DAG�
 # 与跨轮冻结可比性）⇒ 一律以**尾部载体块**形态追加：既有 15291 字符逐位不变，仅在其后加厚。
 # 工具枚举与执行面同源（ActionToolDecl.Names，字母序），由 C# 单测逐名钉住本块字面量。
 ACTION_CANDIDATES = """<action_candidates>
-**动作候选**（可选; **远端只做声明, 不决定执行**）: 任务需要多步工具动作时逐条声明你要做的动作;
+**动作候选**（**回复顶层必填字段**; **远端只做声明, 不决定执行**）: 你要做的多步工具动作**逐条声明**;
 每条 = {id, tool, args, why}; tool \u2208 delete_file|list_dir|read_file|run_command|write_file（与执行面声明同源）;
 args 取该工具的必填参数（write_file={path,content} / run_command={command} / read_file={path} / list_dir={path} / delete_file={path}）;
-why 一句话说明该动作在整条计划里的作用。声明**不得**含请求未要求的动作; 不声明 \u21d2 本地只按 plan 执行。
+why 一句话说明该动作在整条计划里的作用。
+该字段**必须出现**在回复顶层: 有动作则逐条列出; **确实没有动作时给空数组 `[]`**（字段缺席 = 契约不完整）。
+本字段与 plan 是**两条并行通路**: plan 已表达的写文件/执行步骤由管道执行面负责, **不要**在本字段里重复声明;
+声明**不得**含请求未要求的动作。
+</action_candidates>"""
+
+# R615 对照臂载体（**逐字节 = R610–R614 现盘块**，由 git show HEAD 派生、禁手抄）：
+# 单变量对照用 —— 环境开关 `AGENTFRAMEWORK_R1_ACTION_PROMPT=legacy` ⇒ 用本块重建前缀（sha 必须等于 R614 冻结 pin）。
+ACTION_CANDIDATES_LEGACY = """<action_candidates>
+**动作候选**（可选; **远端只做声明, 不决定执行**）: 任务需要多步工具动作时逐条声明你要做的动作;
+每条 = {id, tool, args, why}; tool ∈ delete_file|list_dir|read_file|run_command|write_file（与执行面声明同源）;
+args 取该工具的必填参数（write_file={path,content} / run_command={command} / read_file={path} / list_dir={path} / delete_file={path}）;
+why 一句话说明该动作在整条计划里的作用。声明**不得**含请求未要求的动作; 不声明 ⇒ 本地只按 plan 执行。
 </action_candidates>"""
 
 PREFIX = "\n\n".join([
@@ -308,6 +320,17 @@ PREFIX = "\n\n".join([
     SPEC_APPENDIX, ACTION_CANDIDATES,
     "</prefix>",
 ])
+
+PREFIX_LEGACY = "\n\n".join([
+    "<prefix version=\"%s\">" % R1_VERSION,
+    ROLE, HARD_GATES + OUTPUT_CONTRACT, SEMANTICS_DICT, TOOL_MENU, ENVIRONMENT, EXAMPLES,
+    SPEC_APPENDIX, ACTION_CANDIDATES_LEGACY,
+    "</prefix>",
+])
+
+
+def prefix_sha_legacy():
+    return hashlib.sha256(PREFIX_LEGACY.encode("utf-8")).hexdigest()
 
 
 def prefix_sha():
@@ -325,6 +348,7 @@ def build_messages(task_text, note=None):
 if __name__ == "__main__":
     print("R1_VERSION", R1_VERSION)
     print("PREFIX 字符", len(PREFIX), "| sha256", prefix_sha())
+    print("PREFIX_LEGACY 字符", len(PREFIX_LEGACY), "| sha256", prefix_sha_legacy())
     print("段数", PREFIX.count("<" + ""))
     print("---- 前 400 ----")
     print(PREFIX[:400])

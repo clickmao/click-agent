@@ -42,7 +42,10 @@ public sealed record R1RunResult(
     //   Declared==0（含轴关）⇒ 台账字段不出现 ⇒ 与旧台账逐字节同（零回归由字段缺席机检）。
     int ActionCandidatesDeclared = 0,
     int ActionCandidatesAccepted = 0,
-    int ActionCandidatesRejected = 0)
+    int ActionCandidatesRejected = 0,
+    // R615：键到达面（字段存在且为数组，**空数组合法**）。与 Declared 分开落台账 ⇒
+    //   「模型给了空数组」不再是不可见状态；轴关 ⇒ 恒 false ⇒ 字段缺席（零回归不变）。
+    bool ActionCandidatesPresent = false)
 {
     public bool Halted => Rc != 0;
 }

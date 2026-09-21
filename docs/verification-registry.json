@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R614",
+ "updated_round": "R615",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -6986,17 +6986,18 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "b2da9e8fd123",
     "instrument": "tools/r1gen/gen_csharp.py",
-    "instrument_sha12": "4272751e1861",
+    "instrument_sha12": "76a81b019053",
     "binding": "audit-pin",
-    "audited_by_round": "R580"
+    "audited_by_round": "R615"
    },
-   "negative_control": "① 前态锚有牙（承重）: 同一契约在前态提交字节上判红（has_point=false, sha16 699008bc63e83379）而现盘判绿 ⇒ 判据非恒真门；② 器具自捕留档: 键集扫描窗口含点位名字面量 ⇒ 首跑 extra=['nlp_shape'] rc=1 假红，定因=器具读法错（非被测不符），修器具**不放宽判据**，首跑读数留档不翻案。"
+   "negative_control": "① 前态锚有牙（承重）: 同一契约在前态提交字节上判红（has_point=false, sha16 699008bc63e83379）而现盘判绿 ⇒ 判据非恒真门；② 器具自捕留档: 键集扫描窗口含点位名字面量 ⇒ 首跑 extra=['nlp_shape'] rc=1 假红，定因=器具读法错（非被测不符），修器具**不放宽判据**，首跑读数留档不翻案。",
+   "note": "R615 **重审**（R2e 触发的正当重钉，非行为回归）：本轮为新增单变量轴改写了器具 `tools/r1gen/gen_csharp.py`（sha12 4272751e1861 → 76a81b019053），触发 R2e「器具已改, 引用它的证据须重审」。重审动作与读数：① 重跑器具同源闸 `python3 tools/r1gen/gen_csharp.py --check` ⇒ `R1GEN_DRIFT_FILES=0 / R1GEN_EXIT=0`；② 本行承重面复跑 `dotnet test --filter FullyQualifiedName~Supplement` ⇒ **10/10 绿**（补充注入的可变区落点未受影响）；③ 本行 capability 里记录的 `chars=15291 / sha=f1280f71…` 是 **R580 当时读数，原样保留不改写**；当前冻结前缀 = chars **15794** / sha `8b8be6b8070e92a9…`（另见 `F_env.prefix.chars` / `F_env.prefix.sha256`，源 `eval/rover/r615/prefix-r615.json`）⇒ 两者不可混读。阈值与判据一字未改。"
   },
   {
    "id": "r582.round-validity-auditor",
    "level": "L2",
    "owner_round": "R582",
-   "capability": "每轮有效性校对 + 起臂前置闸器具（用户令：需要额外调试工具校对每轮有效性和验证方案可行性）。`tools/roundcheck/roundcheck.py audit --round <R>` 审 10 条：登记行/提交唯一(轮号重号)/证据在位/**冻结 pin 与现盘字节一致**/文档结构(诚实边界)/提交面卫生(疑 `git add -A` 代理判据)/**提交内无 key 面**/读数有档/暂存面卫生/工作区 key 面提醒; `preflight` 审 8 条：依赖 key 面 set-unset(**绝不回显值**)/权重在盘/内存·磁盘余量/在飞执行体/轮号占用仲裁/目标轮号空闲/PUSH_PAUSED。读数: 器具自检 `--selftest` **PASS（负控 3/3 有牙 + 假红控制 1/1 + 正控 1/1）**;真机实跑 `audit R580` **rc=0（10 条无 FAIL）**、`audit R581` **rc=1（R1 无登记行 ∧ R8 读数缺档）**、`preflight R582` **rc=1（FRONTEND_TOKEN unset ∧ MemAvailable 2467MB < 2650MB ∧ 磁盘 free 2GB < 5GB）**（三条 FAIL 正是该器具要提前拦下的三类翻车, 非缺陷）。**诚实边界: 只审台账/证据/提交面一致性, 不判产品能力; R580 首跑 R7 曾因 `sk-` 正则误吃 `task-plan-*`判红(假红), 已加左边界 + 假红控制; R6 的 40 文件阈值是 `git add -A` 的代理判据, 不是证明; 无 CI 接线。** 【R587 重审】器具在本轮新增「零产品源码改动对照轮」作用域分支（声明件 `audit-scope-<rid>.json`；R1 N/A / R6 改面形状判据 / R8 读声明读数面）+ 6 夹具（正控 1 + 负控 5）。重审取证 = 现盘字节重跑历史轮: `audit R580` rc=0、`audit R586` rc=1 且**同三条**（R1 无登记行 / R6 124 文件 > 40 / R8 读数缺档）⇒ 纯增量、历史判决中性、判据未放宽；首跑读数不撤。新行见 `r587.roundcheck-contrast-scope`。",
+   "capability": "每轮有效性校对 + 起臂前置闸器具（用户令：需要额外调试工具校对每轮有效性和验证方案可行性）。`tools/roundcheck/roundcheck.py audit --round <R>` 审 10 条：登记行/提交唯一(轮号重号)/证据在位/**冻结 pin 与现盘字节一致**/文档结构(诚实边界)/提交面卫生(疑 `git add -A` 代理判据)/**提交内无 key 面**/读数有档/暂存面卫生/工作区 key 面提醒; `preflight` 审 8 条：依赖 key 面 set-unset(**绝不回显值**)/权重在盘/内存·磁盘余量/在飞执行体/轮号占用仲裁/目标轮号空闲/PUSH_PAUSED。读数: 器具自检 `--selftest` **PASS（负控 3/3 有牙 + 假红控制 1/1 + 正控 1/1）**;真机实跑 `audit R580` **rc=0（10 条无 FAIL）**、`audit R581` **rc=1（R1 无登记行 ∧ R8 读数缺档）**、`preflight R582` **rc=1（FRONTEND_TOKEN unset ∧ MemAvailable 2467MB < 2650MB ∧ 磁盘 free 2GB < 5GB）**（三条 FAIL 正是该器具要提前拦下的三类翻车, 非缺陷）。**诚实边界: 只审台账/证据/提交面一致性, 不判产品能力; R580 首跑 R7 曾因 `sk-` 正则误吃 `task-plan-*`判红(假红), 已加左边界 + 假红控制; R6 的 40 文件阈值是 `git add -A` 的代理判据, 不是证明; 无 CI 接线。** 【R587 重审】器具在本轮新增「零产品源码改动对照轮」作用域分支（声明件 `audit-scope-<rid>.json`；R1 N/A / R6 改面形状判据 / R8 读声明读数面）+ 6 夹具（正控 1 + 负控 5）。重审取证 = 现盘字节重跑历史轮: `audit R580` rc=0、`audit R586` rc=1 且**同三条**（R1 无登记行 / R6 124 文件 > 40 / R8 读数缺档）⇒ 纯增量、历史判决中性、判据未放宽；首跑读数不撤。新行见 `r587.roundcheck-contrast-scope`。 【R616 重审】器具加「违例基线 / 过期例外(R11) / 抑制计数(R12) / 轮次作用域」面（零 src） ⇒ instrument_sha12 b348eff8dd63→e0cb84aa86ae, audited_by_round R587→R616；重审判据 = 旧 10 条判据行为逐行未变（R580/R582/R587 三点重跑 diff 仅多出 R10/R11/R12 三行 PASS） + --selftest 全绿；对照轮作用域分支未触碰。不改本行判据语义，非放宽。",
    "evidence_cmd": "python3 tools/roundcheck/roundcheck.py --selftest; python3 tools/roundcheck/roundcheck.py audit --round R580",
    "evidence_path": "docs/evidence/RF0001/R582-roundcheck.md",
    "evidence_generated_with": {
@@ -7005,9 +7006,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "c5d82feffad0",
     "instrument": "tools/roundcheck/roundcheck.py",
-    "instrument_sha12": "b348eff8dd63",
+    "instrument_sha12": "e0cb84aa86ae",
     "binding": "audit-pin",
-    "audited_by_round": "R587"
+    "audited_by_round": "R616"
    },
    "negative_control": "器具内建 selftest 3 负控: 错 pin ⇒ R4 红 / 提交内 key 面 ⇒ R7 红 / 无提交轮号 ⇒ R2 红;另 2 假红控制: 正常 `task-*` 标识符不得误判为 `sk-` key; P5 在飞执行体探测不得自匹配(旧 `pgrep -c -f` 把调用者自己含 `agenthost` 的命令行算成在飞执行体 ⇒ 假 WARN; R584 起改扫 /proc 按 argv[0]/解释器 argv[1] 匹配)。"
   },
@@ -7053,7 +7054,7 @@
    "id": "r587.roundcheck-contrast-scope",
    "level": "L2",
    "owner_round": "R587",
-   "capability": "审计器对「零产品源码改动对照轮」的作用域分支（R585/R586 同形三连红的收口; 用户令 2026-09-19「全部候选并轮」）。声明件 `eval/rover/<rid>/audit-scope-<rid>.json`: kind=contrast_zero_product_change ∧ reason≥20 字符 ∧ readings 逐个在位非空 ∧ allowed_faces 非空；**且提交面零 `src/`** ⇒ R1 判 `PASS(N/A, 明细带声明件与 reason)` / R6 改**面形状**判据（提交面每个文件须落在声明的面内; 垃圾面判据不变）/ R8 改读**声明的读数面**（须含 verdict.rc ∧ `x/y` 通过率 ∧（require_form_gate 时）`形式门禁`读数）。缺声明 ⇒ **旧行为逐字节不变**；声明非法 ⇒ **出声不豁免**。读数: `--selftest` 对照轮 正控 1/1 + 负控 5/5 全绿；历史判决中性 = 现盘器具重跑 `audit R580` rc=0 ∧ `audit R586` rc=1 且三条红逐条相同。**诚实边界: R6 的面形状判据是「提交面落在声明面内」的代理判据（声明错则判据跟着错）; R8 的「形式门禁」要求是本轮主动保留的牙; 本器具只审台账/证据/提交面一致性, 不判产品能力; 声明件在 R587 为跑后落盘（declared_after_run=true, 冻结预注册未触碰）; 无 CI 接线。**",
+   "capability": "审计器对「零产品源码改动对照轮」的作用域分支（R585/R586 同形三连红的收口; 用户令 2026-09-19「全部候选并轮」）。声明件 `eval/rover/<rid>/audit-scope-<rid>.json`: kind=contrast_zero_product_change ∧ reason≥20 字符 ∧ readings 逐个在位非空 ∧ allowed_faces 非空；**且提交面零 `src/`** ⇒ R1 判 `PASS(N/A, 明细带声明件与 reason)` / R6 改**面形状**判据（提交面每个文件须落在声明的面内; 垃圾面判据不变）/ R8 改读**声明的读数面**（须含 verdict.rc ∧ `x/y` 通过率 ∧（require_form_gate 时）`形式门禁`读数）。缺声明 ⇒ **旧行为逐字节不变**；声明非法 ⇒ **出声不豁免**。读数: `--selftest` 对照轮 正控 1/1 + 负控 5/5 全绿；历史判决中性 = 现盘器具重跑 `audit R580` rc=0 ∧ `audit R586` rc=1 且三条红逐条相同。**诚实边界: R6 的面形状判据是「提交面落在声明面内」的代理判据（声明错则判据跟着错）; R8 的「形式门禁」要求是本轮主动保留的牙; 本器具只审台账/证据/提交面一致性, 不判产品能力; 声明件在 R587 为跑后落盘（declared_after_run=true, 冻结预注册未触碰）; 无 CI 接线。** 【R616 重审】器具加「违例基线 / 过期例外(R11) / 抑制计数(R12) / 轮次作用域」面（零 src） ⇒ instrument_sha12 b348eff8dd63→e0cb84aa86ae, audited_by_round R587→R616；重审判据 = 旧 10 条判据行为逐行未变（R580/R582/R587 三点重跑 diff 仅多出 R10/R11/R12 三行 PASS） + --selftest 全绿；对照轮作用域分支未触碰。不改本行判据语义，非放宽。",
    "evidence_cmd": "python3 tools/roundcheck/roundcheck.py --selftest",
    "evidence_path": "docs/evidence/RF0001/R587-roundcheck-contrast-scope.md",
    "evidence_generated_with": {
@@ -7062,9 +7063,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "cab29c315a06",
     "instrument": "tools/roundcheck/roundcheck.py",
-    "instrument_sha12": "b348eff8dd63",
+    "instrument_sha12": "e0cb84aa86ae",
     "binding": "audit-pin",
-    "audited_by_round": "R587"
+    "audited_by_round": "R616"
    },
    "negative_control": "6 夹具（正控 1 + 负控 5）: 声明了却提交触碰 `src/` ⇒ R1 红（分支不适用）; 无声明 ⇒ R1 红（旧行为未被改坏）; 声明非法（读数件缺/空）⇒ R1 红且明细出声; 声明面缺「形式门禁」⇒ R8 红; 提交面越界（未声明路径）⇒ R6 红; 还原后 rc=0。（夹具自身首跑假红 —— `allowed_faces` 漏 `docs/` 使正控 R6 红 —— 由自检当场抓出: 修声明完整性, 未放宽判据。）"
   },
@@ -7312,6 +7313,68 @@
     "binding": "audit-pin",
     "audited_by_round": "R614"
    }
+  },
+  {
+   "id": "r615.j1-arrival-face-and-prompt-block-axis",
+   "capability": "M3 第一刀 J1「声明到岸率」的**测量面修复** + 提示尾块**单变量**真机重测：① 键到达面与「声明非空」解耦后，措辞有牙 —— 到达跑次 T **8/9** vs C（旧尾块逐位）**0/9**，其中 6/8 为**空数组到达**（R614 台账结构性读 0 的形态）；② 轴关逐位等价锚 = R610–R614 冻结 pin `a9792fdb…`（sha 单测钉住）；③ 能力面**无增益**（整题全对 T 5/9 vs C 6/9 vs codex 0/3，摆动≥效应）；④ 任务面 v3 `NO_RESOLUTION`（有效窗 0 ⇒ 不可判）；⑤ 铁律 11 rc=1（21 臂全部实跑，10 臂未达 58/58，含真值臂）⇒ 成本/降幅一律**参考（未可验收）**。**仅证「措辞移动键到达」；不证任何能力或成本收益。**",
+   "level": "L3",
+   "evidence_cmd": "bash eval/rover/r615/run_r615.sh   # 21 跑次（T×9 / C×9 / C1×3），落 $HOME/.agentframework/harness/runs/r615/；后处理重算: python3 eval/rover/r615/judge_r615.py --D $HOME/.agentframework/harness/runs/r615 --pd eval/rover/r615；铁律 11: python3 eval/rover/r507pre/exec_precondition.py --round r615",
+   "evidence_path": "eval/rover/r615/report-r615.md",
+   "negative_control": "① **同轮负控**：C 档（`AGENTFRAMEWORK_R1_ACTION_PROMPT=legacy`，前缀逐位 = R614）到达 **0/9** ∧ 单测 `R615_轴判定_仅legacy字样翻档_其余取值全落新块`（拼写近似值必须落新块）；② **轴关等价锚**：单测 `R615_轴关档_旧块逐位等于R614冻结pin`（chars 15675 ∧ sha a9792fdb…）；③ **只加厚负控**：`prefix-r615.json` 断言前 15282 字符逐位不变、尾块后收尾逐位不变；④ **渲染漂移负控**：`present` 值出现 0 ⇒ 判器具缺陷（应有则恒 1）∧ 单测 `R615_空数组到达_台账落present且declared面缺席` （去掉该字段即逐字节 == 旧标记）；⑤ **器具缺陷披露**：v1 判决件 `verdict-r615-v1readcontract.json`（读取契约缺新键 ⇒ J1 假红）原样保留，v2 为后处理重算、读数未重测。",
+   "covers": [
+    "eval/rover/r615/dag-r615.md",
+    "eval/rover/r615/premise-r615.json",
+    "eval/rover/r615/premise_r615.py",
+    "eval/rover/r615/prereg-r615.json",
+    "eval/rover/r615/prefix-r615.json",
+    "eval/rover/r615/report-r615.md",
+    "eval/rover/r615/run_r615.sh",
+    "eval/rover/r615/judge_r615.py",
+    "eval/rover/r615/aot_r615.sh",
+    "eval/rover/r615/taskset-r615.json",
+    "eval/rover/r615/verdict-r615.json",
+    "eval/rover/r615/verdict-r615-v1readcontract.json",
+    "eval/rover/r615/kpi-table-r615.json",
+    "eval/rover/r615/kpi-table-r615-v1readcontract.json",
+    "eval/rover/r615/gate-margin-r615.json",
+    "eval/rover/r615/bins-r615.json",
+    "eval/rover/r615/evidence/smoke-aot-r615.txt",
+    "eval/rover/r615/evidence/windows/w202/report.json",
+    "eval/rover/r615/evidence/windows/w203/report.json",
+    "eval/rover/r615/evidence/windows/w204/report.json"
+   ],
+   "owner_round": "R615",
+   "updated_round": "R615",
+   "note": "预注册先写后跑；判据器 J1 块按本轮单变量重写、J2/J2b/J3/J4/J5 逐字继承 R610。起手闸余量重派生 70MB（源 r610/run-samples.jsonl，n=341）；与 R585–R614 冻结件轮**禁相减**。",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "b70bd8ded0b2",
+    "instrument": "eval/rover/r615/judge_r615.py",
+    "instrument_sha12": "d144a3011bb9",
+    "binding": "audit-pin",
+    "audited_by_round": "R615"
+   }
+  },
+  {
+   "id": "r616.roundcheck-baseline-governance",
+   "level": "L2",
+   "owner_round": "R616",
+   "capability": "审计器的「例外治理」面（外部参照采纳 · ZCode `.architecture-baseline.json` 模型；用户令 2026-09-21「按需采纳 zcode 的方案和进行你的下轮计划…只要不偏离主线」）：违例基线 + 过期例外 + 抑制计数 + 轮次作用域。`audit` 新增三闸：R10_baseline（基线形态；**缺失 ⇒ 旧行为逐字节不变**，非法/条目缺 reason·expires_round ⇒ 出声不豁免）/ R11_expired_exception（例外过期未清 ⇒ 红，不接受永久豁免）/ R12_disable_count（`entries > max_entries` ⇒ 红，抑制只许减）；已在册 FAIL 降 `BASELINED`（不计 rc）；条目录必填 item/subject/reason(≥20)/expires_round，可选 round 作用域；唯一抬上限入口 = `baseline --add|--remove`。R8「形式门禁」读数面同步由魔法常量 `14/14` 改**结构判定**（`形式(?:门禁)? x/y`，含 7 断言负控）——真机遇到「闸真不是 14/14」时旧判据会逼出假读数。读数：`--selftest` PASS（负控 3/3 + 正控 1/1 + 假红 2/2 + 对照轮 正控1/1+负控5/5 + 基线 正控4/4+负控7/7）；真树控制：无基线=旧行为（仅 +R10 一行）/ R609 吸收 2 ⇒ rc=0 / R614 吸收 2 ⇒ rc=0 / **同基线跑 R613 吸收 0（作用域外）⇒ rc=1**（精确性负控）/ 过期 ⇒ R11 红 / 偷加 ⇒ R12 红；build 0 error（19.5 s）；形式门禁 **13/14**（唯一红 = r580 pin 被 R615 未提交残件改 `tools/r1gen/gen_csharp.py` 所致，非本轮，**未代对侧重钉**）；通过率 23/23。R2e 重审：r582/r587 `instrument_sha12` b348eff8dd63→e0cb84aa86ae（中性证据 = R580/R582/R587 三点重跑 diff 仅 +3 行 PASS）。**诚实边界**：基线 4 条全为历史/适用性类（无一条缺陷豁免），全部 `expires_round=R625` 到期回红；R12 只防**静默**增长；豁免粒度 = item × 明细子串 × 可选轮号；`--changed` 与树级结构规则族未采纳（缺面如实标注）；零 src ⇒ 未跑 AOT；未写共享台账 `docs/research/lit-review-ledger.md`（兄弟会话残件未落定，不代提交）。",
+   "evidence_cmd": "python3 tools/roundcheck/roundcheck.py --selftest; python3 tools/roundcheck/roundcheck.py audit --round R609 --baseline tools/roundcheck/baseline.json",
+   "evidence_path": "docs/evidence/RF0001/R616-roundcheck-baseline-governance.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "7aff7b314005",
+    "instrument": "tools/roundcheck/roundcheck.py",
+    "instrument_sha12": "e0cb84aa86ae",
+    "binding": "audit-pin",
+    "audited_by_round": "R616"
+   },
+   "negative_control": "**R615 复核补登**（对侧 R616 行原缺该字段 ⇒ 共享 L3 门禁红、阻塞同树两写者提交；本侧**自跑器具**取读数后代为补登，**未代改它字段**）：`python3 tools/roundcheck/roundcheck.py --selftest` ⇒ `SELFTEST PASS (负控 3/3 有牙 + 正控 1/1 + 假红控制 2/2 + 对照轮分支 正控 1/1 + 负控 5/5 + 基线分支 正控 4/4 + 负控 7/7)`；真树控制（对侧已登记、本侧并列引用不作我方读数）：无基线=旧行为（仅 +R10 一行）/ R609·R614 吸收 ⇒ rc=0 / 同基线跑 R613 吸收 0（作用域外）⇒ rc=1 / 过期 ⇒ R11 红 / 偷加 ⇒ R12 红。归属 = **foreign（对侧实施 + 本侧复核读数）**。"
   }
  ],
  "aot_check_policy": "release_tag_only",

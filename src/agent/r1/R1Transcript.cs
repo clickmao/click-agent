@@ -68,6 +68,12 @@ public static class R1Transcript
         }
         // R610 动作候选轴（AGENTFRAMEWORK_R1_ACTION_CANDIDATES，默认开）：声明数 0（含轴关）⇒
         //   三字段不出现 ⇒ 与旧标记逐字节同（零回归由字段缺席机检；R546/R550/R600 同一纪律）。
+        // R615 键到达面：present=true 即落（**空数组也算到达**）；declared 面保持「非空才落」不变。
+        if (r.ActionCandidatesPresent)
+        {
+            // 到达 = 顶层键存在且为数组（**空数组也算到达**）⇒ 恒 1（guard 已保证 Present=true）。
+            sb.Append(",\"action_candidates_present\":").Append(R1Json.Num(r.ActionCandidatesPresent ? 1 : 0));
+        }
         if (r.ActionCandidatesDeclared > 0)
         {
             sb.Append(",\"action_candidates_declared\":").Append(R1Json.Num(r.ActionCandidatesDeclared));
@@ -111,6 +117,10 @@ public static class R1Transcript
             sb.Append("  \"artifact_carryover_chars\": ").Append(R1Json.Num(r.ArtifactCarryoverChars)).Append(",\n");
         }
         // R610 动作候选轴：声明数 0（含轴关）⇒ 字段不出现 ⇒ 与旧台账逐字节同。
+        if (r.ActionCandidatesPresent)
+        {
+            sb.Append("  \"action_candidates_present\": ").Append(R1Json.Num(r.ActionCandidatesPresent ? 1 : 0)).Append(",\n");
+        }
         if (r.ActionCandidatesDeclared > 0)
         {
             sb.Append("  \"action_candidates_declared\": ").Append(R1Json.Num(r.ActionCandidatesDeclared)).Append(",\n");

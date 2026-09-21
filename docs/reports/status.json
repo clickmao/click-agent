@@ -68,7 +68,7 @@
  },
  "baselines": {
   "by_face": {
-   "F_env": 4,
+   "F_env": 5,
    "F_merge": 7,
    "F_orch": 3
   },
@@ -77,12 +77,12 @@
    "diagnostic": 1,
    "env_gate": 3,
    "external_truth": 1,
-   "frozen_invariant": 2,
+   "frozen_invariant": 3,
    "negative_control": 1
   },
-  "entries": 14,
+  "entries": 15,
   "file": "eval/capability/baselines.json",
-  "file_sha12": "2ea7862c12b1",
+  "file_sha12": "0713b82c3833",
   "missing_sources": [],
   "rules": [
    "kind_semantics",
@@ -103,12 +103,12 @@
   "latest": {
    "bin_sha": "",
    "grid": null,
-   "kind": "R610 顺延边 N8→N9 重启：M3 第一刀真机读数（零产品改动；单变量 = 已提交的 AGENTFRAMEWORK_R1_ACTION_CANDIDATES）——机制面未行使（声明到岸率 0/9）、任务面 v3 PASS、铁律 11 rc=1 未可验收",
+   "kind": "J1 测量面修复 + 提示尾块单变量重测（真机臂 w202..w204）：机制面 **PASS**（键到达 T 8/9 vs C 0/9，6/8 为空数组到达）、能力面无增益（T 5/9 vs C 6/9 vs codex 0/3）、任务面 v3 NO_RESOLUTION、铁律 11 rc=1 ⇒ 成本列**参考（未可验收）**",
    "readouts": null,
-   "ts": "2026-09-21T11:52:10+08:00"
+   "ts": "2026-09-21T13:50:00+08:00"
   },
-  "latest_round": "R614",
-  "lines": 149,
+  "latest_round": "R615",
+  "lines": 150,
   "non_round_rows": [
    "EXP1-Q1",
    "EXP1-Q10",
@@ -314,11 +314,12 @@
    "R609",
    "R610",
    "R614",
+   "R615",
    "loop-mechanism",
    "unknown"
   ],
   "rows_missing_kind": 19,
-  "sha12": "04562cb2650d"
+  "sha12": "053e7dfe71f6"
  },
  "plans": [
   {
@@ -382,13 +383,13 @@
   "by_level": {
    "L0": 2,
    "L1": 20,
-   "L2": 137,
-   "L3": 84,
+   "L2": 138,
+   "L3": 85,
    "L4": 46
   },
-  "rows": 289,
-  "sha12": "577bc290f451",
-  "updated_round": "R614",
+  "rows": 291,
+  "sha12": "d94bfd9fc553",
+  "updated_round": "R615",
   "violations": [],
   "warnings": [
    {
@@ -477,6 +478,10 @@
    },
    {
     "id": "r606.probe-repair-budget-default",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r616.roundcheck-baseline-governance",
     "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
    }
   ]

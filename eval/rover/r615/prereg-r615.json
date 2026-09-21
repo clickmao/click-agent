@@ -1,0 +1,69 @@
+{
+ "round": "R615",
+ "written_before_run": true,
+ "written_at": "2026-09-21T13:02:00+08:00",
+ "author": "cron capability-cycle (R615)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9 / §1 迭代单元七硬约束",
+ "claim": "R614 把 M3 第一刀的 J1 读作「声明到岸率 0/18」并疑心「远端不遵守契约」。本轮**不预设**归因，先机检前提：判定器只读 action_candidates_declared（>0 才落字段）⇒「模型给出空数组」这一形态在台账上**结构性不可见**。本轮修的是**测量面**（键到达与声明非空解耦），并用单变量提示尾块重测。",
+ "single_variable": {
+  "axis": "AGENTFRAMEWORK_R1_ACTION_PROMPT",
+  "T": "unset ⇒ 产品新缺省（重写的 <action_candidates> 尾块）",
+  "C": "legacy ⇒ R610–R614 冻结尾块（**逐位**：前缀 sha256 == a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e）",
+  "instrument_both_arms": "action_candidates_present（键到达面）两臂同开 —— 器具，不是被测变量",
+  "why_only_one": "提示尾块是唯一会改变远端输入字节的自由度；遥测字段不改变 prompt 字节、不改变决策（单测钉住）。"
+ },
+ "arms": {
+  "C1": {"side": "codex", "reps": 1, "env": {}},
+  "T": {"side": "agent", "reps": 3, "env": {}},
+  "C": {"side": "agent", "reps": 3, "env": {"AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy"}}
+ },
+ "windows": {"set": ["w202", "w203", "w204"], "disjoint_from_history": true,
+             "history_up_to": "w201（R610 用 w199..w201；本轮起 w202，与历史窗集不相交）"},
+ "criterion_version": "v3",
+ "thresholds_cite_baselines": [
+  "F_env.prefix.sha256（轴关逐位等价的锚 = R614 冻结 pin）",
+  "F_env.prefix.chars",
+  "F_merge.quality.cases_median_truth（同窗 codex 真值中位，本题集 58/58）",
+  "F_merge.cache.hit_v_all",
+  "F_merge.cost.new_prompt_sum"
+ ],
+ "criteria": {
+  "J1_mechanism": {
+   "need": "T_arrival_runs > C_arrival_runs ∧ T_arrival_runs >= 1 ∧ present 字段无 0 值（渲染漂移 ⇒ rc=2）",
+   "why": "单变量方向性判据：新块须**抬升键到达率**；不到 1 即无效应，如实收窄。",
+   "teeth": "同轮负控 = C 臂（旧块逐位）；渲染负控 = 单测 R615_空数组到达_台账落present且declared面缺席（present 出现但 declared 字段缺席，与旧标记逐字节差恰为该字段）。",
+   "forbidden_reading": "禁用「到达率上升」直接当**能力面**达标；能力面仍看 J4（整题全对率 vs 同窗 codex）。"
+  },
+  "J2b_selection_conservation": {
+   "need": "declared>0 的跑次上 accepted + rejected == declared（违例 0）∧ 有声明跑次 > 0",
+   "vacuous_green_guard": "R614 自捕的真空绿：声明数为 0 时守恒式真空成立 ⇒ 必须要求有声明跑次 > 0，否则判 `NO_DECLARATION_VACUOUS`（不可判，禁读作通过）。"
+  },
+  "J2_repair_convergence": {"need": "T_converged >= C_converged + 1", "inherited_from": "R610 一字未改"},
+  "J3_cost": {"form_in_force": "v2 (a1 ∧ a2 ∧ b1)", "unit": "调用数 / 新算 prompt / completion 三列分列，禁用名义总量",
+              "cross_round": "与被测件变更的历史轮**禁相减**，只并列"},
+  "J4_capability": {"need": "整题全对率 T >= C ∧ 与同窗 codex 配对", "power": "n=9/档 ⇒ 欠功率，只作并列",
+                    "external_truth": "codex-cli 同题面同夹具同窗"},
+  "J5_cross_windowset": {"note": "并列项，不改主 rc；判据器改版 ⇒ 跨轮禁相减"},
+  "ironlaw11": "收口前必跑 eval/rover/r507pre/exec_precondition.py --round r615；rc≠0 ⇒ 本轮降幅一律标「参考（未可验收）」。"
+ },
+ "evidence_scope": {
+  "require": [
+   "prereg-r615.json（先写后跑闸）",
+   "bins-r615.json（全臂同一枚二进制 + codex 指纹）",
+   "prefix-r615.json（只加厚不变量 + 轴关 sha 锚）",
+   "gate-margin-r615.json（起手闸余量条款）",
+   "logs/run-samples.jsonl（运行期内存采样，供下轮 swing 重派生）",
+   "kpi-table-r615.json（KPI 表）",
+   "verdict-r615.json（判决件）"
+  ],
+  "note": "缺任一项 ⇒ 该轮不可收口（收口五件 = 轮工件/证据文档/registry 行/kpi 行带 baselines/逐名列名提交）。"
+ },
+ "honest_boundaries": [
+  "本轮**不**宣称三档目标读数（32ms / 快 50× / −95% / −85~91%）—— 那是终局目标（外部出处 TabAgent 2602.16429），本仓未复现。",
+  "器件路径不变：决策主体 = src/agent.nlp 规则族 + 闸族系；本轮不动器件、不引入外部判别模型。",
+  "被 2:1 风险: 若 T 与 C 的到达率都 ≥1 且相等 ⇒ 判「无方向性增益」，如实收窄，禁改阈值。",
+  "窗数 3 × reps 3 = 每档 9 跑次；跨窗摆动可能 ≥ 效应 ⇒ 只报逐窗 + 中位 + 极差，不作单窗结论。"
+ ],
+ "rc_semantics": {"0": "预注册判据全过", "1": "预注册判据未过（被测不满足，读数有效）",
+                  "2": "器具/环境缺陷（禁计入被测读数）", "3": "输入缺失或窗口不可开（fail-closed）"}
+}

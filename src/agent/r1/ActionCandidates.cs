@@ -43,7 +43,10 @@ public static class ActionCandidates
         int Accepted,
         int Rejected,
         IReadOnlyList<string> AcceptedIds,
-        IReadOnlyList<string> RejectReasons);
+        IReadOnlyList<string> RejectReasons,
+        // R615：**键到达**（字段存在且为数组，**空数组合法**）——与「声明非空」(Declared>0) 是两个读数。
+        //   动因：只在 Declared>0 时落台账 ⇒「模型给了空数组」结构性不可见（arXiv:2608.04355v1 的抽取边界假象）。
+        bool Present = false);
 
     public static readonly Selection Empty =
         new(0, 0, 0, new List<string>(), new List<string>());
@@ -78,6 +81,8 @@ public static class ActionCandidates
         {
             return Empty;
         }
+        // R615：走到这里 = 键**到达**（数组形态，含空数组）⇒ Present 与「声明非空」解耦。
+        const bool present = true;
         var accepted = new List<string>();
         var reasons = new List<string>();
         var seen = new HashSet<string>(StringComparer.Ordinal);
@@ -120,7 +125,7 @@ public static class ActionCandidates
             }
             accepted.Add(id);
         }
-        return new Selection(declared, accepted.Count, reasons.Count, accepted, reasons);
+        return new Selection(declared, accepted.Count, reasons.Count, accepted, reasons, present);
     }
 
     private static string Str(JsonElement o, string key)

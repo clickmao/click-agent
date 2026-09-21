@@ -297,3 +297,32 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 - arXiv 面本轮**不可用**：`export.arxiv.org` 直连 `curl -m 60` 超时、脚本退避 3 次后 `HTTP 429`、`web_extract` 走网关 `Gateway timeout` ⇒ 本轮检索式**未取到原文**，按反幻觉硬闸记「未取到原文 ⇒ 不采信」，**不写任何论文结论**；改用官方工程文档 2 件（已给 URL + 采集日 + 逐字引文）。
 - 检索预算：arXiv query 记 **1 式**（未成功），全文抓取 2 件（≤2 上限内）；429 后**未重试同端点**（消耗窗口未恢复），符合纪律。
 - 反空转计数：R608 = 连续 0 采信第 1 轮；R609/R610 = 采信；**R614 = 采信 0 条（2 条观察）⇒ 连续 0 采信第 0 轮起算**（观察项不计入采信）。
+
+## 13. R615 增量（2026-09-21；M3 前提机检轮 · 真机臂 · 单变量 = `AGENTFRAMEWORK_R1_ACTION_CANDIDATES`）
+
+采集日：**2026-09-21** ｜ 检索预算：arXiv query **3 式**（helper 2 + API 直查 1，= 上限）｜ 全文抓取 1 次（API `id_list` 取逐字摘要，≤2 上限内）｜ 间隔 ≥4s。
+
+| 日期 | 检索式 | 出处（含版本） | 逐字引文 | 机制假设 | 改哪一格 KPI（方向） | 单变量轴 + 判据（阈值/可证伪点） | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 | `abs:"constrained decoding" AND cat:cs.CL`（sortBy=submittedDate） | **arXiv:2607.18476v1**（纯预印本：comment 仅给页数/配套研究/代码仓，**无 venue / journal-ref** ⇒ 权威性代理**低**，只作机制假设） | "a format clause -- \"Reply with JSON only\" -- changes which answer it chooses" ∧ "Convergence deepens sharply: on the unconstrained \"Pick a word\" prompt the modal answer rises from 41% to 64% of the pool and distinct answers fall from 52 to 36" | **措辞级契约条款（无 schema 强制、无约束解码，仅请求文字）即可移动输出分布**；但代价是**趋同加剧**（多样性 52→36） | ⑤ tokens/② 执行面（机制面键到达率↑）**∧** ⑥ 质量（**代价方向未定 ⇒ 必须成对读**） | 轴 = 契约尾块措辞（「可选」→「必填，空数组合法」）；判据 = 键到达率 > 0（`baselines: baselines.json#cache-hit-floor` 之外新增机制面读数，阈值引同名 id）**∧** 配对质量中位 ≥ −2（`truth-vs-t-arm`）——即「条款有牙」不得以质量代价换取 | **采信（机制假设已实施）**：本仓代码证据 = `tools/r1gen/r1prompt.py` 尾块（措辞级唯一改动点）+ `src/agent/r1/R1Pipeline.cs:164`（措辞改动唯一消费点） |
+| 2026-09-21 | 同上 | **arXiv:2608.04355v1**（纯预印本：comment 仅给页数 ⇒ 权威性代理**低**） | "We show this can fail at the answer-extraction boundary" ∧ "format effects exceed content effects (Wilcoxon p=1.7e-3)" | **抽取边界会把「格式面」误读成「内容面」** ⇒ 「字段缺席 / 字段为空」与「模型未遵守」必须分开测 | ④ 轮数/⑥ 质量（判据口径修正，**不产生增益**） | 轴 = 键到达面打点（`Present`），判据 = 「`present` 与 `declared>0` 两个读数列，前者含空数组到达」；证伪点 = 若 `present` 仍恒 0 ⇒ 措辞路线无牙 | **采信（本轮实施）**：代码证据 = `src/agent/r1/R1Transcript.cs:71`（`if Declared>0` 才落字段 ⇒ **空数组到达结构性不可见**）+ R614 归因「远端零遵守」（本轮按 R1 改判为 `contract_face_structural`） |
+
+**反空转计数**：R615 = **采信 2 / 证伪 0 / 顺延 0** ⇒ 连续 0 采信计数**清零**（R614 的 2 条观察不计入采信）。
+**对照本仓现状（代码证据）**：本轮两条机制的**可动面都是措辞/打点面**，不涉及器件替换；`ActionCandidates.Select` 消费者数 = 0（`git grep -n 'ActionCandidatesAccepted' -- src` 除 tests/transcript/runresult/pipeline 外为空）⇒ 出口闸「调用数 ≤ 旧臂 50%」在接线前**按构造不可达**（R614 结论保持）。
+
+## 14. R615 第二轮增量（2026-09-21；主线环 step 2 的**当轮文献小步**；采集日 2026-09-21）
+
+检索预算：arXiv query **3 式**（= 上限）｜ 逐字摘要抓取 **1 次**（`id_list` 两件，≤2 上限内）｜ 检索间隔 ≥4s ｜ 全文抓取 0（未超限）。
+**逐条读标题/摘要后结论：3 式全部为不相关命中 ⇒ 本轮新增采信 0 条**（结果数不是判据：三式分别报 311,793 / 722,755 / 263,884 条，逐条读题名与摘要后与本机制面无关）。
+
+| 日期 | 检索式 | 出处（含版本） | 逐字引文 | 机制假设 | 改哪一格 KPI（方向） | 单变量轴 + 判据（阈值/可证伪点） | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-21 | `"structured output" tool calling schema compliance`（cs.CL, sort date） | 检索式记录（无采信件）；返回 311,793 条，前 6 条逐条读题名/摘要 = 与本机制面无关 | **未取到原文 ⇒ 不采信**（禁编造） | — | — | — | 未采信（0 采信，不计入候选队列） |
+| 2026-09-21 | `"constrained decoding" function calling structured`（cs.CL, sort date） | 同上；返回 722,755 条，前 6 条无关 | **未取到原文 ⇒ 不采信** | — | — | — | 未采信 |
+| 2026-09-21 | `"tool calls" empty array absent key agent`（cs.AI, sort date） | 同上；返回 263,884 条，前 6 条无关 | **未取到原文 ⇒ 不采信** | — | — | — | 未采信 |
+| 2026-09-21 | `id_list=2607.18476v1,2608.04355v1`（**反幻觉硬闸复核**，非新采信） | **arXiv:2607.18476v1**（纯预印本，comment 仅 12 页/配套件/代码仓，无 venue/journal-ref ⇒ 权威性代理低） | 摘要逐字含 `Reply with JSON only` ∧ `convergence`（探针命中 True） | 同上节（措辞级条款移动输出分布） | — | — | **引文复核通过（出处含版本 + 逐字片段在摘要中命中）** |
+| 2026-09-21 | 同上 | **arXiv:2608.04355v1**（纯预印本，comment 仅 36 页/5 图，无 venue/journal-ref） | 摘要逐字含 `extraction boundary` ∧ `format effects`（探针命中 True） | 同上节（抽取边界把格式面读成内容面） | — | — | **引文复核通过** |
+
+**反空转计数**：R615 新增采信 **0**（上一段 R615 首段的 2 条采信发生在同一轮内、已登记）⇒ 连续 0 采信**第 1 轮**（未达「连续 3 轮 ⇒ 降频每 3 轮一次」门槛，阈值不动）。
+**口径修正（append-only，不改上文）**：上文 §13 段落头写「单变量 = `AGENTFRAMEWORK_R1_ACTION_CANDIDATES`」，**实际定稿的单变量 = 提示尾块轴 `AGENTFRAMEWORK_R1_ACTION_PROMPT`**（新块 vs `legacy` 旧块逐位）；动作候选轴两臂同开（遥测器具，非被测变量）。差异原因：本轮被测目标是「**措辞**能否抬升键到达率」，而轴关动作候选会同时关掉抽取面 ⇒ 会把两种改动混在一个自由度里。
+**代码证据（对照本仓现状，file:line 现盘）**：`src/agent/r1/R1Transcript.cs:75`（到达面落字段，`Present` 驱动）· `:77`（`declared>0` 才落三计数）· `src/agent/r1/R1Pipeline.cs:165`（唯一抽取消费点）· `src/agent/contract/StructuredPrompt.cs:615`（轴判定键）/`:618`（生效前缀）· 轴关逐位锚 = `a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e`（= R610–R614 冻结 pin，与 `eval/capability/baselines.json#F_env.prefix.sha256` 同值）。

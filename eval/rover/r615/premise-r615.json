@@ -1,0 +1,66 @@
+{
+ "rc": 0,
+ "attribution": "contract_face_structural",
+ "reads": {
+  "ac_chars": 392,
+  "ac_vocab": [
+   "delete_file",
+   "list_dir",
+   "read_file",
+   "run_command",
+   "write_file"
+  ],
+  "menu_vocab": [
+   "none",
+   "run",
+   "write_file"
+  ],
+  "menu_names": [
+   "none",
+   "run",
+   "write_file"
+  ],
+  "opt_out": true,
+  "intersect": [
+   "write_file"
+  ],
+  "only_in_block": [
+   "delete_file",
+   "list_dir",
+   "read_file",
+   "run_command"
+  ]
+ },
+ "frozen_reads": {
+  "runs": 17,
+  "declared_field_present": 0,
+  "plan_ge2": 17,
+  "plan_hist": {
+   "15": 3,
+   "7": 5,
+   "11": 2,
+   "10": 1,
+   "14": 3,
+   "12": 1,
+   "8": 1,
+   "16": 1
+  },
+  "rc_hist": {
+   "0": 4,
+   "8": 5,
+   "5": 8
+  },
+  "root": "/home/agentuser/.agentframework/harness/runs/r610"
+ },
+ "checks": {
+  "C1_vocab_not_menu": true,
+  "C2_explicit_opt_out": true,
+  "C3_orchestrated_but_zero_declared": true
+ },
+ "controls": {
+  "POS_opt_out_flips": true,
+  "NEG_empty_corpus": true,
+  "non_trivial": true
+ },
+ "claim": "J1=0 由契约面结构决定（可选 ∧ 显式豁免 ∧ 词表与管道菜单不同源），非「远端零遵守」"
+}

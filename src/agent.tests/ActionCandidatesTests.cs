@@ -113,6 +113,48 @@ public class ActionCandidatesTests
         Assert.Equal(0, ActionCandidates.Select(@"{""action_candidates"": {}}").Declared);
     }
 
+    // ---- R615：键到达面（present）与声明非空面（declared）**解耦** -------------------
+    [Fact]
+    public void R615_键到达_空数组算到达_非数组与缺字段不算()
+    {
+        // 正控：空数组合法 ⇒ Present=true 而 Declared=0（这正是 R614 结构性看不见的形态）
+        var empty = ActionCandidates.Select(@"{""schema_version"":""r1.0"",""action_candidates"":[]}");
+        Assert.True(empty.Present);
+        Assert.Equal(0, empty.Declared);
+        // 正控：有动作 ⇒ 两面同时成立
+        var full = ActionCandidates.Select(@"{""action_candidates"":[{""id"":""c1"",""tool"":""run_command"",""args"":{""command"":""ls""},""why"":""inspect""}]}");
+        Assert.True(full.Present);
+        Assert.Equal(1, full.Declared);
+        Assert.Equal(1, full.Accepted);
+        // 负控：缺字段 / 非数组 / 非 JSON / 空回复 ⇒ Present=false（不得把「没到达」读成「到达」）
+        Assert.False(ActionCandidates.Select(@"{""intent"":""code_task""}").Present);
+        Assert.False(ActionCandidates.Select(@"{""action_candidates"":{}}").Present);
+        Assert.False(ActionCandidates.Select("not json").Present);
+        Assert.False(ActionCandidates.Select("").Present);
+        // 轴关语义：Empty.Present 必须 false（否则轴关会凭空落 present 字段 ⇒ 破零回归）
+        Assert.False(ActionCandidates.Empty.Present);
+    }
+
+    [Fact]
+    public void R615_空数组到达_台账落present且declared面缺席()
+    {
+        var only = R1Transcript.Marker(new R1RunResult(0, "done", "r", "raw", R1CallStats.Empty,
+            15794, "sha", "tsha", null, 0, null, new List<StepOutcome>(),
+            ActionCandidatesPresent: true));
+        var json = only.Substring("R1_STATS ".Length);
+        using (var doc = JsonDocument.Parse(json))
+        {
+            Assert.True(doc.RootElement.TryGetProperty("action_candidates_present", out var pres));
+            Assert.Equal(1, pres.GetInt32());           // 空数组 ⇒ 到达=1，而 declared 字段缺席
+            Assert.False(doc.RootElement.TryGetProperty("action_candidates_declared", out _));
+        }
+        // 负控：Present=false 且 Declared=0 ⇒ 与旧标记逐字节同（present 与三字段全缺席）
+        var noKey = R1Transcript.Marker(new R1RunResult(0, "done", "r", "raw", R1CallStats.Empty,
+            15794, "sha", "tsha", null, 0, null, new List<StepOutcome>()));
+        Assert.DoesNotContain("action_candidates", noKey);
+        Assert.Equal(noKey, only.Replace(@",""action_candidates_present"":1", ""));
+    }
+
     [Fact]
     public void 轴解析_缺省开且显式关()
     {

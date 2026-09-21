@@ -28,9 +28,12 @@ def verbatim(s):
 
 
 PREFIX_V = verbatim(r1prompt.PREFIX)
+LEGACY_PREFIX_V = verbatim(r1prompt.PREFIX_LEGACY)
 SCHEMA_V = verbatim(contract.render_schema_text())
 SHA = r1prompt.prefix_sha()
 NCHARS = len(r1prompt.PREFIX)
+LEGACY_SHA = r1prompt.prefix_sha_legacy()
+LEGACY_NCHARS = len(r1prompt.PREFIX_LEGACY)
 
 # 生成期自检（fail-closed）：前缀里教的每个 <good_response> 必须**自己过契约** ——
 # 否则等于教模型一个非法形态（R536 实测：示例 #2 的 JSON 里内嵌未转义引号 ⇒ 根本不是合法 JSON）。
@@ -169,6 +172,70 @@ public static class StructuredPrompt
     public const int PrefixMinTokensForCache97 = 6704;
 
     public const string Prefix = __PREFIX__;
+    // ---- R615 单变量对照臂载体（轴关 = 旧行为**逐位等价**） -----------------------------
+    /// <summary>R610–R614 冻结块的**逐字节**副本（由 git show &lt;HEAD&gt;:tools/r1gen/r1prompt.py 派生，禁手抄）。
+    /// 环境开关 <c>AGENTFRAMEWORK_R1_ACTION_PROMPT=legacy</c> ⇒ 生效前缀 == 本常量 ⇒ 与 R614 冻结 pin 逐位同。</summary>
+    public const int PrefixLegacyChars = __LEGACY_NCHARS__;
+    public const string PrefixLegacySha256Pinned = "__LEGACY_SHA__";
+    public const string PrefixLegacy = __LEGACY_PREFIX__;
+
+    /// <summary>轴名（遥测/臂表用）。</summary>
+    public const string AxisEnvKey = "AGENTFRAMEWORK_R1_ACTION_PROMPT";
+
+    /// <summary>轴取值判定（**纯函数**，便于无 env 污染的臂对称单测）。仅 "legacy"（大小写/空白不敏感）⇒ 旧块。</summary>
+    public static bool IsLegacyValue(string? v)
+    {
+        return v is not null && v.Trim().ToLowerInvariant() == "legacy";
+    }
+
+    /// <summary>生效前缀：缺省 = 新块；显式 legacy = 旧块（逐位 = R614）。</summary>
+    public static string EffectivePrefix()
+    {
+        return PrefixFor(IsLegacyValue(System.Environment.GetEnvironmentVariable(AxisEnvKey)));
+    }
+
+    public static string PrefixFor(bool legacy)
+    {
+        return legacy ? PrefixLegacy : Prefix;
+    }
+
+    /// <summary>生效前缀的钉子字符数 / sha256（供 R1Pipeline 的 fail-closed 漂移闸用）。</summary>
+    public static int EffectiveChars()
+    {
+        return CharsFor(IsLegacyValue(System.Environment.GetEnvironmentVariable(AxisEnvKey)));
+    }
+
+    public static int CharsFor(bool legacy)
+    {
+        return legacy ? PrefixLegacyChars : PrefixChars;
+    }
+
+    public static string EffectiveSha256Pinned()
+    {
+        return Sha256PinnedFor(IsLegacyValue(System.Environment.GetEnvironmentVariable(AxisEnvKey)));
+    }
+
+    public static string Sha256PinnedFor(bool legacy)
+    {
+        return legacy ? PrefixLegacySha256Pinned : PrefixSha256Pinned;
+    }
+
+    public static string EffectiveSha256()
+    {
+        return Sha256Of(EffectivePrefix());
+    }
+
+    public static string Sha256Of(string text)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(text));
+        var sb = new StringBuilder(64);
+        foreach (var b in bytes)
+        {
+            sb.Append(b.ToString("x2"));
+        }
+        return sb.ToString();
+    }
+
 
     public static string PrefixSha256()
     {
@@ -260,7 +327,7 @@ public static class StructuredPrompt
             + "它只证明公开输入/输出契约被满足, **不能**据以收尾或宣称完成; 剩余缺口以下列**执行器实测**证据为准。";
     }
 }
-""".replace("__NCHARS__", str(NCHARS)).replace("__SHA__", SHA).replace("__PREFIX__", PREFIX_V)
+""".replace("__NCHARS__", str(NCHARS)).replace("__SHA__", SHA).replace("__PREFIX__", PREFIX_V).replace("__LEGACY_NCHARS__", str(LEGACY_NCHARS)).replace("__LEGACY_SHA__", LEGACY_SHA).replace("__LEGACY_PREFIX__", LEGACY_PREFIX_V)
 
 FILES["StructuredContract.cs"] = """using System.Collections.Generic;
 using System.Text.Json;
