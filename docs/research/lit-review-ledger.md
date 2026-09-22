@@ -628,3 +628,30 @@ Semantic Scholar 无 key ⇒ `HTTP 429` ⇒ 引用数**不可用**，如实记�
 - 口径诚实：第 3 行数字（82.6%/74.8%）是**他仓夹具**的突变分，**禁**直引为本仓结论；本仓无突变分读数 ⇒ 该列只作「公开面是上界」的旁证。
 
 **轮小结**：arXiv query 3/3 · 全文抓取 0 · 采信 **3 条（候选 2 + 旁证 1）** · 证伪 0 · 顺延 0 ⇒ **连续 0 采信计数归零**（保持常规频率，不降频）。
+
+
+## R634 追加（2026-09-22 · 主线对照轮 R634 · arXiv query 2/3 · 全文抓取 0 · 摘要 API 1 次）
+
+### L-adopted-6【候选·机制采信】黑箱「输出等价」判据在**构造上**对某类缺陷不可见 ⇒ 判据面须按**缺陷类**匹配
+
+| 列 | 内容 |
+|---|---|
+| 日期 | 2026-09-22 |
+| 检索式 | `"hidden test coverage" oracle`（首条无关，见下注）；`"test oracle" reference implementation failures`（cs.SE，结果面松散）|
+| 出处（含版本） | arXiv:2609.24230v1（2026-09-21 提交；20 页；`comment` = "Companion paper to arXiv:2609.13839"；**journal-ref 空 ⇒ 纯预印本，无同行评审记录**；采集日 2026-09-22） |
+| 逐字引文 | "Roughly 28% of merged Qiskit transpiler bug-fixes (95% Wilson CI 19-40%) repair a fault that corrupts layout metadata, global phase, or run-to-run reproducibility while output stays correct: invisible to a black-box output-equivalence oracle by construction."（≤2 句；取自 arXiv API `summary`；**未取全文**） |
+| 机制假设 | 单一「黑箱输出等价」判据（本仓 = `ok = rc==0 ∧ stdout==expected`）**按构造**漏掉下述缺陷类：① 元数据/结构面被改坏 ② 逐次可复现性（run-to-run determinism）失效 ③ 产物在盘性/完整性。对策 = **fault-class-matched 判据家族**（每类一条独立通道），而非把黑箱判据调严。 |
+| 改哪一格 KPI | 质量（回复质量列的口径完备性）· 方向 = 判据面**加通道**而非**调阈值**；不预期 tokens/命中率变化 |
+| 单变量轴 + 判据 | 轴 = 「逐用例 stdout 判据面」vs「独立重放一致性通道」**并列**（非同源 oracle）；判据 = 同批**冻结快照**两次独立重放**逐条同数**（差异 0）∧ 通道能区分「产物树挂死」与「判错」（前者判 VOID/缺席、后者判 FAIL）。可证伪点 = 出现「逐条同数但产物结构不同」或「挂死被读成判错」。 |
+| 状态 | **候选**（机制采信；本轮**未**按预注册单变量实施 —— 禁新增夹具 ∧ 无放行） |
+
+**本仓现状（代码证据）**：
+- 判分器 = 黑箱输出等价：`eval/rover/r610/cases/run_cases_r521.py`（`ok = returncode==0 ∧ stdout==expected`）⇒ 上表第①②③类**均不在**该判据面内。
+- **旁证（本轮已落地的事实对齐）**：R634 事后复算件 `eval/rover/r634/codex_stdout_first_r634.py` 对同一批冻结快照做**独立重放**（12 棵树）⇒ 与冻结判分器**逐条同数**（w228 58/58/58/49 · w229 56/53/58/50 · w230 58/55/53/44）⇒ 「重放一致性通道」在本仓**已可产出读数**（但**非**预注册判据，只作旁证）。
+- ③ 产物完整性：本仓已有**独立通道**（R633 E1 的 VOID 判定：`cli_rc=124 ∧ 58/58 同质 TimeoutExpired`）⇒ 该缺陷类**已有**承载体，非缺口。
+- **真缺口 = ② 逐次可复现性**：`git grep -n "determinis\|byte_identical\|reproducib" -- eval/rover/r634 eval/rover/r633` 零命中（同批冻结件的**两次独立重放**目前只在 `codex_stdout_first_*` 里以「计数同数」形态出现，无 sha/逐字节维度的轮级登记）。
+- 口径诚实：28%（95% CI 19–40%）是**他仓**（Qiskit 编译器）读数，**禁**直引为本仓结论；本仓无对应统计。
+
+**注（检索面）**：本轮 2 个检索式均返回「Found N results」极大值（10,208 / 280,567）且 top-6 **逐条读标题/摘要后大多无关** ⇒ 依「结果数不是判据」纪律，采信仅取 API 精取件（`id_list`）的摘要，非检索 top 结果。
+
+**轮小结**：arXiv query 2/3 · 全文抓取 0 · 摘要 API 1 · 候选 **1**（含旁证 1 条）· 采信作机制 **0**（未改 KPI ⇒ 不得记已实施）· 证伪 0 · 顺延 0。**连续 0 采信计数 = 1**（未达 3 ⇒ 不降频）。

@@ -1,0 +1,51 @@
+{
+ "EQUAL": {
+  "state": "PASS",
+  "D": [
+   0,
+   0,
+   0
+  ],
+  "valid": 3,
+  "expect": true
+ },
+ "WORSE_BY_3": {
+  "state": "不达",
+  "D": [
+   -3,
+   -3,
+   -3
+  ],
+  "valid": 3,
+  "expect": true
+ },
+ "MISSING_TRUTH": {
+  "state": "NO_RESOLUTION",
+  "valid": 0,
+  "expect": true
+ },
+ "TRUTH_SELF_FAIL_NOW_VALID": {
+  "state": "PASS",
+  "valid": 3,
+  "unreliable": [],
+  "self_failed": {
+   "C1": 1
+  },
+  "expect": true
+ },
+ "TRUTH_VOID": {
+  "state": "PASS",
+  "valid": 2,
+  "unreliable": [
+   "w229"
+  ],
+  "expect": true
+ },
+ "ANCHOR": {
+  "bad_rejected": true,
+  "good_accepted": true,
+  "expect": true
+ },
+ "all_ok": true,
+ "rc": 0
+}
