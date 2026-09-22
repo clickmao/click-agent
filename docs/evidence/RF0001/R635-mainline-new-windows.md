@@ -54,3 +54,4 @@ python3 eval/capability/status_gen.py --check
 6. 真值非硬上限：w233 真值自败 2 例单列；`unreliable_policy` **只对本轮声明之后产生的窗生效（拒绝追溯）** ⇒ R634 及更早判决不翻案、不改写。
 7. wythoff 族为 R621/R622 登记的**承重缺口**；本轮**只复现、未做机制归因**（测量轮无产品改动）⇒ 不沿用旧结论定因。
 8. 三档终局目标读数（32 ms / 快 50× / −95% / −85~91%）本轮**不动不宣称**（终局目标，非本仓已达标读数）。
+9. **`roundcheck audit --round R635` = FAIL=4 / WARN=1，与 R634 逐项同形同一清单**（R4 pin 为检查器口径缺陷：`artifact_sha12=null` 经 `str()` 变 `"None"` 被当声明值 ⇒ live 行必红；R6 归档轮裸计数；R8 要求实盘 build 读数；R11 基线条目过期于 R625；R9 提交后空暂存面 WARN）⇒ **本轮未引入任何 audit 失败项**（与 R634 差额 0）；收口判据仍以 `status_gen --check` PASS + 形式门禁 14/14 为准。
