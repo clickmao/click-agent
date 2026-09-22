@@ -1,0 +1,12 @@
+FAIL hooks.pre-commit             rc=1 substr=True nc=[1] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+    ['        before version=content-sha12:28770b831e52 instrument_sha12=28770b831e52', '        after  version=content-sha12:67fba76283b7 instrument_sha12=67fba76283b7', 'DECL_SWEEP=DRIFT (只读模式; 加 --apply 才刷新 —— 判据未放宽, 只是把声明补齐)']
+PASS bind_evidence.check          rc=0 substr=True nc=[0] l2={'version': 'ok', 'instrument_sha12': 'ok', 'input_surface': 'ok:dynamic_corpus', 'input_fingerprint': 'ok(n=0)', 'kpi_quad': 'ok'}
+SIDE-EFFECT(pre-existing, 不判红): 874 条窗内内容未变
+  census(仓内 cwd, 信息项): pid=3116883 cwd=. cmd=/home/agentuser/.hermes/hermes-agent/venv/bin/python /tmp/hermes_kerne
+  census(仓内 cwd, 信息项): pid=3129343 cwd=. cmd=/usr/bin/bash -c source /home/agentuser/.hermes/cache/terminal/hermes-
+  census(仓内 cwd, 信息项): pid=3129345 cwd=. cmd=timeout 900 python3 eval/capability/instruments_check.py --only hooks.
+MEMBER-CLASS: informational=['bind_evidence.check'] (why={'bind_evidence.check': 'self-referential-tree-state'}) 通过 1/1; 可判据面 0/1 通过
+FACE_OUTPUTS_DECLARED n=22 eval/capability/exp1-q38/archive_dir_nodes_q38.json,eval/capability/exp1-q38/bind_evidence_tail_selftest_q38.json,eval/capability/instruments-check-class-info-only.json,eval/capability/instruments-check-class-info-only.runtime.json,eval/capability/instruments-check-class-mixed.json,eval/capability/instruments-check-class-mixed.runtime.json,eval/capability/instruments-check-drift.json,eval/capability/instruments-check-drift.runtime.json,eval/capability/instruments-check-nc-notapplied.json,eval/capability/instruments-check-nc-notapplied.runtime.json,eval/capability/instruments-check-scoped.json,eval/capability/instruments-check-scoped.runtime.json,eval/capability/instruments-check-surface-claim.json,eval/capability/instruments-check-surface-claim.runtime.json,eval/capability/instruments-check-surface-unknown.json,eval/capability/instruments-check-surface-unknown.runtime.json,eval/capability/instruments-check.json,eval/capability/instruments-check.runtime.json,eval/rover/r444/precheck-prefilter.json,eval/rover/r444/precheck-prefilter.runtime.json,eval/rover/r444/runs/precheck-prefilter.neg.json,eval/rover/r444/runs/precheck-prefilter.neg.runtime.json
+CANON-SPLIT: face_scoped_q43.json sha12=2104816a58f0 bytes=78075; 运行期字段 → face_scoped_q43.runtime.json
+
+L2 器具验收面[scoped]: 可判据 0/1 通过 · 信息项 1/1 (信息项=自指成员, 真值由面外独立轮核验) · 落盘 eval/capability/exp1-q43/face_scoped_q43.json

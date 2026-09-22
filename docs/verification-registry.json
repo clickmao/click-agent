@@ -1833,11 +1833,11 @@
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
     "pin_kind": "semantic-projection",
-    "artifact_sha12": "dda66b65ded0",
+    "artifact_sha12": "1ac6dfbeaf0d",
     "instrument": "eval/capability/instruments_check.py",
     "instrument_sha12": "37c09c2e7fa9",
     "binding": "audit-pin",
-    "audited_by_round": "R516"
+    "audited_by_round": "R638"
    },
    "negative_control": "每条器具必带 nc_cmd 且必须非零; 缺负控的器具不许进面",
    "covers": [
@@ -5336,9 +5336,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "18e5f2fc9133",
     "instrument": "eval/capability/exp1-q42/verify_replay_archive_q42.py",
-    "instrument_sha12": "7ec62e1cfc8c",
+    "instrument_sha12": "76639858271b",
     "binding": "audit-pin",
-    "audited_by_round": "EXP1-Q42"
+    "audited_by_round": "R638"
    },
    "negative_control": "证据件形态本身的负控: `replay_q41_scopeA_classified.json` 含 HEAD 相关字段 (`head_ct`/`post_contract_window.*`) ⇒ 重跑**字节必变** (实测 sha 由 c6dbd4d1 变 48f65d03) ⇒ 该件**不得作冻结 pin** (否则下轮必报 FROZEN_EVIDENCE_DRIFT), 证据改取输入不变归档 + 确定性校验器 (V6 同输入重算两遍字节相同)。回放器自身缺陷的负控留痕: D1 违规列表**截断归档** (首版 `viol[:20]` ⇒ 报 37 而归档 20, 分类器静默在子集上工作; 修后全量归档, V2 断言总体不缩小); D2 「下一次触碰」**方向反** (`--skip=1` 逆序 ⇒ 取到上一次; 修后 `--reverse` 全序定位 index∓1); D3 写侧运行时探针 **VOID** (scratch 与源逐字节相同 ⇒ 写入器根本没写, 靠守恒断言抓到) ⇒ 写侧结论改由静态派生承担。",
    "covers": [
@@ -5409,11 +5409,11 @@
     "evidence_kind": "artifact",
     "pin_status": "frozen",
     "pin_reason": "archived-per-round",
-    "artifact_sha12": "28770b831e52",
+    "artifact_sha12": "67fba76283b7",
     "instrument": "eval/rover/r507pre/selfcheck_r507.py",
     "instrument_sha12": "75b0a35bf809",
     "binding": "audit-pin",
-    "audited_by_round": "R507"
+    "audited_by_round": "R638"
    },
    "negative_control": "成对: ① 正控 —— 两侧同为好码 ⇒ 必须**绿**(`EXECUTABLE_AND_CORRECT=True`, 两次跑逐字节同); 若恒红 ⇒ `NC_HOLLOW` 弃权。② 注入缺陷必红且**点名**(9 例): 错值(用例 0/3) / 语法错(抽取层救回前缀⇒按运行结果判红) / 运行即崩(rc≠0) / 死循环(超时 rc=124) / 缺输入(rc=3 fail-closed) / 产物缺失(`no_code`, 不冒充通过) / 非程序题(not-applicable) / 相对路径 reply ⇒ 判 no_code(自捕空心 NC, 已改绝对路径)。③ 真读数复算: R503 `vm_run` 8/12 / R504 `wythoff` 10/13 被点名 ⇒ 判**未可验收**, 证明该器对真数据有判别力",
    "covers": [
@@ -8028,6 +8028,38 @@
    ],
    "negative_control": "成对/负向控制（现场执行，读数入 `verdict-r637.json` / `family-lift-r637-selftest.json` / `out/negctl-r637.json` / `out/minfix-r637.json`）：① **独立 oracle 正控**：15/15（判据器有牙的前提，不绿则整轮弃权）。② **变异负控三件成对**：同字节空重写 ⇒ 目标族仍 `0/15`（**非「凡改即绿」**）∧ 替换为独立 oracle 实现 ⇒ `15/15` 全 OK（探针**可转绿**）∧ 恒 LOSE ⇒ `4/15`（必被大量判红）。③ **最小修复实验的成对控制（最承重）**：目标族 `0/n → n/n` ∧ 其它三族**逐例逐字节不变** ∧ 空重写负控仍 `0/n` ⇒ 缺陷归因到**被改那一行**（排除「凡改即绿」与管道面）。④ **新判据两侧有牙**：S2 单跑次整族归零 ⇒ 最差式 FAIL 而**中位式 PASS**（空心闸两侧成对）∧ S5 未跨阈 ⇒ PASS（非恒红）∧ S4 全族一致落后 ⇒ FAIL（非恒绿）∧ S3 同数据旁路本判据 ⇒ 聚合口径判过（判决来自判据，不来自数据）。⑤ **确定性 ×2**：5/5 整族归零跑次逐例逐字节相同（非常数输出冒充——同族跨族读数互异由 `probe-coldset` 四变类分布证）。⑥ **VOID 前置剔除**：`cli_rc=124` 挂死跑次先剔除并单列，否则「挂死」被读成「整族归零」。⑦ **锚点缺失 fail-closed**：最小修复实验的锚点替换次数 != 1 ⇒ `ANCHOR_MISS` 且 rc=2（**不静默跳过、不静默判过**）。",
    "note": "轮次工件: eval/rover/r637/{prereg-r637.json, dag-r637.md, attrib_r637.py, minfix_r637.py, family_lift_r637.py, family-lift-r637-selftest.json, verdict-r637.json, report-r637.md} + out/{percase-r637.json, percase-r637-partial.json, probe-coldset-r637.json, negctl-r637.json, minfix-r637.json, attrib-run.log} + evidence/。自捕 **1 条**（J5-N4 锚点写死 ⇒ `applied=false`；补救件单列，**判据不翻案**）。跳步「构建/AOT」（零 `src/` 改动 ⇒ 无新二进制可构建）。跳步「产品侧最小改动」（轮性质 = 只读定因 ⇒ 预注册自陈零产品改动，净产品改动 0）。跨轮禁相减：R634（rc=1）/ R635（rc=1）/ R636（rc=1）/ 本轮（rc=1）**只并列**。基线引用: eval/capability/kpi.jsonl 行 R637 带 `baselines` id 列表（RF0004 §4.1 引用义务）；新增基准条目 `F_merge.quality.family_lift_min`（kind=instrument_criterion）。推送暂停令在效：只本地 commit，无 push / 无镜像 / 无 gh api 写。"
+  },
+  {
+   "id": "r638.exp1q43-face-health-triage",
+   "level": "L3",
+   "owner_round": "R638",
+   "capability": "EXP1-Q43 卫生/器具轮：**器具面红项三态归属**（self / foreign / pre_existing）+ **冻结 pin 定向重审**。零产品源码改动 / 零新臂 / 零远端 / 零新增夹具语义。真机全量面读数 = **可判据 19/29 通过**（信息项 2/2 单列，31 器 / 68 命令），落盘 `eval/capability/instruments-check.json`；与仓内最近登记读数（R516 时代 27/29）**不可相减，只做逐条差集**。归属：**self 4 条**（两件 Q42 器具加负控臂未刷绑定 ⇒ `hooks.pre-commit` / `bind_evidence.check`；全量面重写其语义投影件 ⇒ `r444.instrument-acceptance`；面输出污染 ⇒ `exp1q31.stage-guard-hook`）已修；**foreign 1 条**（`external.contrast-exec-precondition` 冻结 pin 滞后于 R631 器具改动 `af9bb7ae`）定向 repin，`pin_status` 保持 `frozen`、只刷 `artifact_sha12` `28770b831e52→67fba76283b7`（3 次独立重跑同字节 ⇒ 确定性）；**pre_existing 6 条**逐条点名结转（`exp1q31.cap-headroom` / `exp1q38.dir-node-archive` / `r444.prefilter-precheck` / `r444.analyze` / `r446.judge-precheck` / `exp1q2.docref-selftest`）另加 `external.contrast-interaction-kpi` 声明字段异常。AN.11 候选结论：#6 两器入面（31→33）**被面自身容量闸否决**（`P2 余量不足: soft_cap/log_bytes=1.318 < K_MIN=2.00 ⇒ 扩面前先复测并抬阈值`）⇒ 登记行不落盘；#1 序列化形态统一**预注册被证伪**（606 件含 `indent=1`，其中活通路 8 件 ≠ 0）⇒ 零改动；#5 产物件尾 LF **结转**（R481 以来新增 253 件，220 件缺尾 LF = 87.0%）。",
+   "evidence_cmd": "python3 eval/capability/instruments_check.py && python3 eval/capability/instruments_check.py --only hooks.pre-commit --out eval/capability/exp1-q43/face_scoped2_q43.json && python3 eval/capability/instruments_check.py --only exp1q31.cap-headroom,exp1q31.stage-guard-hook,exp1q38.dir-node-archive,external.contrast-exec-precondition,external.contrast-interaction-kpi --out eval/capability/exp1-q43/face_scoped3_q43.json && python3 eval/capability/exp1-q43/census_q43.py && python3 eval/capability/bind_evidence.py --check && python3 eval/capability/exp1-q42/verify_replay_archive_q42.py --neg-control && python3 eval/capability/exp1-q42/nc_prestate_q42.py --neg-control",
+   "evidence_path": "docs/evidence/RF0001/R638-exp1q43-face-health.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/capability/exp1-q43/census_q43.py",
+    "instrument_sha12": "fe4a32ad4a0e",
+    "binding": "audit-pin",
+    "audited_by_round": "R638"
+   },
+   "covers": [
+    "eval/capability/exp1-q43/dag-r638.md",
+    "eval/capability/exp1-q43/prereg_q43.json",
+    "eval/capability/exp1-q43/census_q43.py",
+    "eval/capability/exp1-q43/census_q43.json",
+    "eval/capability/exp1-q43/face_before_q43.txt",
+    "eval/capability/exp1-q43/face_scoped2_q43.json",
+    "eval/capability/exp1-q43/face_scoped3_q43.json",
+    "eval/capability/exp1-q43/formgate_q43b.txt",
+    "eval/capability/exp1-q42/verify_replay_archive_q42.py",
+    "eval/capability/exp1-q42/nc_prestate_q42.py"
+   ],
+   "negative_control": "成对/负向控制（现场执行，读数入 `face_scoped2_q43.json` / `face_scoped3_q43.json` / `census_q43.json`）：① **两件新器具的有牙负控**：`verify_replay_archive_q42.py --neg-control` 只篡改 V1 依赖的输入（一条违规行的原因码）⇒ rc=**2** 且 `red_checks=['V1_scopeA_single_reason_no_false_positive']`；`nc_prestate_q42.py --neg-control` 把对照物换成浮动 `HEAD` ⇒ rc=**2** 且 `red_checks` ⊇ `{N1_pre_sha_is_ancestor_and_differs}`。二者**未捕获时退 0**（⇒ 面侧 `nc_expect:nonzero` 判红）⇒ 非空心。② **面级成对**：`hooks.pre-commit` 修前 rc=1 → 修后 rc=0（同一命令、同一树态差集只有声明）；`bind_evidence --check` 违规 2 → 0。③ **确定性**：`external.contrast-exec-precondition` 的冻结件 3 次独立重跑 sha12 同为 `67fba76283b7`（`repin_preview_q43.txt`）。④ **归属控制**：`self` 只在单轮动作时间线内成立；`foreign` 钉不可变提交号 `af9bb7ae`（HEAD 祖先）；其余记 `pre_existing` 且逐条点名，未用「红数下降」掩盖。",
+   "note": "轮次工件: eval/capability/exp1-q43/{dag-r638.md, prereg_q43.json, census_q43.py, census_q43.json, face_before_q43.txt, face_scoped_q43.json, face_scoped_q43.txt, face_scoped2_q43.json, face_scoped2_q43.txt, face_scoped3_q43.json, face_scoped3_q43.txt, formgate_q43.txt, formgate_q43b.txt, regtest_q43.txt, bind_check_before_q43.txt, bind_check_after_q43.txt, bind_apply_q43.txt, repin_preview_q43.txt, repin_apply_q43.txt, append_rows_q43.py} + eval/capability/exp1-q42/{verify_replay_archive_q42.py, nc_prestate_q42.py}（加 `--neg-control`） + docs/evidence/RF0001/R638-exp1q43-face-health.md + 计划面 AN.12/AN.13 + 文献台账 §35。诚实边界: 面读数取自**脏工作区**（83 件历史未跟踪件在场）⇒ 与干净态不可直接比；`cap-headroom` 的 log_bytes（76.4 MB）构成**未定因**；两件新器具登记行**未落盘**（扩面受闸）；零 src/ 改动 ⇒ 无能力分数、无 kpi.jsonl 行（与 Q39–Q41 同例）；未 push（推送暂停令）。"
   }
  ],
  "aot_check_policy": "release_tag_only",

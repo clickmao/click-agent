@@ -29,8 +29,11 @@ def git(*a):
 
 
 def main():
+    neg = '--neg-control' in sys.argv
     checks, detail = {}, {}
-    pre = git('show', '%s:%s' % (PRE_SHA, REL))
+    # EXP1-Q43 入面负控: 把**对照物**从钉死的提交号换成浮动 `HEAD` ⇒ N1 必须转红
+    # （这正是 R-Q40 的教训: 「前态锚禁写 HEAD」，写 HEAD 在修复被提交后静默失效）。
+    pre = git('show', '%s:%s' % ('HEAD' if neg else PRE_SHA, REL))
     if pre.returncode != 0:
         print('ENV: 取前态字节失败 rc=%d (%s) ⇒ 弃权' % (pre.returncode, PRE_SHA))
         return 3
@@ -75,6 +78,13 @@ def main():
     ok = all(checks.values())
     payload = {'round': 'EXP1-Q42', 'schema': 'nc-prestate-q42/1', 'checks': checks,
                'detail': detail, 'verdict': 'PASS' if ok else 'FAIL'}
+    if neg:
+        # 负控臂: 不写 OUT（面跑侧写 = 副作用）。篡改被捕获才退非零，否则退 0 ⇒ 面判红。
+        red = sorted([k for k, v in checks.items() if not v])
+        caught = (payload['verdict'] == 'FAIL' and 'N1_pre_sha_is_ancestor_and_differs' in red)
+        print('NC_TAMPER=pre_sha->HEAD red_checks=%s' % (red,))
+        print('NC_DETECTED' if caught else 'NC_HOLLOW: HEAD 与前态不可分 ⇒ N1 是恒真门')
+        return 2 if caught else 0
     OUT.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     for k in sorted(checks):
         print('%-46s %s' % (k, 'PASS' if checks[k] else 'FAIL'))

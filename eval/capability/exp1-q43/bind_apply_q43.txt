@@ -1,0 +1,16 @@
+AUDITED_BY_ROUND=R638
+TAIL_CONTRACT=R481-tail-lf registry_tail=LF
+NONCANONICAL_INPUT=0 reason=none (input=docs/verification-registry.json; 契约=R481-tail-lf = 登记表 JSON 尾须为 LF; 缺 LF ⇒ 本次写盘补 1 B, 语义零变化)
+ONLY_SCOPE=n=2 exp1q41.tail-lf-replay-falsepositive-zero,r444.instrument-acceptance
+SER_ASSERT=OK (indent=1, ensure_ascii=False, tail=LF — 形态由现盘反解)
+WRITE_READBACK=OK
+SCOPE=only(n=2)
+COVERED 2 -> 2 (scope); 全表 COVERED=259
+UNCHANGED=0 / TOUCHED=2 (scope)
+4	4	docs/verification-registry.json
+PIN_KIND_SEMANTIC_PROJECTION=1
+CHECKED_WITH_FIELD=2
+DIST_SCOPE=only(n=2) —— 与全表口径分布不可比
+  dist artifact     frozen archived-per-round     x2
+FROZEN_EVIDENCE_DRIFT=0 (归档自洽 ∧ 工作区漂移; 可见项, 不判红)
+R2E_R2F_EXIT=0

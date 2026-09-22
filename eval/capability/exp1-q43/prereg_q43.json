@@ -1,0 +1,46 @@
+{
+  "round": "R638",
+  "plan_item": "EXP1-Q43",
+  "parent_plan": "docs/plans/v0.22.0-exp1-local-index-and-code-graph.md (AN.11 下轮候选)",
+  "written_before_any_measurement": true,
+  "ordering_note": "预注册之前已发生的**触发探测**读数（非本轮判据）: ① `verify_replay_archive_q42.py` 单跑 VERDICT=PASS rc=0; ② `nc_prestate_q42.py` 单跑 VERDICT=PASS rc=0。二者仅用于确认器具可运行，面内读数（M1）在预注册之后取。",
+  "zero_product_code_change": true,
+  "skip_declarations": [
+    "跳步「构建/AOT」 零 src/ 改动 ⇒ 无新二进制可构建（承 Q37–Q42 同例）",
+    "跳步「产品侧最小改动」 轮性质 = 器具面登记 + 只读普查, 预注册自陈 ⇒ 无单变量轴"
+  ],
+  "criteria": {
+    "M1": {
+      "claim": "候选#6: 两件 Q42 器具登记进 L2 器具面, 器具数 31 → 33, 且新两行**有牙**",
+      "threshold": "新两行 `cmd` rc == expect_rc ∧ `expect_substr` 命中; 新增 `nc_cmd` 实跑**非零**(或以 detect: 形态判红) ⇒ 负控有牙; 其余 31 行逐行读数与基线面一致(零回归)",
+      "falsify": "任一新行 rc 或 substr 不符 ⇒ M1 FAIL; 负控 rc=0 ⇒ 「有牙」证伪 ⇒ M1 FAIL"
+    },
+    "M2": {
+      "claim": "形式门禁",
+      "threshold": "`dotnet test --filter VerificationForm|SkillGeneralization|DevPlanDocRef` Failed=0 ∧ rc=0",
+      "falsify": "任一 Failed>0 ⇒ M2 FAIL"
+    },
+    "M3": {
+      "claim": "候选#1 序列化形态统一(indent=1 vs 2)的收益判定",
+      "threshold": "活通路件数(被当前 tools/ 或 cron 引用者) == 0 ⇒ 该统一**零功能增益** ⇒ 收窄关闭(只留普查读数与重开条件)",
+      "falsify": "活通路件数 > 0 ⇒ 收窄被证伪 ⇒ 必须开独立预注册轮(不得本轮顺手改)"
+    },
+    "M4": {
+      "claim": "候选#5 产物件缺尾 LF 的**写入器缺口是否仍在产**",
+      "threshold": "自 R481(尾契约闸入册)起**新增**的产物件(.json/.jsonl)中缺尾 LF 数 == 0 ⇒ 写入器缺口已闭合 ⇒ 候选关闭; >0 ⇒ 点名文件并结转",
+      "falsify": "无"
+    },
+    "M5": {
+      "claim": "台账/登记一致",
+      "threshold": "`bind_evidence --check` rc=0 ∧ `decl_sweep --check` rc=0",
+      "falsify": "任一 rc≠0 ⇒ M5 FAIL"
+    },
+    "M6": {
+      "claim": "收口判据(RF0005 §2 ④)",
+      "threshold": "`python3 eval/capability/status_gen.py --check` 判 PASS (违规 0 / 基准漂移 0 / 缺源 0)",
+      "falsify": "非 PASS ⇒ 不得 commit"
+    }
+  },
+  "arm_table_note": "本轮为器具/登记轮: 无被测臂 ⇒ 不写 kpi.jsonl(与 Q39–Q41 同例); 面读数落 eval/capability/exp1-q43/ 与计划文档。",
+  "push": "推送暂停令在效: 只允许本地 commit"
+}

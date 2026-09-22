@@ -31,9 +31,16 @@ def sha16(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()[:16]
 
 
-def build():
+def build(neg=False):
     A = json.loads(ARCH_A.read_text(encoding='utf-8'))
     B = json.loads(ARCH_B.read_text(encoding='utf-8'))
+    if neg:
+        # EXP1-Q43 入面负控: 只篡改 **V1 依赖的输入**（把一条违规行的原因码换成
+        # 「合法但含标记」的伪原因码）⇒ V1 必须转红。只动 V1 的输入、不越界动其它检查，
+        # 以证明「V1 有牙」而不是「整件被弄坏」（后者会让负控变成恒真）。
+        rows0 = A.get('violation_rows') or []
+        if rows0:
+            rows0[0]['why'] = 'false_positive_marker_present'
     rows = A['violation_rows']
     why = sorted({r['why'] for r in rows})
     tgt = set(A.get('targets') or [])
@@ -82,6 +89,16 @@ def main():
     if not (ARCH_A.exists() and ARCH_B.exists()):
         print('ENV: 归档缺失 ⇒ 弃权 (rc=3)')
         return 3
+    if '--neg-control' in sys.argv:
+        # EXP1-Q43 入面负控臂: 不写 OUT（面跑侧写 = 副作用）。语义 = 篡改**被捕获**才退非零；
+        # 篡改未被判红 ⇒ 退 0 ⇒ 面侧 `nc_expect:nonzero` 判红（负控不可空心）。
+        np_ = build(neg=True)
+        red = sorted([k for k, v in np_['checks'].items() if not v])
+        caught = (np_['verdict'] == 'FAIL'
+                  and red == ['V1_scopeA_single_reason_no_false_positive'])
+        print('NC_TAMPER=V1_reason_code red_checks=%s' % (red,))
+        print('NC_DETECTED' if caught else 'NC_HOLLOW: 篡改未被判红 ⇒ V1 是空心门')
+        return 2 if caught else 0
     p1 = build()
     p2 = build()
     det = json.dumps(p1, ensure_ascii=False, indent=1, sort_keys=True) == json.dumps(p2, ensure_ascii=False,

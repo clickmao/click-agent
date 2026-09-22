@@ -1,0 +1,15 @@
+AUDITED_BY_ROUND=R473
+TAIL_CONTRACT=R481-tail-lf registry_tail=LF
+NONCANONICAL_INPUT=0 reason=none (input=docs/verification-registry.json; 契约=R481-tail-lf = 登记表 JSON 尾须为 LF; 缺 LF ⇒ 本次写盘补 1 B, 语义零变化)
+PIN_KIND_SEMANTIC_PROJECTION=1
+CHECKED_WITH_FIELD=259
+  dist artifact     frozen archived-per-round     x204
+  dist artifact     live   append-only-ledger     x1
+  dist artifact     live   archived-per-round     x14
+  dist artifact     live   self-derived           x1
+  dist artifact     live   worktree-only          x29
+  dist directory    frozen archived-per-round     x7
+  dist self-derived live   self-derived           x3
+FROZEN_EVIDENCE_DRIFT=1 (归档自洽 ∧ 工作区漂移; 可见项, 不判红)
+  FROZEN_DRIFT external.contrast-exec-precondition kind=artifact pin=28770b831e52 disk=67fba76283b7
+R2E_R2F_EXIT=0
