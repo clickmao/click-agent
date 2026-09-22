@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R637",
+ "updated_round": "R639",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -8060,6 +8060,48 @@
    ],
    "negative_control": "成对/负向控制（现场执行，读数入 `face_scoped2_q43.json` / `face_scoped3_q43.json` / `census_q43.json`）：① **两件新器具的有牙负控**：`verify_replay_archive_q42.py --neg-control` 只篡改 V1 依赖的输入（一条违规行的原因码）⇒ rc=**2** 且 `red_checks=['V1_scopeA_single_reason_no_false_positive']`；`nc_prestate_q42.py --neg-control` 把对照物换成浮动 `HEAD` ⇒ rc=**2** 且 `red_checks` ⊇ `{N1_pre_sha_is_ancestor_and_differs}`。二者**未捕获时退 0**（⇒ 面侧 `nc_expect:nonzero` 判红）⇒ 非空心。② **面级成对**：`hooks.pre-commit` 修前 rc=1 → 修后 rc=0（同一命令、同一树态差集只有声明）；`bind_evidence --check` 违规 2 → 0。③ **确定性**：`external.contrast-exec-precondition` 的冻结件 3 次独立重跑 sha12 同为 `67fba76283b7`（`repin_preview_q43.txt`）。④ **归属控制**：`self` 只在单轮动作时间线内成立；`foreign` 钉不可变提交号 `af9bb7ae`（HEAD 祖先）；其余记 `pre_existing` 且逐条点名，未用「红数下降」掩盖。",
    "note": "轮次工件: eval/capability/exp1-q43/{dag-r638.md, prereg_q43.json, census_q43.py, census_q43.json, face_before_q43.txt, face_scoped_q43.json, face_scoped_q43.txt, face_scoped2_q43.json, face_scoped2_q43.txt, face_scoped3_q43.json, face_scoped3_q43.txt, formgate_q43.txt, formgate_q43b.txt, regtest_q43.txt, bind_check_before_q43.txt, bind_check_after_q43.txt, bind_apply_q43.txt, repin_preview_q43.txt, repin_apply_q43.txt, append_rows_q43.py} + eval/capability/exp1-q42/{verify_replay_archive_q42.py, nc_prestate_q42.py}（加 `--neg-control`） + docs/evidence/RF0001/R638-exp1q43-face-health.md + 计划面 AN.12/AN.13 + 文献台账 §35。诚实边界: 面读数取自**脏工作区**（83 件历史未跟踪件在场）⇒ 与干净态不可直接比；`cap-headroom` 的 log_bytes（76.4 MB）构成**未定因**；两件新器具登记行**未落盘**（扩面受闸）；零 src/ 改动 ⇒ 无能力分数、无 kpi.jsonl 行（与 Q39–Q41 同例）；未 push（推送暂停令）。"
+  },
+  {
+   "id": "r639.mainline-new-window-set-with-f-lift",
+   "level": "L3",
+   "owner_round": "R639",
+   "capability": "主线对照轮（**新窗集 w237/w238/w239**，与历史 w184..w236 不相交；产品默认档 ×3/窗 + codex 外部真值 ×1/窗；同一枚 AOT 件 cefd045e8d1d；零产品源码改动 / 零新增夹具 / 零新增开关）：**主判据 Q1「不达」** —— 逐窗配对差 **D = [−3, 0, −9]**（中位 **−3** < 阈值 −2；逐窗均 ≥ −15），有效窗 **3**（窗有效 = 真值跑通 ∧ 非自败例 ≥1，w239 codex 自败 2 例**单列**不构成窗失效）。次级 Q2 **劣化**：整题全对 P **4/9 = 0.4444** vs codex 真值 **2/3 = 0.6667**。**抬升 rc 的判据逐条点名** = ①Q1 不达 ②Q2 劣化 ⇒ `rc=1`（次级档）。**本轮新增判据 `F_lift_min`（承 R637 候选②，声明先于跑）并入判决件**：判据核 **import** `eval/rover/r637/family_lift_r637.py#family_lift_core`（唯一实现，本件不重写第二份）；本轮真机面逐窗最差式族栏差 w237 **−12** / w238 **−3** / w239 **−10** ⇒ `min_lift = −12 (< −2)` · 中位式 **−9**；**并读未行使**（Q1 非 PASS ⇒ 按预注册短路，不重复计红），读数已并列入档。**齿证两侧**：合成（影子自检）正控=全族全跑次相等必判过 ∧ 负控=单跑次整族归零必判红；真机冻结面（R636 三窗只读重算）w234 最差式 **−11 例** 与 R637 同源工件**逐值一致（mismatch=0）**，且中位 **0（PASS）** vs 最差 **−11（FAIL）** ⇒ 分辨力差异在冻结面被真实行使；**新窗集上两式同向（都判红）⇒ 未行使**（如实登记，禁据此宣称真机行使）。B_family_block：n=9 整族归零 **0** / 部分族 **5** / 干净 **4** ⇒ `pair_read_ok=True`。代价三列（中继 dump 时间轴）：P n=9 `21 调用 / 15,510 新算 / 67,899 completion`（v_all 中位 ≈0.9134 / v_incr 中位 ≈0.8551）vs 真值 n=3 `23 / 13,870 / 11,215`（0.9341 / 0.9506）；**跑次数不等（9 vs 3）⇒ 总和列异分母**，归一列：每跑次调用 **2.33 vs 7.67** · 每跑次新算 **1,723.3 vs 4,623.3** · 每跑次 completion **7,544.3 vs 3,738.3**。**铁律 11 可执行前置器 rc=1**（独立物化 + 实跑 58 隐藏用例：P 中位 **55**、最低 **46**；真值中位 **58**，失败例**全部集中 `wythoff` 族**）⇒ 本轮不得产生「达标」类宣称（本轮结论本为「不达」，两者同向互证）。**诚实边界**：无单变量轴（测量轮，禁跨轮相减）· n=9/档欠功率 · 判据器跨轮改版（schema 再扩一位）· `sub` 族冷集不可判 · 三档终局目标读数不动不宣称 · `posthoc` 件本轮缺席记不可判。",
+   "evidence_cmd": "bash eval/rover/r639/run_r639.sh && python3 eval/rover/r639/judge_r639.py --D $HOME/.agentframework/harness/runs/r639 --pd eval/rover/r639 && python3 eval/rover/r639/judge_r639.py --D /tmp/none --pd eval/rover/r639 --selftest && python3 eval/rover/r639/judge_r639.py --D $HOME/.agentframework/harness/runs/r636 --pd eval/rover/r639 --json eval/rover/r639/frozen-face-r639.json && python3 eval/rover/r507pre/exec_precondition.py --round r639 && python3 eval/capability/decl_sweep.py --check && python3 eval/capability/status_gen.py --check",
+   "evidence_path": "docs/evidence/RF0001/R639-mainline-new-windows-f-lift.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r639/judge_r639.py",
+    "instrument_sha12": "a9141bac2898",
+    "binding": "audit-pin",
+    "audited_by_round": "R639"
+   },
+   "covers": [
+    "eval/rover/r639/judge_r639.py",
+    "eval/rover/r639/run_r639.sh",
+    "eval/rover/r639/prereg-r639.json",
+    "eval/rover/r639/selftest-r639.json",
+    "eval/rover/r639/verdict-r639.json",
+    "eval/rover/r639/kpi-table-r639.json",
+    "eval/rover/r639/frozen-face-r639.json",
+    "eval/rover/r639/gen_prereg_r639.py",
+    "eval/rover/r639/derive_judge_r639.py",
+    "eval/rover/r639/derive_r639.py",
+    "eval/rover/r639/dag-r639.md",
+    "eval/rover/r639/cases/run_cases_r521.py",
+    "eval/rover/r639/cases/cases-r521.json",
+    "eval/rover/r637/family_lift_r637.py",
+    "eval/rover/r507pre/exec_precondition.py",
+    "docs/evidence/RF0001/R639-mainline-new-windows-f-lift.md",
+    "冻结题集双钉（文件 sha e0c667c2… ＋ payload sha e7ddce02…）与新窗集不相交（w237..w239）",
+    "aux 两件同批携带（用例脚本 sha16 d9aecf4d… ＋ 语料 sha256 270128eb…），缺件自愈且 sha 断言 fail-closed",
+    "F_lift_min 判据核 import 唯一实现（不在判决件重写第二份口径）",
+    "并读纪律两侧有牙（合成正控＋负控；真机冻结面 R636 逐值交叉校验 mismatch=0）"
+   ],
+   "negative_control": "成对/负向控制（现场执行，读数入 selftest-r639.json / verdict-r639.json / frozen-face-r639.json / precond-r639.json）：① **F 判据两侧有牙**（最承重，承纪律「只跑一侧 = 未证有牙」）——合成正控（全族全跑次相等 ⇒ 判过，防恒红）∧ 合成负控（单跑次整族归零 ⇒ 判红，防恒绿）；② **F 真机样例不与合成同源**——冻结面 R636 只读重算得 min_lift **−11**（中位式 **0**）与 R637 同源工件逐值一致 ⇒ 合成自检不替代真机样例；③ **B 并读纪律**——主判 PASS ∧ 有整族失败 ⇒ `pair_read_ok=False`（R636 实测命中）；主判非 PASS ⇒ 短路 True（本轮实测，不重复计红）；影子自检 PAIR_READ 两侧覆盖；④ **窗有效性修正未放宽另一侧**——TRUTH_SELF_FAIL_NOW_VALID 正控 = 有效窗 3 ∧ TRUTH_VOID 负控 = 剔除；本轮 `w239/codex` 自败 2 例按该口径**单列**且 `blocking=False`；⑤ **锚面两侧样例**——P **9/9** == 锚 ∧ 缺席下限与覆盖列齐备；⑥ **起手闸 fail-closed 三次真拒**（ceiling 2448/2682 < REQ 2727 ⇒ 窗口不开），清 LSP 残留后 A1/A2 双 PASS ⇒ 闸有牙且**闸值一字未调**。",
+   "note": "轮次工件: eval/rover/r639/{prereg,gen_prereg,derive,derive_judge,run,judge,selftest,verdict,kpi-table,frozen-face,taskset,bins}-r639.* + dag-r639.md + evidence/windows/** + snapshots/** + lit/**。自捕 **5 条**（E1 检索式漏内层引号 ⇒ 修正 R637「工具面拆散」的误判结论并作废旧结论；E2 派生器替换表只覆盖 docstring ⇒ 判决件 kind 串仍写上一轮窗集 = **声明滞后**，修法 = 加替换条目 + 重派生 + **零重测**重判（读数逐值不变）；E3 驱动器头部 ②b 实盘常量串滞后（WIN0=234/PREV_SWING=81 对 实盘 237/137）**且首修时我漏 cap 项写错公式**，二次修正为忠实公式 `REQ = GATE_MB + clamp(PREV_SWING, 60, ceil−GATE_MB−60)`（本轮 cap=77 ⇒ REQ=2727 与实盘日志同值）；E4 会话 LSP 自动重启吃 ≈343MB ⇒ 闸三次真拒，清残留后放行（**非闸值问题**）；E5 import 往轮件时在其轮目录生成 `__pycache__`（冻结面禁写入）⇒ 删除并一律 `PYTHONDONTWRITEBYTECODE=1`）。跳步「构建/AOT」（零 `src/` 改动 ⇒ 无新二进制可构建）与「产品侧最小改动」（净产品改动 0）。跨轮禁相减（RF0005 §6 红线 4）：R633（rc=3）/ R634（rc=1）/ R635（rc=1）/ R636（rc=1，label 带 B 项）/ 本轮（rc=1，label = Q1 不达 + Q2 劣化）**只并列**。基线引用: eval/capability/kpi.jsonl 行 R639 带 `baselines` 11 id（含本轮新引 `F_merge.quality.family_lift_min`）。"
   }
  ],
  "aot_check_policy": "release_tag_only",

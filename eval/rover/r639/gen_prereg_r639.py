@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""R639 预注册生成器（**先写后跑**：本文件必须在起臂前落盘）。
+
+承 R637 下轮候选 ②「`F_lift_min` 进主判据并读（声明先于跑）」。
+本轮 = 主线对照轮（新窗集 w237..w239 × 每窗 codex 真值 ×1 + 产品默认档 ×3）＋ 判据面新增并读。
+"""
+from __future__ import annotations
+import datetime
+import io
+import json
+import os
+
+REPO = "/home/agentuser/AgentFramework"
+PD = os.path.join(REPO, "eval/rover/r639")
+NOW = datetime.datetime.now().astimezone().replace(microsecond=0).isoformat()
+
+WINS = ["w237", "w238", "w239"]
+scope = [f"{w}/{a}" for w in WINS for a in ("agentP-r1", "agentP-r2", "agentP-r3", "codex")]
+
+pre = {
+    "round": "R639",
+    "written_before_run": True,
+    "written_at": NOW,
+    "author": "cron self-check loop (AgentFramework capability cycle)",
+    "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9；本轮 = 主线对照轮（新窗集）+ 判据面并读轮 ⇒ 跳步声明见 skip_steps",
+    "claim": ("主线对照轮：**同件同题集、只换窗集**（w237..w239 × 每窗 codex 真值 ×1 + 产品默认档 ×3）。"
+              "本轮实质变化 = ①【承 R637 候选②】`F_lift_min`（最低族栏）**并入判决件并读**（声明先于跑，"
+              "判据核 import r637 件、不重写第二份口径）；②沿用 R636 的 `B_family_block` / `evidence_scope` / "
+              "`unreliable_policy` 三把机读键。零产品源码改动 / 零新增夹具 / 零新增开关。"),
+    "skip_steps": {
+        "构建/AOT": ("跳步 构建/AOT —— 本轮**零产品源码改动**（`git diff --stat src/` 空）；被测件 = R630 AOT 件"
+                     "（sha16 cefd045e8d1d，与 R631/R633–R636 逐字节同），无新二进制可构建。"),
+        "产品侧最小改动": ("跳步 产品侧最小改动 —— 本轮唯一实质自变量 = **判据形态**（F 并读）+ 窗集（样本侧）；"
+                           "产品默认档保持缺省 ⇒ 净产品改动 0（未放行的产品分支一律不动）。"),
+    },
+    "single_variable": {
+        "axis": "无",
+        "why": ("主线对照轮：无 env 开关剂量 / 无产品代码改动 ⇒ 按 RF0005 §1 硬约束 1 **不计为单变量轮**"
+                "（同 R589/R628/R633/R635/R636 先例）。判据器改版（新增 F 并读）⇒ 承 R7："
+                "**与 R633–R636 读数禁相减**，只并列。"),
+    },
+    "arms": {
+        "C1": {"side": "codex",
+               "what": "外部真值（codex-cli，另一套真 agent 框架，同真实模型 deepseek-flash）",
+               "env": {},
+               "note": "同题面 / 同夹具 / 同窗；未跑通的窗由 `unreliable_policy` 逐窗移出验收面（单列），不得读作本侧收益"},
+        "P": {"side": "agent",
+              "what": "产品默认档（唯一的本侧档位）",
+              "env": {"AGENTFRAMEWORK_R1_CONTRACT": "1",
+                      "AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy",
+                      "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1"},
+              "env_note": ("剂量键（MAX_REPAIR / MAX_EXEC_REPAIR / MAX_PROBE_REPAIR / EARLY_STOP_PFAIL / "
+                           "ARTIFACT_CARRYOVER / ACTION_CANDIDATES / ACTION_EXEC）**全部 unset** = 产品缺省；"
+                           "ACTION_PROMPT=legacy 与 PUBLIC_SELFCHECK=1 为 held-constant（保前缀面可比）。")},
+    },
+    "windows": {
+        "set": WINS,
+        "disjoint_from_history": True,
+        "history_up_to": "w236（R636 用 w234..w236；本轮起 w237，与历史窗集 w184..w236 不相交）",
+        "note": "窗 = 独立会话命名空间；窗集只增不复用。",
+    },
+    "criterion_version": ("v8-family-lift-pair-read（承 v7-family-block-and-pair-read；本轮新增 `F_lift_min` 并读；"
+                          "器具改版 ⇒ 与 R633–R636 禁相减）"),
+    "evidence_scope": {
+        "declare_rationale": ("承 R635 候选①：预注册**显式声明**验收面成员（两侧全臂），否则前置器退化为全局口径 ⇒ "
+                              "外部真值自败例会让验收面恒不可满足。禁事后 `--scope` 补声明 = 翻案。"),
+        "require": scope,
+        "nonrequired": [],
+        "note": ("声明两侧全臂为验收面成员；外部真值臂未跑通的窗由 `unreliable_policy` 自动移出"
+                 "（`policy=unreliable_excluded`，单列 `unreliable_windows`）；**本侧臂失败不受该规则影响**。"),
+    },
+    "unreliable_policy": {
+        "declared_before_run": True,
+        "policy_declared_ts": NOW,
+        "rule": "truth_arm_window_unavailable",
+        "rule_note": ("窗**有效** ⟺ 真值侧**跑通**（有跑次 ∧ 用例面完整 cases_total == 58，即非挂死/VOID）∧ "
+                      "**非自败例 ≥1**；真值**自败的例**逐条单列（`Q1_quality_paired.truth_self_failed_cases`），"
+                      "**不**构成窗失效。窗**无效** ⟺ 真值侧缺席 ∨ 真值跑次用例面不完整。`valid_windows` < 2 ⇒ "
+                      "rc=3 停链先造窗（禁下调阈值）。"),
+        "rule_note_correction": ("修正对象 = R633 的构造缺陷：窗有效性曾被绑定在「真值*整题全对*」上 ⇒ 真值现实读数 "
+                                 "43–45/58 时有效窗恒 0、主判据在原理上恒不可判。**声明先于跑**；R633/R634/R635 判决"
+                                 "一律不翻案。"),
+        "truth_arm_patterns": ["*/codex"],
+        "effect": ("真值臂在**未跑通**的窗 ⇒ `blocking=False` + `policy=unreliable_excluded`；本侧臂失败不受本规则影响；"
+                   "策略**只对本轮声明之后产生的窗生效**（拒绝追溯套用）。"),
+        "bars": {
+            "B1": "窗有效判据 = 「真值跑通 ∧ 非自败例 ≥1」（**不得**含「整题全对」条件）；自败例单列可见",
+            "B2": "**每窗双侧必检**：①自败但跑通的窗**转为有效** ②真值挂死/VOID 窗**仍被剔除** —— 只证一侧 = 放宽判据",
+            "B3": "**拒绝追溯套用**：只对本轮起声明之后产生的窗生效；R636 及更早的既有判决一律不翻案、不改写",
+            "B4": "缺键/背时序/`rule` 非机读常量 ⇒ 策略不生效（fail-closed，不判绿）；起臂前由 run_r639.sh 第 0 步机检闸断言本段 ∧ `evidence_scope` 段 ∧ `B_family_block` 段 ∧ `F_lift_min` 段",
+        },
+    },
+    "B_family_block": {
+        "declared_before_run": True,
+        "declared_ts": NOW,
+        "why": ("承 R635 收口教训：主判据（逐窗用例通过中位）在 `w232/agentP-r2` 判 PASS（中位 58）而同批该跑次实际 "
+                "43/58（`wythoff` 整族 15 例全败）⇒ 中位口径看不见族级失败。R636 已把它机制化（本轮沿用，不改阈值）。"),
+        "classification": "FAMILY_BLOCK ⟺ ∃ family: total ≥ 2 ∧ pass == 0 ／ PARTIAL_FAMILY ⟺ 非前者 ∧ ∃ family: 0 < pass < total ／ CLEAN ⟺ 其余",
+        "scope": "只对本侧 `side==\"agent\"` 跑次且 `cases_total == 58`（VOID 跑次已先剔除、单列）；真值侧不参与该分类",
+        "orthogonality": "分类**不重算** `cases_pass`、**不进**中位分母、**不改写**任何质量列 ⇒ 并列读数",
+        "pair_read_rule": ("`主判据 state == PASS` ∧ `n_family_block > 0` ⇒ `pair_read_ok = False` ⇒ rc 抬至 ≥1；"
+                           "主判据非 PASS 时该规则短路（不重复计红）。"),
+        "bars": {
+            "B1": "分类三态互斥且**无条件发射**（判决件必含 `B_family_block`，含 `by_run` 逐跑次明细）",
+            "B2": "**并读纪律两侧有牙**：主判 PASS ∧ 有整族失败跑次 ⇒ False；主判 PASS ∧ 无整族失败 ⇒ True；主判非 PASS ⇒ 短路 True",
+            "B3": "分类器对全过跑次必须判 CLEAN（不恒红）；对整族归零必须判 FAMILY_BLOCK（不恒绿）",
+            "B4": "缺 `B_family_block` 段/缺 bars ⇒ 起臂前机检失效（fail-closed，不判绿）",
+        },
+    },
+    # ---------------- 本轮新增判据（承 R637 候选②） ----------------
+    "F_lift_min": {
+        "declared_before_run": True,
+        "declared_ts": NOW,
+        "why": ("承 R637 候选②「`F_lift_min` 进主判据并读」。R637 已在**冻结面**给出空心闸实证：同一数据下"
+                "`F_lift_min_median = 0`（PASS）而 `F_lift_min_worst = −15`（FAIL）⇒ 「只报聚合/中位」**按构造**"
+                "掩盖整族归零。本轮把它并入**判决件并读**（不再只活在独立器具里）。"),
+        "criterion_source": ("`eval/rover/r637/family_lift_r637.py#family_lift_core`（**import，不在本件重写第二份口径**）；"
+                             "族读数取 `read_cases.families`（`{fam: {total, pass}}`），**不重算用例**"),
+        "metric_unit": "例数（非比率；避开族规模差 14 vs 15 的分母问题）",
+        "delta_def": "Δ = 本侧族通过例数 − 真值族通过例数",
+        "threshold_cases": -2,
+        "decided_form": ("`worst_form`（逐窗取 min over 族 of **最差跑次**族读数差）；`median_form`（重复跑次中位）"
+                         "**并列报告但不作判决依据** —— 其中位式无牙已由 R637 在冻结面证明。"),
+        "pair_read_rule": ("`主判据 state == PASS` ∧ `worst_form < −2 例` ⇒ rc 抬至 ≥1（**禁把中位 PASS 单独读作达标**）；"
+                           "主判据非 PASS ⇒ 短路（不重复计红）；**无有效窗 ⇒ 不判红**（`lift_ran=False`，与 W 层 rc=3 同源，"
+                           "禁把不可判读成红或绿）。"),
+        "bars": {
+            "T1": "三态无条件发射：判决件必含 `F_lift_min`（含 `min_lift` / `min_lift_median_form` / `per_window`）",
+            "T2": "**并读纪律两侧有牙**（合成影子自检）：全族全跑次相等 ⇒ 判过（不恒红）；单跑次整族归零 ⇒ 最差式必红（不恒绿），并同时记录中位式读数",
+            "T3": "缺 `F_lift_min` 段 / 阈值非 −2 / `decided_form` 未含 worst+median ⇒ 起臂前机检失效（fail-closed，不判绿）",
+        },
+    },
+    "thresholds_cite_baselines": [
+        "F_merge.quality.cases_median_truth",
+        "F_merge.quality.allpass",
+        "F_merge.quality.family_block_scan",
+        "F_merge.quality.family_lift_min",
+        "F_orch.cost.calls_sum",
+        "F_merge.cost.new_prompt_sum",
+        "F_merge.cache.hit_v_all",
+        "F_merge.gate.precondition_rc",
+        "F_env.prefix.legacy_anchor",
+        "F_orch.wythoff.pass_r606",
+        "F_merge.ld.frozen_list",
+    ],
+    "criteria": {
+        "M1_anchor_premise": {
+            "kind": "instrument", "primary": False,
+            "need": "P 档逐跑次 `prefix_sha256 == F_env.prefix.legacy_anchor`（a9792fdb…）∧ 题集规范 sha == e7ddce02… ∧ 题集**文件** sha == e0c667c2…",
+            "fail_action": "锚面/题集不匹配 ⇒ rc=2 器具缺陷（禁作被测结论）；缺项跑次若为 VOID/超时 ⇒ 弃权单列不抬 rc",
+        },
+        "Q1_quality_paired": {
+            "kind": "capability", "primary": True,
+            "need": "有效窗 ≥2 ∧ 配对中位（P − C1 的逐窗用例通过中位差）≥ −2 ∧ 逐窗 D > −15（引 `F_merge.quality.cases_median_truth`）",
+            "fail_action": "有效窗 ∈{0,1} ⇒ `NO_RESOLUTION` + rc=3；中位 < −2 或任一窗 ≤ −15 ⇒ 判「不达」",
+        },
+        "B_family_block": {
+            "kind": "capability_secondary", "primary": False,
+            "need": "见顶层 `B_family_block` 段（独立分类 ∧ 并读纪律 ∧ 两侧有牙）",
+            "fail_action": "`pair_read_ok=False` ⇒ 次级红 rc=1（主判据本身仍按其原判）；分类为并列读数，不得回写质量列",
+        },
+        "F_lift_min": {
+            "kind": "capability_secondary", "primary": False,
+            "need": "见顶层 `F_lift_min` 段（最低族栏 ∧ 最差式判决 ∧ 并读纪律 ∧ 两侧有牙）",
+            "fail_action": "`lift_fail=True` 且主判 PASS ⇒ 次级红 rc=1；闸未行使（无有效窗）⇒ 不判红并单列 `lift_ran=False`",
+        },
+        "Q2_all_pass_secondary": {
+            "kind": "capability", "primary": False,
+            "need": "整题全对率 P ≥ C1（引 `F_merge.quality.allpass`）；n=9/档 ⇒ 欠功率，只作并列",
+            "fail_action": "P < C1 ⇒ 次级红（rc=1），不得用来宣称增益",
+        },
+        "C_cost_columns": {
+            "kind": "report", "primary": False,
+            "need": "调用数 / 新算 prompt / completion **三列分列**（引 `F_orch.cost.calls_sum`、`F_merge.cost.new_prompt_sum`）＋命中率双口径 v_all/v_incr（引 `F_merge.cache.hit_v_all`）",
+            "fail_action": "缺 dump / 解析失败 ⇒ 计 `bad_dumps` 并单列；不作 rc，禁跨轮相减",
+        },
+        "W_floor_resolution_floor": {
+            "kind": "resolution", "primary": False,
+            "need": "有效窗 ≥2（引 `F_merge.gate.precondition_rc` 同族纪律）",
+            "fail_action": "<2 ⇒ rc=3 停链（禁下调阈值、禁把不可判读成通过）",
+        },
+        "Y_selfcheck_blind_spot": {
+            "kind": "diagnostic", "primary": False,
+            "need": "同一跑次内「题面公开用例全过 ∧ 隐藏用例有失败」⇒ 计数（公开/隐藏二分按用例 id 后缀）",
+            "fail_action": "诊断列，不作判据、不进 rc",
+        },
+        "LD_low_discrimination": {
+            "kind": "diagnostic", "primary": False,
+            "need": "冻结低分辨用例列表命中计数（引 `F_merge.ld.frozen_list`）",
+            "fail_action": "诊断列，不作判据",
+        },
+    },
+    "falsification": [
+        {"id": "F1", "cond": "本轮 `F_lift_min` 在「主判 PASS ∧ 无任何整族失败跑次」形态下仍判红",
+         "action": "判据**恒红** ⇒ 器具缺陷（rc=2），修判据并单测覆盖该分支；禁放宽阈值凑绿"},
+        {"id": "F2", "cond": "本轮三窗上 `worst_form` 与 `median_form` 读数**完全一致**",
+         "action": "说明本轮**未行使**到两形态的分辨力差异 ⇒ 报告写「本轮未行使」，**禁**宣称该判据已获分辨力证据"},
+        {"id": "F3", "cond": "F 并读使 rc 抬升而 `B_family_block.pair_read_ok` 为 True（或反之）",
+         "action": "必须逐条点名**是哪一条判据**抬升的 rc，禁合并叙述为「族级判据红」"},
+        {"id": "F4", "cond": "`lift_ran=False`（有效窗 0）而 rc 未按 W 层判 3",
+         "action": "口径冲突 ⇒ 按预注册原文判，并把冲突单列 `checks_posthoc`（禁两套口径并列绿）"},
+    ],
+    "teeth_plan": {
+        "synthetic": ("`judge_r639.py --selftest` ⇒ 新增 `F_LIFT_MIN/SYNTHETIC` 两侧（全等 ⇒ 过 ∧ 单跑次整族归零 ⇒ 红）"
+                      "+ 保留原六态 + FAMILY_BLOCK/SYNTHETIC + PAIR_READ"),
+        "real": ("冻结面**只读**重算：以 R636 三窗（w234..w236）跑次读数走本轮 F 并读 ⇒ 与 R637 `family-lift-r637.json` 交叉校验"
+                 "（同一判据核 import ⇒ 逐值应一致；不一致 ⇒ 器具缺陷 rc=2）"),
+        "negative": "中位式（无牙）读数必须**并列**出现且与最差式不同（R636 `w234` 应为 median 0 / worst −15），只报一侧 = 未证有牙",
+    },
+    "honest_bounds": [
+        "无单变量轴 ⇒ 本轮**不计为单变量轮**；读数只作「同件同题集、新窗集」的并列面，**禁跨轮相减**",
+        "n=9/档（3 窗 × 3 跑次）⇒ 欠功率；单窗集不作能力结论",
+        "判据器改版（新增 F 并读）⇒ 判决件 schema 再扩一位，与 R633–R636 的 rc 列只并列",
+        "`sub` 族在冷集探针下**不可判**（承 R637 未闭合项）⇒ 该族 F 读数只作族级例数差，不作机理结论",
+        "三档终局目标读数（32 ms 级 / 快 50× / −95% / 成本 −85~91%）本轮**不动不宣称**",
+    ],
+}
+
+out = os.path.join(PD, "prereg-r639.json")
+io.open(out, "w", encoding="utf-8", newline="\n").write(json.dumps(pre, ensure_ascii=False, indent=1))
+print("prereg 落盘", out, "bytes", os.path.getsize(out), "written_at", NOW)
+print("windows", WINS, "scope", len(scope), "criteria", len(pre["criteria"]),
+      "baselines", len(pre["thresholds_cite_baselines"]), "falsification", len(pre["falsification"]))

@@ -1,0 +1,44 @@
+Found 16 results (showing 6)
+
+1. Intra-Prompt Parallel Decoding for Common-Context Question Answering
+   ID: 2609.05707v1 | Published: 2026-09-04 | Updated: 2026-09-04
+   Authors: Theodore Glavas, Nikhita Vedula, Dushyanta Dhyani, Antonios Valkanas, Yilun Zhu, Shervin Malmasi
+   Categories: cs.CL
+   Abstract: In common-context question answering (CCQA) tasks, multiple input questions share a common context to base their answers from. However, Large Language Models typically generate each answer using an independent prompt. While existing batching and caching techniques help improve parallelism and reduce...
+   Links: https://arxiv.org/abs/2609.05707 | https://arxiv.org/pdf/2609.05707
+
+2. TOPAS: Workflow-Aware Prefix-State Scheduling for Multi-Agent LLM Serving
+   ID: 2608.25523v1 | Published: 2026-08-26 | Updated: 2026-08-26
+   Authors: Hongqiu Ni, Han Tian, Chi Zhang, Guopeng Li, Haisheng Tan
+   Categories: cs.CL
+   Abstract: Prefix caching introduces a fundamental tradeoff in multi-agent large language model (LLM) serving: retaining a long system-prompt key-value (KV) cache for an agent accelerates future calls, yet it reduces the GPU memory available for batching concurrent requests. In multi-stage workflows, existing ...
+   Links: https://arxiv.org/abs/2608.25523 | https://arxiv.org/pdf/2608.25523
+
+3. ReCache: Efficient KV Cache Reuse and Compression for Tool-Augmented LLM Agents
+   ID: 2608.19662v1 | Published: 2026-08-20 | Updated: 2026-08-20
+   Authors: Yichu Fang, Sitong Wei, Haozhe Hu, Xiaoyu Shen
+   Categories: cs.CL
+   Abstract: Agentic language models repeatedly encode tool and skill schemas that recur across requests in different combinations and orders, preventing standard prefix caching from reusing their key--value (KV) states. We introduce \textbf{ReCache}, a framework for independently caching resource representation...
+   Links: https://arxiv.org/abs/2608.19662 | https://arxiv.org/pdf/2608.19662
+
+4. Multi-Block Diffusion Language Models
+   ID: 2606.29215v2 | Published: 2026-06-28 | Updated: 2026-06-30
+   Authors: Yijie Jin, Jiajun Xu, Yuxuan Liu, Chenkai Xu, Yi Tu, Jiajun Li, Dandan Tu, Xiaohui Yan, Kai Yu, Pengfei Liu, Zhijie Deng
+   Categories: cs.LG, cs.CL
+   Abstract: Block Diffusion Language Models (BD-LMs) improve diffusion-based text generation with KV caching and flexible-length generation. A natural next step is to extend them from Single-Block Diffusion (SingleBD) to Multi-Block Diffusion (MultiBD), where a running-set of consecutive blocks is decoded concu...
+   Links: https://arxiv.org/abs/2606.29215 | https://arxiv.org/pdf/2606.29215
+
+5. CacheWeaver: Cache-Aware Evidence Ordering for Efficient Grounded RAG Inference
+   ID: 2606.19667v2 | Published: 2026-06-18 | Updated: 2026-09-04
+   Authors: Kaizhen Tan, Rong Gu, Mingyuan Li
+   Categories: cs.CL
+   Abstract: Retrieval-Augmented Generation (RAG) improves factual grounding, but it also lengthens prompts and raises prefill cost. Prefix caching in serving engines such as vLLM reduces this cost only when requests share the same token prefix. In grounded generation, however, adjacent queries may retrieve over...
+   Links: https://arxiv.org/abs/2606.19667 | https://arxiv.org/pdf/2606.19667
+
+6. MiniPIC: Flexible Position-Independent Caching in <100LOC
+   ID: 2606.13126v1 | Published: 2026-06-11 | Updated: 2026-06-11
+   Authors: Nathan Ordonez, Thomas Parnell
+   Categories: cs.LG, cs.AI, cs.CL
+   Abstract: Retrieval-augmented and agentic workloads repeatedly prefill recurring predictable structured inputs (which we call "spans") such as documents and code files. Yet, prefix caching in engines such as vLLM cannot reuse their KV entries unless they share identical prefixes with another request, while Po...
+   Links: https://arxiv.org/abs/2606.13126 | https://arxiv.org/pdf/2606.13126
+

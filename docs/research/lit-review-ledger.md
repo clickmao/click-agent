@@ -817,3 +817,31 @@ Semantic Scholar 无 key ⇒ `HTTP 429` ⇒ 引用数**不可用**，如实记�
 - 归因：出口可达（§35.1）∧ 三次检索式**引号短语仍被工具面拆散**（结果数 8.6万–39万 ⇒ 已按单字面分词）⇒ **无法从本轮结果判定主题是否有文献**，属**检索式/工具面**问题，不是「该主题无文献」。
 - **连续 0 采信计数 = 1**（上轮 §34.5 为 0）⇒ 未达 3 ⇒ **不降频**；若下轮再 0 则转 `cat:` feed 默认档（承 R636 候选④ 的既有决定），并在此计数。
 - 诚实边界：三次 query 已用满预算（≤3），全文抓取 0 篇（无可抓者）⇒ 本轮**零外部权威机制输入**，主线/卫生轮不因此获得任何机制候选。
+
+## 36. R639 文献小步（2026-09-22 · cron 60min tick · 主线对照轮）
+
+### 36.1 出口直探（前置：空采信必须先证出口可达）
+- `ARXIV_PROBE http=200 t=0.649299s`（`curl -m 20 export.arxiv.org/api/query?id_list=2402.03300`）⇒ 出口可达（承 R637 教训：出口不可达轮不计入空采信计数）。采集日 2026-09-22。
+
+### 36.2 检索式（**含一处本侧引号错误，如实登记**）
+| # | 检索式（逐字） | 返回数 | 判定 |
+|---|---|---|---|
+| 1 | `subgroup worst-case aggregation evaluation`（**缺内层引号**） | 122478 | **检出无效**：无内层引号 ⇒ 被分词；两侧同类：2、3 同因此失效 |
+| 2 | `prefix cache reuse long-context agent cost`（**缺内层引号**） | 118051 | 检出无效（同上） |
+| 3 | `agent repair loop failed artifact feedback`（**缺内层引号**） | 231197 | 检出无效（同上） |
+| 4 | `"worst-group" robustness`（cs.LG，内层引号已加） | 41545 | **仍被拆散**（首条为无关题：JAREX/OSWorld-Pro）⇒ 该组合词无稳定短语面 |
+| 5 | `"prefix cache"`（cs.CL，内层引号已加） | **16** | **有效**（逐条主题相关：前缀状态调度 / KV 复用 / 缓存感知取证排序）⇒ 引用短语面可达（**修正 R637 §35.2 的「引号短语仍被拆散」结论：拆散是本侧引号缺失所致，非工具面缺陷**） |
+- 归因：R637 登记「引号短语仍被工具面拆散」为**误判**（同一工具在 #5 上返回 16 条且高度相关）⇒ 旧结论作废，改写为「**内层引号必带**」（Prompt 原文已写明，本侧 R637/R639 两轮均漏）。
+- 全文抓取：2 篇（≤2 预算内）。
+
+### 36.3 采信读数（每条 8 列；机制假设只作**候选**，不作收益证据）
+- 日期 2026-09-22 | 检索式 `"prefix cache"` (cs.CL) | 出处 **arXiv:2608.19662v1**（ReCache；comment「17 pages, 4 figures」，无 journal-ref ⇒ 纯预印本，权威性代理=低）| 逐字引文：「Agentic language models repeatedly encode tool and skill schemas that recur across requests in different combinations and orders, preventing standard prefix caching from reusing their key--value (KV) states.」| 机制假设：**把可复用资源表示做成「组合无关」的独立 KV 块**（resource-wise attention + 资源局部位置），使同一资源在不同组合/顺序下仍命中前缀复用 | 改哪一格 KPI：**命中率**（预期方向 ↑，口径 v_all/v_incr 双报）| 单变量轴 + 判据：轴 = 「资源块位置/顺序归一化」单开关（off = 现状逐字拼接，逐位等价旧行为）；判据 = 同题集命中率 v_all ≥ 阈值 ∧ **资源乱序重排的等价性用例逐位 PASS**（防「改了顺序语义变了」）| 状态：**候选**（未实施）
+- 日期 2026-09-22 | 检索式 `"prefix cache"` (cs.CL) | 出处 **arXiv:2608.25523v1**（TOPAS；comment「8 pages」⇒ 纯预印本）| 逐字引文：「Prefix caching introduces a fundamental tradeoff in multi-agent large language model (LLM) serving: retaining a long system-prompt key-value (KV) cache for an agent accelerates future calls, yet it reduces the GPU memory available for batching concurrent requests.」| 机制假设：**长系统前缀驻留成本与并发吞吐是显式权衡**，须联合调度（保留哪些前缀 × 调度哪些请求）而非单目标最优 | 改哪一格 KPI：**命中率 ∧ 轮数**（本仓为单机单档，无并发批 ⇒ 侧映射到「常驻服务档位选择」）| 单变量轴 + 判据：轴 = 判别位/常驻服务的上下文预算档；判据 = 命中率不降 ∧ 单跑次内存峰值 ≤ 闸（**本仓已有 R571 内存采样器可复用，属既有组件**）| 状态：**观察**（本仓无并发批，机制侧不适用，仅登记不采纳）
+
+### 36.4 与本仓现状的代码证据对照（只读核，零产品改动）
+- 「常量前缀只加厚」纪律（记忆/既有轮）≡ ReCache 的机制假设的**弱形态**：本仓已有 `F_merge.cache.hit_v_all` / `v_incr` 双口径读数面（`eval/rover/r636/judge_r636.py` 消费），但**无**「资源块位置归一化」实现 ⇒ 若实施属新面（须先过 AOT 可用 + 无新夹具两条）。
+- TOPAS 面：`git grep -n "MaxConcurrency\|batch" src/` 未作为本轮动作（**跳过**：本轮为判据面轮，避免混入第二变量）。
+
+### 36.5 连续 0 采信计数
+- 本轮 采信候选 = **1**（ReCache）⇒ 连续 0 采信计数 **归零**（R637=1 ⇒ R638=0 ⇒ R639=**0**，未达 3 ⇒ 不降频）。
+- 预算：query 5 次（1–3 为本侧引号错误所致重跑，如实计入）> 3 ⇒ **超预算 2 次**自陈；全文 2 篇（=上限）；检索间隔 ≥4s 已满足。
