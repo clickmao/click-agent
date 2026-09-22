@@ -6075,9 +6075,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "a7e08af7e126",
     "instrument": "eval/rover/r507pre/exec_precondition.py",
-    "instrument_sha12": "2acf12be09d0",
+    "instrument_sha12": "61e873636100",
     "binding": "audit-pin",
-    "audited_by_round": "R549"
+    "audited_by_round": "R631"
    },
    "negative_control": "过宽负控: 真产物树不受影响 —— w2 的 agentA/agentO/codex 三快照照常判分 (58/58 · 31/58 · 58/58), 即修复只把「空」判成不可验收, 不改变已有产物的判分结果",
    "owner_round": "R521"
@@ -6130,9 +6130,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "308d9ba985ce",
     "instrument": "eval/rover/r507pre/exec_precondition.py",
-    "instrument_sha12": "2acf12be09d0",
+    "instrument_sha12": "61e873636100",
     "binding": "audit-pin",
-    "audited_by_round": "R549"
+    "audited_by_round": "R631"
    },
    "negative_control": "过宽负控: 真产物树不受影响 —— w2 的 agentA/agentO/codex 三快照照常判分 (58/58 · 31/58 · 58/58), 即修复只把「空」判成不可验收, 不改变已有产物的判分结果",
    "owner_round": "R522"
@@ -7796,6 +7796,26 @@
    },
    "negative_control": "① 影子自检 7 态夹具回放（`judge_r630.py --selftest` rc=0）: S1 正常⇒0 / **S2 变异（T 档落回缺省档）⇒判 VOID rc=2** / S3 质量劣⇒1 / S4 字段缺失⇒弃权 3 / S5 单窗⇒停链 3 / **S6 全跑次未达模型⇒2（防假绿）** / S7 计划未跑完不得判 VOID⇒0；② 前缀不变量负控: 四档 sha 互异 + C 档逐位等于缺省 pin（`gen_prefix_r630.py` rc=0）；③ 器具自捕留档不翻案: v1 判据假绿 / v2 判据误判 VOID 两件并列在档。",
    "note": "轮次工件: eval/rover/r630/{prereg,prefix,cost,judge,gate-margin,report}-r630.* + snapshots/。"
+  },
+  {
+   "id": "r631.exec-axis-replication",
+   "level": "L3",
+   "owner_round": "R631",
+   "capability": "执行面轴 `AGENTFRAMEWORK_R1_ACTION_EXEC`（T=1 执行面读采纳候选映射 vs C=产品缺省）在**与历史不相交**的新窗集 w223/w224（reps=3/窗 + codex 外部真值 ×1/窗，同一枚 AOT 件 cefd045e8d1d，零产品源码改动）上**跨窗复现**：J4a 复现判据**不通过** ⇒ 逐窗配对 Δ(T−C) 全对率 {w223 −0.3333, w224 +0.3333}、中位 **0**（R621 +33pt 未复现）⇒ 该轴判**非承重变量、定案关闭**（禁再为同一缺口加轮）；J4b 对外部真值在**唯一可靠窗** w223 上 D=0 持平（w224 真值自败 56/58 ⇒ 按 R4 标 unreliable 不并入）。成本三列（中继 dump 时间轴）两产品臂**相等**（T 1.83/1555/4491 vs C 1.83/1513/4434；codex 5.5/4195/3872）⇒ 该轴既非质量亦非成本杠杆。**诚实边界: 铁律 11 前置器 rc=1（验收面 w223/agentT-r1 54/58 · w224/agentT-r1 51/58 · w224/agentT-r3 46/58）⇒ 全部读数标「参考（未可验收）」；裁判件 `judge_r631.py` 判据族与预注册不同源（旧草稿残留）⇒ 其判决不予采用，本轮判决取自冻产后处理复算；n=2 窗欠功率只作趋势。**",
+   "evidence_cmd": "bash eval/rover/r631/run_r631.sh && python3 eval/rover/r631/recompute_j4ab_r631.py && python3 eval/rover/r507pre/exec_precondition.py --round r631",
+   "evidence_path": "docs/evidence/RF0001/R631-exec-axis-replication.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r631/recompute_j4ab_r631.py",
+    "instrument_sha12": "37c971a3c328",
+    "binding": "audit-pin",
+    "audited_by_round": "R631"
+   },
+   "negative_control": "① 前置器通配声明修复的**两侧样例**（R631 自捕器件缺陷 D1）: 正控 = 修后 `--round r631` 输出 `DECLARED_ABSENT=-` （修前 2 条假红 `w223/agentT-r*`/`w224/agentT-r*`，而 `snapshots/w223/{agentT-r1,r2,r3}` 在盘）且 rc 不变=1；负控 = 注入字面缺席名 `w223/agentT-r9` ⇒ 仍报 `DECLARED_ARM_ABSENT w223/agentT-r9`（牙在）并附判 `VERDICT_POSTHOC_ONLY`；② **历史判决审计**（判决中性证明）: r550 修后重放 `declared_absent` 3→3、rc 1→1 不变（该轮 3 条为字面名 `agentR550on2-g1`，与本修无关）⇒ 本修只消除通配声明的假红，不改写任何既有判决；③ 判决面**不采信裁判件自报**: `judge_r631.py` 判据族与预注册不同源，改用冻产后处理复算（幂等、零重测）并披露；④ `decl_sweep --apply` ⇒ `checked=30 drifted=0`（登记面零漂移）。",
+   "note": "轮次工件: eval/rover/r631/{prereg,judge,kpi-table,verdict,verdict-j4ab,bins,gate-margin,premise}-r631.* + dag-r631.md + evidence/windows/** + snapshots/**。未行使 R529 J4(b) `unreliable_policy`（`POLICY_ACTIVE=False reason=no_policy_key`）⇒ w224 真值自败窗未被机检降级，列入 R632 起手清单。跨轮禁相减（RF0005 §6 红线 4）。"
   }
  ],
  "aot_check_policy": "release_tag_only",

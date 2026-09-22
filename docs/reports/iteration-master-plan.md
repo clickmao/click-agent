@@ -1423,3 +1423,22 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - **门禁**：形式门禁 **14/14**（首次运行因 registry 行 `covers` 含 `/` 被解析为路径 + `artifact_sha12 ≠ evidence_path` 现盘字节而**真红**，修正后转绿 ⇒ 该门禁确实有牙）· `status_gen.py --check` **PASS（违规 0 / 基准漂移 0 / 缺源 0）** · registry **303** 行 / kpi **163** 行。
 - **诚实边界**：① 本轮**零真机跑次** ⇒ **无新 KPI 读数**；主判据 `median_D_task = −0.3333`（阈值 −0.34，valid 窗 2）取自 **R628 冻结快照**，**禁当 R629 能力结论**；② 候选① 的「修后判绿」只在**判决件形态**面成立，**不等于**质量轴达标；③ 候选④ 差异量形态**当前只在本仓器面复用**（未接产品链）；④ 归因结论限定 `wythoff` 族与 R628 冻结窗集，**跨轮禁相减**、与 R605/R606 只可并列；⑤ 三档终局目标读数本轮**不动不宣称**。**artifacts**：`eval/rover/r629/{dag-r629.md,prereg-r629.json,attribution-r629.json,verdict-r629.json,negform-r629.json,nc-form-r629.json,closed-axes-r629.json,report-r629.md,primary-pool-r629.json,taskface-pool-r629-primary-recompute.json,evidence/instrument-defects-r629.json,evidence/judge-prefix-r628.json,judge-r629.json,attr_wythoff_r629.py,pool_taskface_r629.py,judge_r629.py,close_r629.py,nc_metric_r629.py,negform_r629.py}` · registry 行 `r629.verdict-face-and-nc-metric-form`（L2）· kpi 行 R629（`baselines` 6 条）。
 - **下轮候选 (R630)**：① **面 4 达标路径处置（仍待用户放行 · 最高优先）**：生产口径 `R@N` 0.7333 → ≥0.9；两路信号并集天花板 0.7917 ⇒ (a) 放行 `src/agent.rag` 融合/打分位 (b) 放行新信号族 / 单元粒度 (c) 裁定判据口径（分级加厚属**新增夹具**）② **`wythoff` 冷点集构造的修法轮**（候选② 已把主族定位到 `APPROX_COLD_SET`，行号级证据在案 ⇒ 可开**单变量**修法轮，须先预注册阈值并引 `baselines` id）③ 候选① 的**器件面收口**：把 `judge_r629.py` 的机读键绑定与指针同源派生**回灌**到 `eval/rover/r628/run_r628.sh` 系驱动（**只加厚、不改历史判决**）④ 「信息类工具回执 / 序依赖面」（R619，需产品侧改动 ⇒ 与 ① 放行一并裁定）⑤ 文献小步（出口前置探针 + 「0 结果与更宽检索式交叉复核」纪律）⑥ 面 4 器具面**无新增候选**（同形 oracle 禁升能力面上界；异形上界已由 R626 给出 0.7917）。
+
+## R631 (2026-09-22) — 执行面轴 `AGENTFRAMEWORK_R1_ACTION_EXEC` **跨窗复现轮**（新窗 w223/w224 × reps3 × 2 臂 + codex 真值 ×1/窗）· **效应未复现（Δ 中位 0、逐窗 ±0.3333 符号翻转）⇒ 轴非承重、定案关闭** · 外部真值 w224 自败（56/58 ⇒ unreliable）· 铁律 11 **rc=1**（验收面 3 跑次未全对）· 零产品源码改动 · 零新增夹具 · 自捕器件缺陷 3 条（前置器通配声明假红【已修 + 两控 + 历史审计】/ 判决件判据族与预注册不同源【留待 R632】/ 驱动头部声明滞后）
+
+- 单变量: 轴 `AGENTFRAMEWORK_R1_ACTION_EXEC`（T `=1` ⇒ `exec_source=plan_fallback` 6/6；C `unset` ⇒ 五字段全缺席 6/6），
+  held-constant `R1_ACTION_PROMPT=legacy`（前缀锚 a9792fdbe5b2…），被测件 = `pub_r630/agenthost`（全臂同一枚，零 build/AOT）。
+  与 R621 唯一差异 = **窗集**（w217..w219 → w223..w224）与 reps（6→3）⇒ 只并列、禁与历史轮相减。
+- 读数（冻产后处理复算）: 整题全对 T {w223 2/3, w224 1/3} / C {w223 3/3, w224 0/3} / codex {w223 1/1, w224 0/1}；
+  配对 Δ(T−C) 全对率 {w223 −0.3333, w224 +0.3333} 中位 **0**；J4b 唯一可靠窗 D = 0（持平）。
+  成本三列（中继 dump 时间轴）: T 1.83 / 1,555 / 4,491 · C 1.83 / 1,513 / 4,434 · codex 5.5 / 4,195 / 3,872 ⇒ 两产品臂**成本相等**。
+- **rc 分层 v4 首次真机实践**: 14 跑次中 9 条 rc≠0（5=expect_stdout_exhausted / 8=self_test_unmet），其中 6 条产物仍 58/58
+  ⇒ 非零 rc 被判为**结果**而非 VOID（铁律 11 条款①「可裁决」在本窗首次成立）。
+- 器具: 修 `eval/rover/r507pre/exec_precondition.py`（通配声明同源 fnmatch + fail-closed 保持）；新增
+  `eval/rover/r631/{run_r631.sh,judge_r631.py,recompute_j4ab_r631.py,prereg-r631.json,dag-r631.md,verdict-j4ab-r631.json}`
+  + `evidence/windows/**` + `snapshots/**`；证据文档 `docs/evidence/RF0001/R631-exec-axis-replication.md`；
+  kpi 行 `eval/capability/kpi.jsonl`（带 9 条 `baselines` 引用）。
+- 诚实边界: n=2 窗欠功率 ⇒「未复现」≠「效应不存在」；w224 对照列不可用（真值自败）；与 codex 的成本对比为跨实现方向读数且 rc=1 ⇒ 不作收益宣称。
+- **下轮候选 (R632)**: ① 判决件判据族与预注册对齐（`judge_r631.py` 声明滞后修复，**禁跨轮相减**）② 起臂前声明 `unreliable_policy`
+  （R529 J4b 未行使 ⇒ 真值自败窗未机检降级）③ `run_r631.sh` 头部声明刷为实盘值（w223/w224 · 49795 · REQ 2769）④ `wythoff` 族冷点集构造
+  单变量修法轮（候选仍在，须先预注册 + 引 `baselines`）⑤ 文献小步（本轮采信 2 条 ⇒ 连续 0 采信计数归 0，不降频）。

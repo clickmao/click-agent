@@ -504,9 +504,17 @@ def run_project(label, taskset_path, win_root, snap_root, wins, out_path, timeou
     # ---- R529 J4(a): 声明臂缺席 ⇒ fail-closed (缺臂不得被静默跳过而成假绿) ----
     if scope is not None:
         for win in wins:
+            wdir = os.path.join(snap_root, win)
+            realized = sorted(x for x in (os.listdir(wdir) if os.path.isdir(wdir) else [])
+                              if os.path.isdir(os.path.join(wdir, x)))
             for skey in [s for s in (scope.get("require") or []) if s.startswith(win + "/")]:
-                adir = os.path.join(snap_root, win, skey.split("/", 1)[1])
-                if not os.path.isdir(adir):
+                # R631 修（判据器缺陷, 本类第二次出现: r550 3 条 / r631 2 条假红）:
+                # 声明可以是**通配模式**（分类用 fnmatch, 见上 `_scope_of`）⇒ 存在性检查必须同源用 fnmatch 对
+                # **已落盘的真实臂目录**匹配; 原实现把模式当字面名 `isdir(snap/win/<模式>)` ⇒ 通配模式恒判缺席
+                # （r631 实测: 声明 `w223/agentT-r*` 而 `agentT-r1..r3` 三目录俱在 ⇒ 仍报 DECLARED_ARM_ABSENT）。
+                # fail-closed 保持: 零个真实目录匹配 ⇒ 照旧报缺席。
+                name = skey.split("/", 1)[1]
+                if not any(fnmatch.fnmatch(a, name) for a in realized):
                     out["declared_absent"].append(skey)
                     out["blocked"].append("DECLARED_ARM_ABSENT %s (声明为验收面成员但快照缺失)" % skey)
                     out["blocked_scoped"].append("DECLARED_ARM_ABSENT %s (声明为验收面成员但快照缺失)" % skey)

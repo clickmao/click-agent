@@ -1,0 +1,91 @@
+{
+ "round": "R631",
+ "kind": "J4a/J4b 冻产后处理复算（judge_r631.py 判据族与预注册不同源 ⇒ 不采用该件判决）",
+ "criterion_source": {
+  "prereg": "eval/rover/r631/prereg-r631.json",
+  "prereg_sha256": "5a6ac2238af5c267134a40ed2c4f43603f76016f32cf59a82e0ca4a175020593",
+  "criteria_keys": [
+   "J4a_capability_replication",
+   "J4b_capability_vs_truth"
+  ]
+ },
+ "evidence_sha256": {
+  "w223/report.json": "c5ac7fea4d80aae73b6abe85a7e5d2f54868f9515d061e88ea981499b7b420b4",
+  "w224/report.json": "a4bc12b29676550d7f294895a022b90c89a5d40a7093243c724bc12fe153a42b"
+ },
+ "per_window": {
+  "w223": {
+   "T_allpass_rate": 0.6666666666666666,
+   "C_allpass_rate": 1.0,
+   "T_cases_median": 58,
+   "C_cases_median": 58,
+   "C1_cases_median": 58,
+   "C1_all_pass": true,
+   "reps": {
+    "T": 3,
+    "C": 3,
+    "C1": 1
+   },
+   "D_T_minus_C_allpass_rate": -0.3333,
+   "D_T_minus_C_cases_median": 0,
+   "D_product_minus_truth_cases_median": 0
+  },
+  "w224": {
+   "T_allpass_rate": 0.3333333333333333,
+   "C_allpass_rate": 0.0,
+   "T_cases_median": 51,
+   "C_cases_median": 50,
+   "C1_cases_median": 56,
+   "C1_all_pass": false,
+   "reps": {
+    "T": 3,
+    "C": 3,
+    "C1": 1
+   },
+   "D_T_minus_C_allpass_rate": 0.3333,
+   "D_T_minus_C_cases_median": 1,
+   "D_product_minus_truth_cases_median": -5
+  }
+ },
+ "unreliable_windows": [
+  {
+   "window": "w224",
+   "truth_cases": 56,
+   "note": "外部真值未全对 ⇒ 该窗对照列标 unreliable（RF0005 §3 R4），J4b 该窗单列不并入"
+  }
+ ],
+ "J4a": {
+  "D_allpass_rate_by_window": {
+   "w223": -0.3333,
+   "w224": 0.3333
+  },
+  "D_cases_median_by_window": {
+   "w223": 0,
+   "w224": 1
+  },
+  "median": 0.0,
+  "nonneg_frac": 0.5,
+  "pass": false,
+  "power_note": "n=2 窗 ⇒ 欠功率, 只作趋势不作能力结论"
+ },
+ "J4b": {
+  "D_product_minus_truth_cases_median_by_window": {
+   "w223": 0,
+   "w224": -5
+  },
+  "windows_used": [
+   "w223"
+  ],
+  "reliable_windows_from": [
+   "w223/report.json",
+   "w224/report.json"
+  ],
+  "median": 0,
+  "pass": true
+ },
+ "verdict": {
+  "J4a_replicated": false,
+  "J4b_pass": true,
+  "headline": "效应未跨窗复现（Δ 中位 0.0）"
+ }
+}

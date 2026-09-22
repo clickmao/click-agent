@@ -1,0 +1,110 @@
+{
+ "round": "R631",
+ "written_before_run": true,
+ "written_at": "2026-09-22T10:50:00+08:00",
+ "author": "cron capability self-check loop (AgentFramework)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §1/§2/§3",
+ "claim": "复现轮：把 R618/R621 已证的 `AGENTFRAMEWORK_R1_ACTION_EXEC`（执行面读「采纳候选映射」vs 读 `plan`）质量效应，在**与历史窗集不相交**的新窗集 w223/w224 上重测（reps=3/窗），并把本轮**产出物按铁律 11 声明发现契约落盘**（`taskset-r631.json` + `cases/` + `evidence/windows/<win>/{report,artifacts}.json` + `snapshots/`）——使前置器给出**逐臂逐用例 named 阻塞**而不是 DISCOVER_FAIL(rc=3)。零产品源码改动（复用 R630 AOT 件）。",
+ "single_variable": {
+  "axis": "AGENTFRAMEWORK_R1_ACTION_EXEC",
+  "T": "1 ⇒ 执行面 = 采纳候选映射出的节点（`exec_source=candidates`），候选缺席时走回退支 `plan_fallback`",
+  "C": "unset ⇒ 产品缺省 off（执行面读 `plan`，**逐位**等于 R617/R621 轴关行为）",
+  "C1": "codex-cli 外部真值（同题面/同夹具/同窗）",
+  "why_only_one": "与 R621 逐字同轴同档位同 held-constant（`AGENTFRAMEWORK_R1_ACTION_PROMPT=legacy`）⇒ 本轮唯一差异 = **窗集**（w217..w219 → w223..w224）与 reps（6→3）。目的 = 判定 R621 的 +33pt 质量效应是**承重**还是**单窗产物**（RF0005 §3 R5：摆动 ≥ 效应 ⇒ 非承重、定案关闭）。",
+  "third_anchor": "legacy 前缀锚 `F_env.prefix.legacy_anchor`（chars 15675 / sha a9792fdbe5b2…）——held-constant 生效的机检面。",
+  "arm_convention_note": "该轴产品缺省 off ⇒ 「轴关 = 旧行为」的臂 = 产品缺省臂（C = unset）；与 R617 的约定相反是**故意的**（R621 同款）。"
+ },
+ "arms": {
+  "T": {"side": "agent", "sub": "agentT-r<rep>", "env": {"AGENTFRAMEWORK_R1_ACTION_EXEC": "1", "AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy"}},
+  "C": {"side": "agent", "sub": "agentC-r<rep>", "env": {"AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy"}},
+  "C1": {"side": "codex", "sub": "codex", "env": {"AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy"}}
+ },
+ "windows": {
+  "set": ["w223", "w224"],
+  "disjoint_from_history": true,
+  "history_up_to": "w222（R628 用 w220..w222；R630 用 w211..w212；R621 用 w217..w219；本轮起 w223，与历史窗集不相交）"
+ },
+ "criterion_version": "v4-repl",
+ "thresholds_cite_baselines": [
+  "F_env.prefix.legacy_anchor",
+  "F_merge.quality.cases_median_truth",
+  "F_merge.quality.allpass",
+  "F_orch.cost.calls_sum",
+  "F_merge.cost.new_prompt_sum",
+  "F_merge.cache.hit_v_all",
+  "F_merge.gate.precondition_rc",
+  "F_env.gate.prev_swing_mb",
+  "F_orch.wythoff.pass_r606"
+ ],
+ "criteria": {
+  "J0_arm_axis_effective": {
+   "kind": "mechanism",
+   "need": "T 逐跑次 `exec_source` ∈ {candidates, plan_fallback} ∧ C 档五字段全缺席 ∧ 两臂 `prefix_sha256` 同源 ∧ **两臂前缀 == legacy 锚** ∧ 每臂非全缺席",
+   "fail_action": "rc=2 整轮 VOID（先修臂/前提，禁作被测结论）"
+  },
+  "J1_fallback_exercised": {
+   "kind": "mechanism",
+   "primary": true,
+   "need": "同 R621：面覆盖 T 全部跑次 ∈ {candidates, plan_fallback} ∧ 回退跑次 ≥1 ∧ 回退跑次 executed>0 全部 ∧ 守恒（仅在 candidates 源上有定义）",
+   "fail_action": "NOT_EXERCISED（回退 0 行使）⇒ 不判 PASS 不判红，单列"
+  },
+  "J4a_capability_replication": {
+   "kind": "capability_secondary",
+   "need": "逐窗用例通过数配对 Δ := **T − C**（排序后配对，`delta_median_T_minus_C`）；复现判据 = Δ 中位 **> 0** ∧ 逐窗符号非负占比 ≥ 1/2（n=2 窗 ⇒ 欠功率，**只作趋势不作能力结论**）",
+   "fail_action": "Δ 中位 ≤ 0 ⇒ R621 的 +33pt 效应**未被跨窗复现** ⇒ 如实记「非承重、不宣称」"
+  },
+  "J4b_capability_vs_truth": {
+   "kind": "capability",
+   "need": "逐窗 D := 产品 − codex 真值（用例通过数）；D 中位 ≥ −2 ∧ 无窗 ≤ −15（阈值引 `F_merge.quality.cases_median_truth`）",
+   "truth_not_ceiling": "真值自身失分窗标 unreliable 剔除后重算（R4）；单列不筛窗"
+  },
+  "J3_cost": {
+   "kind": "cost",
+   "need": "三列分列（调用 / 新算 prompt / completion，口径 = 中继逐调用 usage）∧ v2 三条款（Σcalls T ≤ C ∧ 逐窗 Σcalls T ≤ C ∧ 单位调用新算 prompt T ≤ C）；阈值零改动",
+   "fail_action": "任一不成立 ⇒ 成本面 FAIL，**禁为凑绿调阈值**"
+  },
+  "J6_equivalence_face": {
+   "kind": "mechanism_secondary",
+   "need": "已由 R621 定案关闭（NO_RESOLUTION / 摆动 ≥ 效应）⇒ 本轮**只登记、不作主判据、禁为同一缺口再加轮**",
+   "fail_action": "如再现 NO_RESOLUTION ⇒ 保持关闭，不翻案"
+  },
+  "W_floor_resolution_floor": {
+   "kind": "resolution",
+   "need": "有效窗 <2 ⇒ rc=3 停链（禁下调阈值）"
+  },
+  "P11_precondition_face": {
+   "kind": "acceptance",
+   "need": "`exec_precondition.py --round r631` **给出 named 阻塞**（逐臂逐用例）而非 DISCOVER_FAIL ⇒ 验收面可归属；rc 由该器判定（引 `F_merge.gate.precondition_rc`：rc≠0 ⇒ 质量/成本列标「参考（未可验收）」）",
+   "fail_action": "DISCOVER_FAIL ⇒ 记器具/契约缺口（本轮即为此修复），不记能力读数"
+  }
+ },
+ "artifacts_required": [
+  "prereg-r631.json（先写后跑闸）",
+  "bins-r631.json（全臂同一枚二进制 + codex 指纹）",
+  "gate-margin-r631.json（起手闸余量条款）",
+  "kpi-table-r631.json（KPI 表）",
+  "verdict-r631.json（判决件）",
+  "report-r631.md（轮志）",
+  "precond-r631.json（铁律 11 前置器读数；named 阻塞）"
+ ],
+ "evidence_scope": {
+  "require": ["w223/agentT-r*", "w224/agentT-r*"],
+  "nonrequired": [
+   {"pattern": "w223/agentC-r*", "reason": "对照臂（轴关 = 旧行为）；本轮验收面只要求治疗臂产出可执行且正确，对照臂读数作并列/配对用"},
+   {"pattern": "w224/agentC-r*", "reason": "同上（w224 对照臂）"},
+   {"pattern": "*/codex", "reason": "外部真值臂（codex-cli）：真值自身失分窗按 RF0005 §3 R4 单列 unreliable，不作验收面"}
+  ],
+  "note": "本键由 `exec_precondition.py`（project 布局）消费；声明必须在起臂前落盘（先写后跑）。"
+ },
+ "falsification": [
+  "① 前提闸未过（legacy 档仍给出候选字段 / 前缀 ≠ legacy 锚）⇒ 零臂起跑（rc=5，起臂前机检），本轮不产生被测读数。",
+  "② J0 未过（两臂 exec 面不可区分 或 前缀不同源）⇒ 整轮 VOID（rc=2），禁作被测结论。",
+  "③ J4a Δ 中位 ≤ 0 ⇒ R621 的 +33pt 质量效应**未被跨窗复现** ⇒ 按 RF0005 §3 R2/R5 记「该轴非承重变量」，**禁再为同一缺口加轮**、禁宣称增益。",
+  "④ J4b 任一窗 D ≤ −15 或中位 < −2 ⇒ 质量面判 FAIL（阈值零改动）。",
+  "⑤ J3 成本 v2 三条款任一不成立 ⇒ 成本面 FAIL，禁调阈值。",
+  "⑥ 有效窗 <2（真值自败窗剔除后）⇒ rc=3 停链、先造窗集，禁下调阈值。",
+  "⑦ 本轮**不含**产品源码改动 ⇒ 任何「修复生效」类宣称均不成立；读数一律为**同一枚 AOT 件**（pub_r630 sha 前缀 cefd045e8d1d4258）下的窗集复现。",
+  "⑧ P11 若仍 DISCOVER_FAIL ⇒ 记**契约/器具**缺口（已在本轮声明中修复，仍失败则如实登记），不记能力读数。"
+ ],
+ "supersedes": "不复现 R621 的 J6 等价面结论（已定案关闭）；本轮**只并列**，禁跨轮相减（RF0005 §6 红线 4）。"
+}
