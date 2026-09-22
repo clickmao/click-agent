@@ -1,0 +1,33 @@
+{
+ "_cases": 15,
+ "N1_null_rewrite": {
+  "ok": 0,
+  "tags": {
+   "HARD_CRASH": 15
+  },
+  "verdict": "PASS",
+  "rule": "同字节重写 ⇒ 失败例数须与原始跑次相同（非「凡改即绿」）"
+ },
+ "N2_correct_impl": {
+  "ok": 15,
+  "tags": {
+   "OK": 15
+  },
+  "verdict": "PASS",
+  "rule": "替换为独立 oracle 实现 ⇒ 15/15 全 OK（探针有牙、可转绿）"
+ },
+ "N3_always_lose": {
+  "ok": 4,
+  "tags": {
+   "STATE_FLIP": 11,
+   "OK": 4
+  },
+  "verdict": "PASS",
+  "rule": "恒 LOSE ⇒ 必被大量判红"
+ },
+ "N4_minfix_experiment": {
+  "applied": false,
+  "old_excerpt": null,
+  "new_excerpt": null
+ }
+}

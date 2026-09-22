@@ -1,0 +1,41 @@
+{
+ "round": "R637",
+ "kind": "family_lift_selftest",
+ "S1_pos_all_equal": {
+  "expect_pass": true,
+  "got_pass": true,
+  "ok": true,
+  "rule": "全族/全跑次相等 ⇒ 过"
+ },
+ "S2_neg_single_rep_family_block": {
+  "expect_pass": false,
+  "got_pass": false,
+  "ok": true,
+  "rule": "单跑次整族归零 ⇒ 最差式必红（中位式无牙，并列报告）"
+ },
+ "S3_bypass_aggregate_only": {
+  "expect_pass": true,
+  "got_pass": true,
+  "ok": true,
+  "rule": "同数据旁路本判据 ⇒ 聚合口径判过（判决来自判据，非数据）"
+ },
+ "S4_neg_uniform_shortfall": {
+  "expect_pass": false,
+  "got_pass": false,
+  "ok": true,
+  "rule": "全族一致落后 6 例 ⇒ 必红"
+ },
+ "S5_pos_within_threshold": {
+  "expect_pass": true,
+  "got_pass": true,
+  "ok": true,
+  "rule": "单族落后 1 例（未跨阈 −2）⇒ 过（阈值非恒红）"
+ },
+ "S2_detail": {
+  "F_lift_min_worst": -15,
+  "F_lift_min_median": 0,
+  "aggregate_median_D_cases": 0
+ },
+ "pass": true,
+ "rc_hint": 0
+}

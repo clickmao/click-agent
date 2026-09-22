@@ -746,3 +746,56 @@ Semantic Scholar 无 key ⇒ `HTTP 429` ⇒ 引用数**不可用**，如实记�
 
 - 本轮**采信 2 条**（L-adopted-8 / L-adopted-9，均**候选**且各带可证伪点）⇒ 连续 0 采信计数**保持 0**，**不降频**。
 - 诚实边界：两条**均为纯预印本**（`journal-ref` 全空、无同行评审痕迹）⇒ 只作**机制来源**，其自报数字（58.04% / 52.78% 等）**禁**直引为本仓结论或收益证据；采集日 2026-09-22。
+
+
+## 34. R637 文献小步（主题 = 族级/子群读数与聚合读数的关系；**只作机制来源，不作收益证据**）
+
+### 34.1 检索方法与预算自陈（反幻觉硬闸）
+
+| 项 | 内容 |
+|---|---|
+| 出口可用性 | 直探 `https://export.arxiv.org/api/query?...` ⇒ **HTTP=200 / t=1.16s**（出口可达 ⇒ 本轮的「0 命中」可归因于检索式而非网络，承 R626 教训） |
+| 请求面 | ① 出口直探 ×1 ② 引用短语式 ×2（`"worst-group accuracy" language model evaluation` / `"subgroup" code generation benchmark aggregate metric`）③ `cat:cs.SE` 最新 feed ×1 ④ 摘要取件 ×1 —— **合计 query 3 次（含 2 次被工具面拆散）+ 摘要 1 次**，与 R636 同源**超预算口径**（R636 自捕 5 次）⇒ 如实登记 |
+| 被拆散的两式 | 两式返回结果数 **1,277,172 / 1,166,914**（短语被拆成单词、`--category` 未生效、返回「当日最新」）⇒ **零信息量**，按台账既有规则**不计入空采信**；本轮起执行 R636 候选 ④：**默认走 `cat:<分类>` feed** |
+| 无 key 项 | Semantic Scholar `cited_by_count` 无 key ⇒ **不可用**（不编造）；两条出处 `journal-ref` / 会议痕迹均**空** ⇒ 权威性代理 = **最低档（纯预印本，未取到同行评审证据）** |
+
+### 34.2 L-adopted-10【候选·机制采信】子集/聚合必须**保组成**，且须**报最差情形**而非只报均值
+
+| 列 | 内容 |
+|---|---|
+| 日期 | 2026-09-22（采集日） |
+| 检索式 | `cat:cs.SE` feed（工具面短语式失效后改走分类 feed） |
+| 出处（含版本） | **arXiv:2609.24928v1**（2026-09-21；`comment` 空、`journal-ref` 空 ⇒ 纯预印本，最低档） |
+| 逐字引文 | "We first **group test set instances by their test outcome in a recent full test run to preserve the historical pass/fail rate**, then select the subset using the trajectory's embedding space." ／ "it reduces the **average estimation error by 3--11% and the worst-case error by 4--11%** relative to the typical draw" ／ "a 10% trajectory-aware subset keeps the **median** estimation error below 5% while cutting token cost by roughly 90%." |
+| 机制假设 | ① 聚合/子集化必须**按组成分组**（组 = 现状结果族）进行，否则估计误差的**最差情形**失控；② 报告口径须**成对**：均值/中位 **∧ 最差情形**（论文自己就是成对报）——单报中位会漏掉尾部。 |
+| 改哪一格 KPI | **质量口径**（新增「最低族栏」列：min over 族 of Δ示例数；主判据仍为逐窗中位配对差）——方向 = 族级塌陷必须在并读纪律下可见；tokens/命中率：不预期变化 |
+| 单变量轴 + 判据 | 轴 = **判据列数**（聚合单栏 vs 聚合+最低族双栏，同一批冻结逐例读数、零重测）；判据 = 双栏在同一冻结件上**可逐族复算** ∧ 存在「总栏过 ∧ 单族归零」样例时**总栏不得单独报绿**（并读纪律）；**可证伪点** = 构造不出「聚合过 ∧ 族级归零」样例 ⇒ 本轴对本仓题集不适用 |
+| 状态 | **采信（实施侧 = 本仓 R637 `F_lift_min` 判据，见 34.4）**；论文自报数字（3–11% / 38–46% / ≈90% token 降）**禁**直引 |
+
+### 34.3 L-adopted-11【候选·机制采信】周期性评测的子集须**可迁移、跨窗稳定**，且**简单可运维**优先于边际精度
+
+| 列 | 内容 |
+|---|---|
+| 日期 | 2026-09-22（采集日） |
+| 检索式 | 同 34.2（同批摘要取件 `id_list=2609.24928,2609.21267`，1 次请求） |
+| 出处（含版本） | **arXiv:2609.21267v1**（`comment` = "A study of efficient recurring evaluation of a production LLM agent based on real-world historical data"；`journal-ref` 空 ⇒ 纯预印本，最低档；**有真实上线自述** ⇒ 机制来源价值高、收益证据价值低） |
+| 逐字引文 | "multidimensional **2PL adaptive testing achieves the best overall score fidelity**: executing 200 questions, **38.5% of a full run, yields 1.03 pp of MAE**." ／ "We nevertheless **deployed difficulty-stratified fixed subsets because of their operational simplicity**, and show they **transfer without recalibration to five other agent families** and **remain stable across calibration windows as short as one day**." |
+| 机制假设 | ① 精度最优方案（自适应）**未必被采用**，稳定性/可运维性是独立判据；② 固定分层子集的价值在**跨窗/跨族可迁移**（换臂不必重标定）；③ 只用 MAE 这类**均值**指标无法表达「某族塌陷」——与 34.2 同向。 |
+| 改哪一格 KPI | **轮数/tokens**（复算面：口径 = 冻结逐例读数上零重测复算，不重跑臂）+ **质量口径**（跨窗可迁移性 = 判据器改版后旧读数仍可并列复算） |
+| 单变量轴 + 判据 | 轴 = **复算面**（重测 vs 只读复算，同一批冻结产物）；判据 = 复算所得逐族读数与冻结判决件**逐跑次一致**（不一致 = 0）∧ 复算耗时 ≪ 重测；**可证伪点** = 复算读数与冻结件不一致 ⇒ 复算面不可用，须回退重测 |
+| 状态 | **采信（框架已在册）**：本仓本轮的只读复算面（`attrib_r637.py` 重放冻结快照 = 56 跑次 × 58 例，零远端/零重测）即该机制的行使；其自报 38.5%/1.03pp **禁**直引 |
+
+### 34.4 与本仓现状的代码证据对照（**有代码行 ≠ 生效**；只读核，零产品改动）
+
+| 外部机制 | 本仓对应（证据） | 判定 |
+|---|---|---|
+| 聚合须配**最差情形/最低族**（34.2） | `eval/rover/r637/family_lift_r637.py::family_lift_core`（**裁决式 = 最差跑次**；阈值 −2 例先声明后算）+ `--selftest` 五态（含「单跑次整族归零 ⇒ 中位式 PASS ∧ 最差式 FAIL」的**空心闸实证**） | **已实施（本轮新增）** —— 论文**不作**其收益证据 |
+| 子集/聚合须**保组成**（34.2） | `eval/rover/r636/judge_r636.py::family_block_core`（族级归零独立分类）+ 本轮 `attrib_r637.py` 的逐族独立重放（同批 4 族逐例） | **已实施（既存 + 本轮复核）** |
+| 跨窗/跨族**可迁移、零重标定**（34.3） | 本轮冻结面 = 5 轮 × 3 窗；`cross_check_r636_frozen` 断言「独立重放 vs R636 冻结判决件逐跑次一致（mismatch 0）」 | **已实施（本轮新增校验）** |
+| 过程级（逐 tick）断言 | 同 R636：`eval/rover/r636/judge_r636.py` 无过程合规断言面；本轮亦未新增（受「禁新增夹具」令约束） | **真缺口（候选，须放行）** |
+
+### 34.5 连续 0 采信计数
+
+- 本轮**采信 2 条**（L-adopted-10 / L-adopted-11，均**候选·机制**且各带可证伪点）⇒ 连续 0 采信计数**保持 0**，**不降频**。
+- 诚实边界：两条**均为纯预印本**（`journal-ref` 空、无同行评审痕迹）⇒ 只作**机制来源**；自报数字**禁**直引；采集日 2026-09-22。
+- 预算自陈：本轮 query **3 次**（含 2 次被工具面拆散的无效式）+ 摘要 **1 次** ⇒ 与 R636 同源**超预算**，已按 R636 候选 ④ 改为**默认 `cat:` feed**。

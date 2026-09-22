@@ -10,6 +10,14 @@
 > 数据时效 (测试数/批号/评测口径)、版本引用一致性、死链检查; **禁止只改局部不做整体校验**。
 > 空间位置相邻但语义不同段的错挂 (如旧版本标题下挂新数据) 视同违例。
 
+## R637 · 2026-09-22 · 状态: **完成（只读定因轮；rc=1 = 机制次级未过〔预注册机制假设被证伪〕；形式门禁 14/14；`status_gen --check` PASS；零产品改动）**
+
+- **主题**: 承 R636 下轮候选 ① —— `B_family_block` 整族归零的**只读逐例定因** × 候选 ②「最低族栏」判据落地（`L-adopted-8` 实施侧）× 候选 ④ 检索式走 `cat:` feed。
+- **修改点**: 新增 `eval/rover/r637/{prereg-r637.json,dag-r637.md,attrib_r637.py,minfix_r637.py,family_lift_r637.py,family-lift-r637-selftest.json,verdict-r637.json,report-r637.md,closeout_r637.py,out/**}` ＋ `docs/evidence/RF0001/R637-family-block-attribution.md`；registry +1 行（L3）；基线台账 +1 条 `F_merge.quality.family_lift_min`；kpi +1 行（10 baselines）；文献台账追加 R637 段（append-only，801 行）。**净产品改动 0**（`git diff --stat src/` 空）。
+- **读数**: J0 oracle 正控 15/15 · J1 census 交叉校验 checked 47 / mismatch 0 · J2/J3 守恒 `205 = 产物 205 + 构造 0 + 判据 0` · **J4 FAIL（预注册被证伪，照原样判）** · J5 变异负控 3/3 · J5b 最小修复实验 4/4 · J6 确定性 5/5 ⇒ **rc=1**。核心结论：五个整族归零跑次 = **四处各异的产物缺陷**（`limit` 未定义 / 冷集分量写反 / `floor` 后多余 ±1 修正 ∧ 走法枚举未限定合法着法〔两处叠加 0→13→15〕 / 贪心构造多 1）+ **一处探针覆盖缺口**（`sub` 族）。空心闸实证：同数据 `F_lift_min_median=0`（PASS）vs `F_lift_min_worst=-15`（FAIL）。
+- **基线**: 新增 `F_merge.quality.family_lift_min`（`instrument_criterion`，阈值 −2 例，五态自检含空心闸两侧成对 + 旁路对照）；引 10 条既有 id。
+- **诚实边界**: 只读复算 ≠ 真机新跑 · 行级定因只证「缺陷在被改那一行」· `sub` 族块机理未测到 · 预注册 FAIL 不翻案 · 不宣称收益降幅。
+
 ## R632 · 2026-09-22 · 状态: **器件面收口（零真机臂；重审 R631 冻结面 rc=3 ⇒ 停链造窗）**
 
 - **主题**: R631 自捕三缺陷全关闭（判据族 ≠ 预注册 / `unreliable_policy` 未声明 / 轮驱动器声明滞后）＋ 本轮新捕四条（取数层假红 · 缺声明判绿 · 同名判据两套谓词 · 台账假断言）。

@@ -1,0 +1,200 @@
+{
+ "round": "R637",
+ "kind": "minfix-per-blocked-run",
+ "cases_sha16": "270128eb85c7afc0",
+ "targets": [
+  {
+   "tag": "r635:w232/agentP-r2",
+   "defect": "冷集第二分量写成 `n`（应为 `t + n`）⇒ 隐含冷集与真值**零交集**（intersect 0 / extra 31 / missing 18）",
+   "patches": [
+    {
+     "file": "games/wythoff.py",
+     "old": "        pairs.add((n, t))\n        pairs.add((t, n))\n",
+     "new": "        pairs.add((t, t + n))\n        pairs.add((t + n, t))\n",
+     "n_replacements": 1
+    }
+   ],
+   "wythoff_stepwise": {
+    "n": 15,
+    "pass_by_step": [
+     0,
+     15
+    ],
+    "labels": [
+     "orig",
+     "patch1..1"
+    ],
+    "pass_null": 0
+   },
+   "other_families": {
+    "life": {
+     "n": 14,
+     "pass_fix": 14,
+     "pass_orig": 14,
+     "percase_identical": true
+    },
+    "sub": {
+     "n": 14,
+     "pass_fix": 14,
+     "pass_orig": 14,
+     "percase_identical": true
+    },
+    "nim": {
+     "n": 15,
+     "pass_fix": 15,
+     "pass_orig": 15,
+     "percase_identical": true
+    }
+   },
+   "verdict": "PASS",
+   "rule": "目标族 0/n → n/n 转绿 ∧ 其它三族逐例逐字节不变 ∧ 空重写负控仍 0/n"
+  },
+  {
+   "tag": "r633:w227/codex",
+   "defect": "入口引用**未定义变量** `limit`（函数内无此名）⇒ 625 次入口 ERR（n_implied=0）",
+   "patches": [
+    {
+     "file": "games/wythoff.py",
+     "old": "    cold = _cold_positions(limit + 2)\n",
+     "new": "    cold = _cold_positions(max(a, b) + 2)\n",
+     "n_replacements": 1
+    }
+   ],
+   "wythoff_stepwise": {
+    "n": 15,
+    "pass_by_step": [
+     0,
+     15
+    ],
+    "labels": [
+     "orig",
+     "patch1..1"
+    ],
+    "pass_null": 0
+   },
+   "other_families": {
+    "life": {
+     "n": 14,
+     "pass_fix": 14,
+     "pass_orig": 14,
+     "percase_identical": true
+    },
+    "sub": {
+     "n": 14,
+     "pass_fix": 14,
+     "pass_orig": 14,
+     "percase_identical": true
+    },
+    "nim": {
+     "n": 15,
+     "pass_fix": 15,
+     "pass_orig": 15,
+     "percase_identical": true
+    }
+   },
+   "verdict": "PASS",
+   "rule": "目标族 0/n → n/n 转绿 ∧ 其它三族逐例逐字节不变 ∧ 空重写负控仍 0/n"
+  },
+  {
+   "tag": "r636:w236/codex",
+   "defect": "缺陷一：`floor(d·φ)` 之后多余的 ±1 修正（`t > d/φ` 对 t≥1 恒真 ⇒ 退化成 round）；缺陷二：走法枚举 `(i, j)` **未限定 Wythoff 合法着法**（只允许取单堆或两堆等量）⇒ 冷集修好后仍返回非法着法（实测 #43 `WIN 1 13` / #57 `WIN 2 11`），两步合计才 15/15",
+   "patches": [
+    {
+     "file": "games/wythoff.py",
+     "old": "    if (t + 1) <= d / PHI:\n        t += 1\n    elif t > d / PHI:\n        t -= 1\n",
+     "new": "",
+     "n_replacements": 1
+    },
+    {
+     "file": "games/wythoff.py",
+     "old": "            if i == 0 and j == 0:\n                continue\n",
+     "new": "            if i == 0 and j == 0:\n                continue\n            if not (i == 0 or j == 0 or i == j):\n                continue\n",
+     "n_replacements": 1
+    }
+   ],
+   "wythoff_stepwise": {
+    "n": 15,
+    "pass_by_step": [
+     0,
+     13,
+     15
+    ],
+    "labels": [
+     "orig",
+     "patch1..1",
+     "patch1..2"
+    ],
+    "pass_null": 0
+   },
+   "other_families": {
+    "life": {
+     "n": 14,
+     "pass_fix": 14,
+     "pass_orig": 14,
+     "percase_identical": true
+    },
+    "sub": {
+     "n": 14,
+     "pass_fix": 14,
+     "pass_orig": 14,
+     "percase_identical": true
+    },
+    "nim": {
+     "n": 15,
+     "pass_fix": 15,
+     "pass_orig": 15,
+     "percase_identical": true
+    }
+   },
+   "verdict": "PASS",
+   "rule": "目标族 0/n → n/n 转绿 ∧ 其它三族逐例逐字节不变 ∧ 空重写负控仍 0/n"
+  },
+  {
+   "tag": "r636:w234/agentP-r3",
+   "defect": "贪心构造 `b_n = a_n + n` 写成 `a_n + n + 1`（多 1）⇒ 冷集整体错位 + 15 次入口 ERR",
+   "patches": [
+    {
+     "file": "games/wythoff.py",
+     "old": "        mm = nn + len(pairs) + 1\n",
+     "new": "        mm = nn + len(pairs)\n",
+     "n_replacements": 1
+    }
+   ],
+   "wythoff_stepwise": {
+    "n": 15,
+    "pass_by_step": [
+     0,
+     15
+    ],
+    "labels": [
+     "orig",
+     "patch1..1"
+    ],
+    "pass_null": 0
+   },
+   "other_families": {
+    "life": {
+     "n": 14,
+     "pass_fix": 14,
+     "pass_orig": 14,
+     "percase_identical": true
+    },
+    "sub": {
+     "n": 14,
+     "pass_fix": 14,
+     "pass_orig": 14,
+     "percase_identical": true
+    },
+    "nim": {
+     "n": 15,
+     "pass_fix": 15,
+     "pass_orig": 15,
+     "percase_identical": true
+    }
+   },
+   "verdict": "PASS",
+   "rule": "目标族 0/n → n/n 转绿 ∧ 其它三族逐例逐字节不变 ∧ 空重写负控仍 0/n"
+  }
+ ],
+ "rc": 0
+}

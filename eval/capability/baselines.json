@@ -516,6 +516,39 @@
    "check_cmd": "python3 eval/rover/r636/family_block_census_r636.py; python3 -c \"import io,json;d=json.load(io.open('eval/rover/r636/family-block-census-r636.json'));print(d['rc'],d['teeth']['POS_got'],d['teeth']['NEG_got'],d['census']['base_rate_family_block'])\"",
    "ground_rule": "判据器与 census **同源**：census 直接 import `judge_r636.family_block_core`（禁第二实现）；分类**不重算** `cases_pass`、**不进**中位分母、**不改写**任何质量列（并列读数）；VOID 跑次（同质超时 / `cli_rc=124`）**先剔除并单列**，否则「挂死」被读成「整族归零」；census 分母 = **在盘**的冻结跑次（非全史）⇒ base_rate 只作描述性读数、不作阈值、不进 rc；跨轮**禁相减**、只并列（各轮臂名不同）。 源改版 ⇒ 必须重钉本 pin（本轮实测：census 首跑在 R636 产物落盘**前**生成、`rounds_scanned` 含 r636 而该轮 0 跑次在盘 ⇒ 重跑后 f57549ef5d60 → fabd36642cd8，两版读数**并列**（v2pre636 留档），旧值不撤。",
    "negative_control": "① **首跑件留档不翻案**：`eval/rover/r636/family-block-census-r636-v1prevoid.json`（缺 VOID 剔除步 ⇒ 把 r633:w227/agentP-r2 的 `cli_rc=124` 挂死跑次误判 FAMILY_BLOCK）——证明该分类对输入集形态**有牙**（改输入即改输出）；② 合成影子自检 8 态（`selftest-r636.json`，含 FAMILY_BLOCK / SYNTHETIC / PAIR_READ 两侧）；③ 两侧**真机**样例成对（只跑一侧 = 未证有牙）。"
+  },
+  {
+   "id": "F_merge.quality.family_lift_min",
+   "face": "F_merge",
+   "kind": "instrument_criterion",
+   "metric": "「**最低族栏**」判据：同一冻结逐例读数上取 **最差跑次** 的族级 Δ示例数（`F_lift_min_worst`），与逐窗中位聚合口径**并列**报告；主判 PASS ∧ 最差栏跨阈 ⇒ 禁单读聚合栏。",
+   "unit": "cases",
+   "value": {
+    "threshold_cases": -2,
+    "selftest_pass": true,
+    "selftest_rc_hint": 0,
+    "hollow_gate_demo": {
+     "same_frozen_data": true,
+     "F_lift_min_median": 0,
+     "F_lift_min_worst": -15,
+     "aggregate_median_D_cases": 0,
+     "reading": "**空心闸实证**：中位式 PASS（0）而最差式 FAIL（−15）⇒ 只报聚合/中位在构造上掩盖整族归零"
+    },
+    "minfix_rc": 0,
+    "minfix_targets": {
+     "r635:w232/agentP-r2": "PASS",
+     "r633:w227/codex": "PASS",
+     "r636:w236/codex": "PASS",
+     "r636:w234/agentP-r3": "PASS"
+    }
+   },
+   "threshold": "T1 三态无条件发射：判决件必含 `F_lift_min_worst` / `F_lift_min_median` / `aggregate_median_D_cases`；T2 阈值 **−2 例**（先声明后算，见 prereg-r637.json）；T3 两侧有牙：S5（单族落后 1 例，未跨阈）必 PASS ∧ S4（全族一致落后 6 例）与 S2（单跑次整族归零）必 FAIL。",
+   "threshold_source": "eval/rover/r637/prereg-r637.json",
+   "source_path": "eval/rover/r637/family-lift-r637-selftest.json",
+   "source_sha12": "428ed6067fb4",
+   "check_cmd": "python3 eval/rover/r637/family_lift_r637.py --selftest; python3 -c \"import io,json;d=json.load(io.open('eval/rover/r637/family-lift-r637-selftest.json'));print(d['pass'],d['S2_detail']['F_lift_min_median'],d['S2_detail']['F_lift_min_worst'])\"",
+   "ground_rule": "裁决式取**最差跑次**而非中位（族级归零在构造上被中位掩盖）；判据与被复算数据同源冻结件；只读复算、零重测；不重算任何既有质量列（并列读数）；跨轮禁相减。",
+   "negative_control": "五态自检（`family-lift-r637-selftest.json`，全过）：S2 单跑次整族归零 ⇒ 最差式 FAIL 而中位式 PASS（**空心闸两侧成对**）；S3 同数据旁路本判据 ⇒ 聚合口径判过（判决来自判据非数据）；S4 全族一致落后 ⇒ FAIL（非恒绿）；S5 未跨阈 ⇒ PASS（非恒红）。"
   }
  ],
  "faces": {

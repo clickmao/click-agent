@@ -1,0 +1,276 @@
+{
+ "round": "R637",
+ "kind": "只读逐例定因轮（承 R636 下轮候选 ① = `B_family_block` 整族归零定因；**零产品源码改动 / 零重测 / 零新增夹具 / 零远端**）",
+ "cases_sha16": "270128eb85c7afc0",
+ "cases_pin_ok": true,
+ "frozen_face": {
+  "rounds": [
+   "r631",
+   "r633",
+   "r634",
+   "r635",
+   "r636"
+  ],
+  "runs_live": 61,
+  "void_excluded": [
+   {
+    "round": "r633",
+    "win": "w227",
+    "arm": "agentP-r2",
+    "reason": "cli_rc=124 (挂死)"
+   }
+  ],
+  "per_case_rows": 3538
+ },
+ "checks": {
+  "J0_oracle_positive_control": {
+   "n": 15,
+   "match": 15,
+   "mismatch": [],
+   "pass": true
+  },
+  "J1_census_reproduction": {
+   "checked": 47,
+   "mismatch": [],
+   "frozen_scanned": [
+    "r631",
+    "r633",
+    "r634",
+    "r635",
+    "r636"
+   ],
+   "pass": true,
+   "void_excluded": [
+    {
+     "round": "r633",
+     "win": "w227",
+     "arm": "agentP-r2",
+     "reason": "cli_rc=124 (挂死)"
+    }
+   ]
+  },
+  "J2_J3_per_case_attribution": {
+   "non_ok_total": 205,
+   "product": 205,
+   "construction": 0,
+   "criterion": 0,
+   "conservation_ok": true,
+   "product_fraction": 1.0,
+   "pass": true,
+   "tag_hist": {
+    "STATE_FLIP": 63,
+    "LEGAL_NONMIN": 5,
+    "TRUE_WRONG": 105,
+    "HARD_CRASH": 32
+   }
+  },
+  "J4_mechanism_hypothesis": {
+   "n_probed": 61,
+   "cross_tab": {
+    "CLEAN": {
+     "COLD_SET_EQUAL": 36
+    },
+    "PARTIAL_FAMILY": {
+     "COLD_SET_OTHER": 12,
+     "ENTRY_ERROR": 2,
+     "COLD_SET_EQUAL": 6
+    },
+    "FAMILY_BLOCK": {
+     "ENTRY_ERROR": 2,
+     "COLD_SET_EQUAL": 1,
+     "COLD_SET_OTHER": 2
+    }
+   },
+   "blocked_all_shift_or_inequal": false,
+   "clean_control_equal": [
+    36,
+    36
+   ],
+   "blocked_runs": [
+    "r633:w227/codex",
+    "r634:w230/agentP-r3",
+    "r635:w232/agentP-r2",
+    "r636:w234/agentP-r3",
+    "r636:w236/codex"
+   ],
+   "pass": false
+  },
+  "J5_negative_controls": {
+   "N1_null_rewrite": {
+    "ok": 0,
+    "tags": {
+     "HARD_CRASH": 15
+    },
+    "verdict": "PASS",
+    "rule": "同字节重写 ⇒ 失败例数须与原始跑次相同（非「凡改即绿」）"
+   },
+   "N2_correct_impl": {
+    "ok": 15,
+    "tags": {
+     "OK": 15
+    },
+    "verdict": "PASS",
+    "rule": "替换为独立 oracle 实现 ⇒ 15/15 全 OK（探针有牙、可转绿）"
+   },
+   "N3_always_lose": {
+    "ok": 4,
+    "tags": {
+     "STATE_FLIP": 11,
+     "OK": 4
+    },
+    "verdict": "PASS",
+    "rule": "恒 LOSE ⇒ 必被大量判红"
+   },
+   "N4_minfix": {
+    "applied": false,
+    "old_excerpt": null,
+    "new_excerpt": null
+   }
+  },
+  "J5b_minfix_per_blocked_run": {
+   "rc": 0,
+   "targets": [
+    {
+     "tag": "r635:w232/agentP-r2",
+     "verdict": "PASS",
+     "pass_by_step": [
+      0,
+      15
+     ],
+     "pass_null": 0,
+     "other_families_identical": true
+    },
+    {
+     "tag": "r633:w227/codex",
+     "verdict": "PASS",
+     "pass_by_step": [
+      0,
+      15
+     ],
+     "pass_null": 0,
+     "other_families_identical": true
+    },
+    {
+     "tag": "r636:w236/codex",
+     "verdict": "PASS",
+     "pass_by_step": [
+      0,
+      13,
+      15
+     ],
+     "pass_null": 0,
+     "other_families_identical": true
+    },
+    {
+     "tag": "r636:w234/agentP-r3",
+     "verdict": "PASS",
+     "pass_by_step": [
+      0,
+      15
+     ],
+     "pass_null": 0,
+     "other_families_identical": true
+    }
+   ]
+  },
+  "J6_determinism": {
+   "runs": [
+    {
+     "run": "r633:w227/codex",
+     "identical": true,
+     "n_total": 58,
+     "ok": 43
+    },
+    {
+     "run": "r634:w230/agentP-r3",
+     "identical": true,
+     "n_total": 58,
+     "ok": 44
+    },
+    {
+     "run": "r635:w232/agentP-r2",
+     "identical": true,
+     "n_total": 58,
+     "ok": 43
+    },
+    {
+     "run": "r636:w234/agentP-r3",
+     "identical": true,
+     "n_total": 58,
+     "ok": 43
+    },
+    {
+     "run": "r636:w236/codex",
+     "identical": true,
+     "n_total": 58,
+     "ok": 43
+    }
+   ],
+   "pass": true
+  }
+ },
+ "prereg_verdict": {
+  "J4": "FAIL（预注册机制假设被证伪，照原样判，不翻案）"
+ },
+ "posthoc": {
+  "P1_mechanism_not_single": "4 个 wythoff 族级归零跑次 = **四处各异的产物缺陷**（冷集公式分量写反 / 入口未定义变量 / floor 后多余 ±1 修正 / 贪心构造多 1）⇒ 「整族归零」非单一机理，禁归因到单一组件",
+  "P2_discriminating_feature": "四变类标签分辨率不足（ENTRY_ERROR 在 PARTIAL 与 BLOCK 均出现）⇒ **判别特征 = `intersect == 0 ∧ missing == n_truth`（真值冷点在探针面全丢）**：wythoff 块 **4/4 命中** · 非块跑次 **1/21 假阳** · CLEAN **0/36 假阳**",
+  "P3_probe_family_coverage": "冷集探针只覆盖 wythoff 族 ⇒ 第 5 个块（`r634:w230/agentP-r3`，`sub` 族 0/14）在本探针下**不可判**（判为 COLD_SET_EQUAL 是探针不适用，不是「该族正常」）；其逐例定因另取 = **14/14 全 TRUE_WRONG 状态层误判**（`LOSE↔WIN` 反向 7 例），无崩无格式错",
+  "P4_instrument_defect_selfcaught": "J5 的 N4 最小修复实验用**写死正则锚** `nn = 0` ⇒ 四跑次单一命中、`applied=false`（**锚点缺失，不是「修复无效」**）⇒ 补救件 `eval/rover/r637/minfix_r637.py` 改为逐跑次显式缺陷行补丁（每处断言替换 == 1）⇒ **4/4 PASS**，其中 `r636:w236/codex` 为**两处缺陷叠加**（补丁一 13/15，补丁二 15/15）"
+ },
+ "landed_instrument": {
+  "id": "F_merge.quality.family_lift_min",
+  "file": "eval/rover/r637/family_lift_r637.py",
+  "selftest": {
+   "round": "R637",
+   "kind": "family_lift_selftest",
+   "S1_pos_all_equal": {
+    "expect_pass": true,
+    "got_pass": true,
+    "ok": true,
+    "rule": "全族/全跑次相等 ⇒ 过"
+   },
+   "S2_neg_single_rep_family_block": {
+    "expect_pass": false,
+    "got_pass": false,
+    "ok": true,
+    "rule": "单跑次整族归零 ⇒ 最差式必红（中位式无牙，并列报告）"
+   },
+   "S3_bypass_aggregate_only": {
+    "expect_pass": true,
+    "got_pass": true,
+    "ok": true,
+    "rule": "同数据旁路本判据 ⇒ 聚合口径判过（判决来自判据，非数据）"
+   },
+   "S4_neg_uniform_shortfall": {
+    "expect_pass": false,
+    "got_pass": false,
+    "ok": true,
+    "rule": "全族一致落后 6 例 ⇒ 必红"
+   },
+   "S5_pos_within_threshold": {
+    "expect_pass": true,
+    "got_pass": true,
+    "ok": true,
+    "rule": "单族落后 1 例（未跨阈 −2）⇒ 过（阈值非恒红）"
+   },
+   "S2_detail": {
+    "F_lift_min_worst": -15,
+    "F_lift_min_median": 0,
+    "aggregate_median_D_cases": 0
+   },
+   "pass": true,
+   "rc_hint": 0
+  },
+  "key_read": "S2 **空心闸实证**：同一冻结数据下中位式 `F_lift_min_median=0`（PASS）而最差式 `F_lift_min_worst=-15`（FAIL）⇒ 只报中位确实**在构造上**掩盖整族归零",
+  "sha12": "7213e11804bd"
+ },
+ "rc": 1,
+ "rc_semantics": "rc 分层 v4：0 主判 / 1 机制次级（预注册机制假设 J4 未过）/ 2 器具 / 3 输入。本轮 J4=FAIL ⇒ rc=1；J0/J1/J2/J3/J6 全过 ⇒ 无器具/输入层红。",
+ "honest_boundary": [
+  "只读复算面（重放冻结快照）**不是**真机新跑；读数只对冻结面成立。",
+  "第 5 个块（`sub` 族）机理**未测到**（探针家族覆盖缺口）⇒ 只落逐例分类，不落行级定因。",
+  "预注册 J4 判 FAIL 不翻案；正确形态列 posthoc 并显式标事后性。",
+  "行级定因来自**副本上的最小修复实验**（非生产链路修复）⇒ 证「缺陷在被改那一行」，不证「生产已修」。"
+ ]
+}

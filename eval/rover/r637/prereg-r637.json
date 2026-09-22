@@ -1,0 +1,93 @@
+{
+ "round": "R637",
+ "written_before_run": true,
+ "written_at": "2026-09-22T18:52:00+08:00",
+ "author": "cron self-check loop (AgentFramework capability cycle)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9；本轮 = 只读定因轮（R636 下轮候选 ①）+ 判据面轮（候选 ②/④ 并轮）",
+ "claim": "承 R636 判决 rc=1（主判据 Q1 PASS 但新判据 `B_family_block` 判 `pair_read_ok=False`：本侧跑次 w234/agentP-r3 整族归零 wythoff 0/15，被逐窗中位 58 掩盖）。本轮在**冻结产物**上做逐例三分定因（构建/夹具缺陷 vs 产物缺陷 vs 判据缺陷），并把「最低族栏」判据（L-adopted-8 实施侧）与文献小步（候选 ④）合并入轮。零产品源码改动 / 零新臂 / 零远端调用 / 零新增夹具语义 / 零重测。",
+ "skip_steps": {
+  "构建/AOT": "跳步 构建/AOT —— 本轮零产品源码改动（`git diff --stat src/` 空），被测件 = R630 AOT 件（sha16 cefd045e8d1d，与 R631/R633/R634/R635/R636 逐字节同），无新二进制可构建。",
+  "真机臂/远端": "跳步 真机臂 —— 本轮只读复算冻结快照（候选题面 = 定因，见 RF0005 §2 步 3），无新臂 ⇒ tokens/命中率/轮数**未测**（禁补记）。"
+ },
+ "single_variable": {
+  "axis": "无",
+  "why": "只读定因 + 判据面轮：无 env 剂量 / 无产品代码改动 / 无新臂 ⇒ 按 RF0005 §1 硬约束 1 **不计为单变量轮**（同 R594/R622/R626 先例）。判据面新增（候选 ②）⇒ 与 R634/R635/R636 读数**禁相减、只并列**。"
+ },
+ "inputs": {
+  "frozen_cases": {
+   "path": "eval/rover/r610/cases/cases-r521.json",
+   "sha256": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+   "note": "58 例（life 14 / sub 14 / nim 15 / wythoff 15），逐字节复用 r631–r636 用例面；起臂（本工具）前机检 sha。"
+  },
+  "oracle": {
+   "path": "eval/rover/r622/wythoff_oracle.py",
+   "sha256": "d26ff0fa77cf661bff1a3026b67f85b8a1fbaadc90c9f94df75bef9a01c305d9",
+   "independence": "由题面**逐字规格**直接实现（按 a+b 升序的定义式 DP + 枚举着法取字典序最小）；与判定器/生成器/被测评分链路零共享代码；不读期望输出、不读 cases。"
+  },
+  "snapshot_roots": ["eval/rover/r631/snapshots", "eval/rover/r633/snapshots", "eval/rover/r634/snapshots", "eval/rover/r635/snapshots", "eval/rover/r636/snapshots"],
+  "census_face": "同 R636 `family-block-census-r636.json` 的扫面（r631/r633/r634/r635/r636），本轮**独立重放** 58 例以取得逐族读数。"
+ },
+ "criteria": {
+  "J0_oracle_positive_control": {
+   "threshold": "oracle 对 15 例 wythoff 逐例**复现冻结期望字节** 15/15",
+   "falsified_if": "<15/15 ⇒ 夹具/题面存在缺陷嫌疑 ⇒ 本轮全部产物侧结论作废（rc=3 输入面）"
+  },
+  "J1_census_reproduction": {
+   "threshold": "独立重放所得「逐跑次族级分类」（FAMILY_BLOCK = 某族 0 例通过 / PARTIAL = 某族有失败但非 0 / CLEAN）与 R636 冻结分类件**逐跑次一致**，不一致数 == 0",
+   "falsified_if": "≥1 跑次分类不一致 ⇒ 先查本工具读法（器具层 rc=2），不得改判 R636"
+  },
+  "J2_four_way_per_case": {
+   "labels": ["TRUE_WRONG", "STATE_FLIP", "LEGAL_NONMIN", "HARD_CRASH", "FORMAT"],
+   "threshold": "全部非 OK 例次 100% 落入四类之一（无残留桶）",
+   "falsified_if": "存在 未分类/UNCLASSIFIED ⇒ 器具缺陷（rc=2）"
+  },
+  "J3_three_way_attribution": {
+   "axis": "构造缺陷（夹具/题面） vs 产物缺陷（生成产物自身） vs 判据缺陷（判据僵硬）",
+   "conservation": "非 OK 例次总数 == 产物缺陷 + 构造缺陷 + 判据缺陷（逐例一次且仅一次）",
+   "rules": {
+    "CONSTRUCTION": "该例 oracle 输出 != 冻结期望（J0 已要求 0 例；非 0 即改判）",
+    "CRITERION": "产物输出满足题面规格（合法必胜着法 ∧ 题面未定死角）却与冻结期望不同 ⇒ 判据僵硬；本轮题面**明文**要求字典序最小 ⇒ 「合法但非最小」记产物缺陷（LEGAL_NONMIN），不得记判据缺陷",
+    "PRODUCT": "其余（oracle == 期望 ∧ 产物输出 != 期望）"
+   },
+   "main_threshold": "产物缺陷占比 ≥ 90% 且 构造缺陷 == 0 ⇒ 定因为产物侧（承重缺口属产品侧）",
+   "falsified_if": "构造缺陷 > 0 或 判据缺陷 > 0 ⇒ 承重缺口归因改写（夹具/判据），不得写作产物缺陷"
+  },
+  "J4_mechanism_attribution": {
+   "method": "行为式探针：在产物树副本上经**其自身接口**（`games.wythoff.solve`，独立子进程）取 25×25 网格的隐含冷集，与独立 oracle 的 P 位集合比对",
+   "threshold": "整族归零跑次：隐含冷集与真值集合**不相等**（对称差 > 0），且诊断出的机制归因字段非空",
+   "falsified_if": "隐含冷集与真值相等却仍整族归零 ⇒ 归因到出口/格式层，不得判为冷集构造层"
+  },
+  "J5_mutation_negative_controls": {
+   "variants": ["N1_null_rewrite（同字节重写）", "N2_correct_impl（oracle 实现替换）", "N3_always_lose（恒 LOSE）"],
+   "threshold": "① 逐例对应性 mismatch == 0（判据器无假红/无误放行）；② N1 在归零跑次的失败例数 == 原跑次失败例数（证明非「凡改即绿」）；③ N2 在 15 例上全 OK（证明探针有牙、可转绿）",
+   "falsified_if": "N2 不全绿地/或 N1 变绿 ⇒ 器具缺陷（rc=2），首跑读数不翻案"
+  },
+  "J6_determinism": {
+   "threshold": "整族归零跑次**重放两次**逐例逐字节相同（确定性 ×2）",
+   "falsified_if": "两次不同 ⇒ 非确定性判据缺陷（rc=2），承 RF0005「强宣称须新增证据」"
+  },
+  "J7_family_lift_criterion": {
+   "new_criterion": "F_lift_min（最低族栏）：逐窗 min over 族 f of (产品族通过例数 − 真值族通过例数)",
+   "threshold": "各有效窗 F_lift_min ≥ −2 例（与主判据 §阈 −2 例同尺度；族规模 14/15 ⇒ 该阈 = 单族最多落后 2 例）",
+   "declare_note": "**声明先于算**：阈值在跑/算之前写死；口径 = 例数（非比率，避免 14 vs 15 分母差）；本判据是**护栏**（补聚合中位之盲），非显著性检验（显著性面见主判据）",
+   "falsified_if": "两侧自检不通过（聚合 PASS ∧ 单族归零的合成样本未被判红；或全族相等的合成样本被判红）⇒ 器具缺陷（rc=2）",
+   "on_frozen": "在 R636（及 R635 并列）冻结逐例读数上复算，零重测；读数如实报告，禁下调阈值"
+  }
+ },
+ "controls": {
+  "positive": ["J0 oracle 15/15", "J5.N2 正确实现全 OK", "J7 合成样本「全族相等 ∧ 聚合 PASS」⇒ 判过"],
+  "negative": ["J5.N1 null 重写（不得变绿）", "J5.N3 恒 LOSE（必被判红）", "J7 合成样本「聚合 PASS ∧ 单族归零」⇒ 必判红", "J1 与 R636 冻结分类件比对（不依赖本人重算的单一来源）"]
+ },
+ "void_rule": {
+  "rule": "跑次 `cli_rc=124`（挂死）或用例面不完整（cases_total != 58）⇒ 该跑次 **VOID**，分类前置剔除（承 R636 自捕 E2：未剔 VOID 会把挂死读成 FAMILY_BLOCK）",
+  "expected_void": ["r633:w227/agentP-r2"]
+ },
+ "honest_bounds": {
+  "no_rank_change": "本轮只读 ⇒ 不改 R636 判决、不动任何历史轮读数（跨轮禁相减，只并列）",
+  "no_gain_claim": "零产品源码改动 / 零远端 ⇒ **不宣称任何质量或成本降幅**；tokens / 命中率 / 轮数 / 问答计数 **未测**",
+  "codex_truth_arm": "外部真值臂本轮只读复算（不新跑）⇒ 质量面读数承 R636，标「参考（未可验收）」（铁律 11 rc=1）",
+  "product_fix_gated": "产物侧修复（冷集构造层）**未放行不动**（RF0005 §3：仅三类升级用户）；本轮产出 = 定因 + 可验收的修复交点",
+  "probe_scope": "行为式探针只判「产物自认该点为必败位」，不读其内部实现；网格 = 题面值域 1..25",
+  "criteria_version_note": "新增 J7 ⇒ 判据器改版：与 R634/R635/R636 rc 列**禁相减**"
+ }
+}
