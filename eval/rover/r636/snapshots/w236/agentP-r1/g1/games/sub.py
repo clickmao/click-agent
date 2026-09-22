@@ -1,0 +1,22 @@
+def solve(text: str) -> str:
+    lines = text.split('\n')
+    n, k = map(int, lines[0].split())
+    moves = sorted(set(map(int, lines[1].split())))[:k]
+
+    win = [False] * (n + 1)
+    for i in range(1, n + 1):
+        for s in moves:
+            if s > i:
+                break
+            if not win[i - s]:
+                win[i] = True
+                break
+
+    if win[n]:
+        best = None
+        for s in moves:
+            if s <= n and not win[n - s]:
+                best = s
+                break
+        return 'WIN %d' % best
+    return 'LOSE'

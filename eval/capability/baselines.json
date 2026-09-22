@@ -466,6 +466,56 @@
    "threshold_source": "eval/rover/r630/prefix-r630.json:pin_spec_tier.sha256",
    "ground_rule": "逐跑次 transcript.prefix_sha256 必须逐位等于本锚（T 档）；不等即轴未生效 ⇒ 整轮 VOID",
    "negative_control": "同 F_env.prefix.spec_chars（影子自检 7 态）"
+  },
+  {
+   "id": "F_merge.quality.family_block_scan",
+   "face": "F_merge",
+   "kind": "instrument_criterion",
+   "metric": "本侧跑次**族级归零**独立分类（FAMILY_BLOCK / PARTIAL_FAMILY / CLEAN）+ 与主判据的**并读纪律**（聚合/中位 PASS **不得**单独读作达标）；跨轮 base rate census 为描述性并列读数",
+   "unit": "runs",
+   "value": {
+    "teeth_pos": "r635/w232/agentP-r2",
+    "teeth_got_pos": "FAMILY_BLOCK",
+    "teeth_neg": "r635/w231/agentP-r1",
+    "teeth_got_neg": "CLEAN",
+    "teeth_pass": true,
+    "n_agent_runs": 47,
+    "n_family_block": 3,
+    "n_partial_family": 14,
+    "n_clean": 30,
+    "base_rate_family_block": 0.0638,
+    "n_void_excluded": 1,
+    "rounds_scanned": [
+     "r631",
+     "r633",
+     "r634",
+     "r635",
+     "r636"
+    ],
+    "family_blocked_runs": [
+     "r634:w230/agentP-r3",
+     "r635:w232/agentP-r2",
+     "r636:w234/agentP-r3"
+    ],
+    "per_round_family_block": {
+     "r631": "0/12",
+     "r633": "0/8",
+     "r634": "1/9",
+     "r635": "1/9",
+     "r636": "1/9"
+    },
+    "blocking_families_observed": [
+     "sub (r634:w230/agentP-r3)",
+     "wythoff (r635:w232/agentP-r2, r636:w234/agentP-r3)"
+    ]
+   },
+   "threshold": "B1 三态**互斥且无条件发射**（判决件必含 `B_family_block`，含 `by_run` 逐跑次明细）；B2 **并读纪律两侧有牙**：主判据 PASS ∧ n_family_block>0 ⇒ `pair_read_ok=False` ⇒ rc 抬至 ≥1；主判据 PASS ∧ 无整族失败 ⇒ True；主判据非 PASS ⇒ 短路 True（不重复计红）；B3 **真机两侧样例**（冻结跑次只读）：R635 `w232/agentP-r2` 必判 FAMILY_BLOCK ∧ `w231/agentP-r1` 必判 CLEAN",
+   "threshold_source": "eval/rover/r636/prereg-r636.json",
+   "source_path": "eval/rover/r636/family-block-census-r636.json",
+   "source_sha12": "fabd36642cd8",
+   "check_cmd": "python3 eval/rover/r636/family_block_census_r636.py; python3 -c \"import io,json;d=json.load(io.open('eval/rover/r636/family-block-census-r636.json'));print(d['rc'],d['teeth']['POS_got'],d['teeth']['NEG_got'],d['census']['base_rate_family_block'])\"",
+   "ground_rule": "判据器与 census **同源**：census 直接 import `judge_r636.family_block_core`（禁第二实现）；分类**不重算** `cases_pass`、**不进**中位分母、**不改写**任何质量列（并列读数）；VOID 跑次（同质超时 / `cli_rc=124`）**先剔除并单列**，否则「挂死」被读成「整族归零」；census 分母 = **在盘**的冻结跑次（非全史）⇒ base_rate 只作描述性读数、不作阈值、不进 rc；跨轮**禁相减**、只并列（各轮臂名不同）。 源改版 ⇒ 必须重钉本 pin（本轮实测：census 首跑在 R636 产物落盘**前**生成、`rounds_scanned` 含 r636 而该轮 0 跑次在盘 ⇒ 重跑后 f57549ef5d60 → fabd36642cd8，两版读数**并列**（v2pre636 留档），旧值不撤。",
+   "negative_control": "① **首跑件留档不翻案**：`eval/rover/r636/family-block-census-r636-v1prevoid.json`（缺 VOID 剔除步 ⇒ 把 r633:w227/agentP-r2 的 `cli_rc=124` 挂死跑次误判 FAMILY_BLOCK）——证明该分类对输入集形态**有牙**（改输入即改输出）；② 合成影子自检 8 态（`selftest-r636.json`，含 FAMILY_BLOCK / SYNTHETIC / PAIR_READ 两侧）；③ 两侧**真机**样例成对（只跑一侧 = 未证有牙）。"
   }
  ],
  "faces": {

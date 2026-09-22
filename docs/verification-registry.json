@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R635",
+ "updated_round": "R636",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7947,6 +7947,45 @@
    ],
    "negative_control": "成对/负向控制（现场执行，读数入 selftest-r635.json / verdict-r635.json / precond-r635.json）：① **判据修正的两侧成对（最承重、承 R634）**——`TRUTH_SELF_FAIL_NOW_VALID`（真值自败但跑通）**正控** = 有效窗 3；`TRUTH_VOID`（真值挂死）**负控** = 有效窗 2 ∧ `unreliable=[w232]` ⇒ 修正**不放宽**另一侧（只证一侧 = 放宽）。② **锚面两侧样例**——有提示面跑次 **9/9 == 锚**（正控）；`waiver.missing_runs=[]` 且缺席下限与覆盖列齐备 ⇒ 缺项**出声弃权**、不读成漂移、不抬 rc=2。③ **真值自败单列 vs 窗剔除的分离**——w233 真值自败 2 例**逐条单列**（`truth_self_failed_cases`）而窗仍有效；`policy_demoted=[w233/codex]`（`unreliable_excluded`）与 `blocked_scoped` 名单**互不重叠** ⇒ 策略未把本侧失败一并吞掉。④ **验收面 fail-closed**——`blocked_scoped` 非空 ⇒ rc=1（不判绿）；`SCOPE_SOURCE` 非空 ∧ `PREREG=True` ⇒ 验收面**不退化**为全局口径（承 R634 E2 的复现与修正）。⑤ **零器具改版**——`decl_sweep --check` = `checked=30 drifted=0`（本轮零放宽、零声明漂移）。",
    "note": "轮次工件: eval/rover/r635/{prereg,judge,run,report,kpi-table,verdict,selftest,bins,gate-margin,premise}-r635.* + dag-r635.md + evidence/** + snapshots/** + run-stdout.log。自捕 0 条（零器具改版轮）；跳步「构建/AOT」（零 `src/` 改动 ⇒ 无新二进制可构建）。跨轮禁相减（RF0005 §6 红线 4）：R633（rc=3）/ R634（rc=1，D 中位 −3）/ 本轮（rc=1，D 中位 0）**只并列**。基线引用: eval/capability/kpi.jsonl 行 O635 带 `baselines` 10 id（RF0004 §4.1 引用义务）。推送暂停令在效：只本地 commit，无 push / 无镜像 / 无 gh api 写。"
+  },
+  {
+   "id": "r636.mainline-new-window-set",
+   "level": "L3",
+   "owner_round": "R636",
+   "capability": "主线对照轮（**新窗集 w234/w235/w236**，与历史 w184..w233 不相交；产品默认档 ×3/窗 + codex 外部真值 ×1/窗；同一枚 AOT 件 cefd045e8d1d；零产品源码改动 / 零新增夹具 / 零新增开关）：**主判据 Q1 PASS** —— 逐窗配对差 **D = [4, 0, 15]**（中位 **4** ≥ 阈值 −2；逐窗均 ≥ −15），有效窗 **3**（窗有效 = 真值跑通 ∧ 非自败例 ≥1，承 R634/R635 修正）。次级 Q2 **非回归**：整题全对 P **7/9 = 0.7778** vs codex 真值 **1/3 = 0.3333**。**本轮新增判据 `B_family_block`（声明先于跑）判 `pair_read_ok=False` ⇒ rc 抬至 1**：本侧 9 跑次中 **整族归零 1**（`w234/agentP-r3` = 43/58，`wythoff` 整族 15/15 全败）∧ 部分族 1（`w235/agentP-r2`）∧ 干净 7 ⇒ **中位口径看不见族级失败**（该跑次被逐窗中位 58 掩盖，主判据照旧 PASS）⇒ 中位判据必须与逐臂-题可执行面**并读**。跨轮 base rate census（只读冻结跑次）：47 本侧跑次 / 整族归零 **3** / base rate **0.0638**，近三轮（r634/r635/r636）**每轮各 1 次**（族 = `sub` / `wythoff`）⇒ 非偶发。成本三列（中继 dump 时间轴）：P n=9 `18 调用 / 13,290 新算 / 39,170 completion`（v_all 中位 ≈0.9091 / v_incr 中位 ≈0.8496）vs 真值 n=3 `22 / 15,094 / 9,663`（0.9249 / 0.9452）；**跑次数不等（9 vs 3）⇒ 总和列异分母**，归一列另报：每跑次调用 **2.00 vs 7.33** · 每跑次新算 **1,476.7 vs 5,031.3** · 每跑次 completion **4,352.2 vs 3,221.0**。**但铁律 11 可执行前置器 rc=1**（`blocked_scoped` = `w234/agentP-r3` 43/58 · `w235/agentP-r2` 55/58）⇒ **质量/成本一律「参考（未可验收）」**。**诚实边界：无单变量轴（测量轮，禁跨轮相减）· n=9/档欠功率 · B 分类不重算质量列（rc schema 已扩，与 R634/R635 禁相减）· base_rate 只作描述性读数 · 真值自败 w234 4 例 / w236 15 例（照原样判、`policy_demoted` 非本侧臂）· 族级归零只复现未归因 · 三档终局目标读数不动不宣称。**",
+   "evidence_cmd": "bash eval/rover/r636/run_r636.sh && python3 eval/rover/r636/judge_r636.py --D $HOME/.agentframework/harness/runs/r636 --pd eval/rover/r636 && python3 eval/rover/r636/judge_r636.py --D /tmp/none --pd eval/rover/r636 --selftest && python3 eval/rover/r636/family_block_census_r636.py && python3 eval/rover/r507pre/exec_precondition.py --round r636 && python3 eval/capability/decl_sweep.py --check && python3 eval/capability/status_gen.py --check",
+   "evidence_path": "docs/evidence/RF0001/R636-mainline-new-windows.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r636/judge_r636.py",
+    "instrument_sha12": "6ded02c4cf0c",
+    "binding": "audit-pin",
+    "audited_by_round": "R636"
+   },
+   "covers": [
+    "eval/rover/r636/judge_r636.py",
+    "eval/rover/r636/run_r636.sh",
+    "eval/rover/r636/prereg-r636.json",
+    "eval/rover/r636/selftest-r636.json",
+    "eval/rover/r636/verdict-r636.json",
+    "eval/rover/r636/kpi-table-r636.json",
+    "eval/rover/r636/family_block_census_r636.py",
+    "eval/rover/r636/family-block-census-r636.json",
+    "eval/rover/r636/cases/run_cases_r521.py",
+    "eval/rover/r636/cases/cases-r521.json",
+    "eval/rover/r507pre/exec_precondition.py",
+    "docs/evidence/RF0001/R636-mainline-new-windows.md",
+    "冻结题集双钉（文件 sha e0c667c2… + payload sha e7ddce02…）与新窗集不相交（w234..w236）",
+    "aux 两件同批携带（用例脚本 sha d9aecf4d… + 语料 sha 270128eb…），缺件自愈且 sha 断言 fail-closed",
+    "族级归零独立分类（FAMILY_BLOCK、PARTIAL_FAMILY、CLEAN）与主判据并读纪律（pair_read_ok）",
+    "跨轮 base rate census（只读冻结跑次，分类口径 import 判据器本体，禁第二实现）",
+    "成本三列的总和列与每跑次归一列双口径（异分母 9 vs 3 的诚实读法）"
+   ],
+   "negative_control": "成对/负向控制（现场执行，读数入 selftest-r636.json / verdict-r636.json / family-block-census-r636.json / precond-r636.json）：① **新判据的真机两侧有牙（最承重，承纪律「只跑一侧 = 未证有牙」）**——冻结跑次 `r635/w232/agentP-r2` 必判 **FAMILY_BLOCK**（正控）∧ `r635/w231/agentP-r1` 必判 **CLEAN**（负控）⇒ 两侧均按预期（`teeth.pass=true`），合成自检不替代真机样例。② **并读纪律两侧有牙**——主判据 PASS ∧ 有整族失败 ⇒ `pair_read_ok=False`（本轮实测命中 rc 抬至 1）；主判据非 PASS ⇒ 短路 `True`（不重复计红）；影子自检 PAIR_READ 两侧覆盖。③ **分类器输入集形态有牙**——首跑未剔 VOID ⇒ 把 `cli_rc=124` 挂死跑次误判 FAMILY_BLOCK（**首跑留档不翻案**）⇒ 判据对输入集形态敏感、非恒真门。④ **窗有效性修正未放宽另一侧**——`TRUTH_SELF_FAIL_NOW_VALID` 正控 = 有效窗 3 ∧ `TRUTH_VOID` 负控 = 剔除；`blocked_scoped`（2 条）与 `policy_demoted`（w234/w236 codex，非本侧臂）名单**互不重叠**。⑤ **锚面两侧样例**——有提示面跑次 **9/9 == 锚**；缺席下限与覆盖列齐备 ⇒ 缺项出声、不读成漂移、不抬 rc=2。⑥ **验收面 fail-closed**——`blocked_scoped` 非空 ⇒ rc=1（不判绿）；`SCOPE_SOURCE` 非空 ∧ `PREREG=True` ⇒ 验收面不退化。⑦ **零器具改版**——`decl_sweep --check` = `checked=30 drifted=0`。",
+   "note": "轮次工件: eval/rover/r636/{prereg,judge,run,report,kpi-table,verdict,selftest,bins,gate-margin,premise,family_block_census}-r636.* + dag-r636.md + family-block-census-r636{,-v1prevoid,-v2pre636}.json + evidence/** + snapshots/** + run-stdout.log + judge-stdout.txt。自捕 **4 条**（E4 registry 形态自伤：covers[] 叙述条目含半角斜杠 ⇒ 被判路径不存在，形式门禁 13/14；修法 = 文案改全角顿号、阈值/判据零改动 ⇒ 修后 14/14，承 R635 同类 E；E1 aux 语料缺件 ⇒ 前置器全臂 `cases=0/0` 假红，逐字节复制后**只重跑后处理零重测**并留档 v1；E2 census 首跑未剔 VOID；E3 census 首跑早于本轮产物落盘 ⇒ pin 重钉 f57549ef5d60 → fabd36642cd8，两版并列）。跳步「构建/AOT」（零 `src/` 改动 ⇒ 无新二进制可构建）。跨轮禁相减（RF0005 §6 红线 4）：R633（rc=3）/ R634（rc=1）/ R635（rc=1）/ 本轮（rc=1，label 带 B 项）**只并列**。基线引用: eval/capability/kpi.jsonl 行 R636 带 `baselines` 10 id（RF0004 §4.1 引用义务）；新增基准条目 `F_merge.quality.family_block_scan`（kind=instrument_criterion）。推送暂停令在效：只本地 commit，无 push / 无镜像 / 无 gh api 写。"
   }
  ],
  "aot_check_policy": "release_tag_only",

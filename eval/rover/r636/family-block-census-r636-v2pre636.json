@@ -1,0 +1,358 @@
+{
+ "round": "R636",
+ "instrument": "family_block_census_r636.py",
+ "role": "`B_family_block` 的**真机两侧有牙**取证 + 跨轮 base rate census（只读冻结跑次；零重测/零远端）；分类口径直接 import judge_r636.family_block_core（**不重写第二份**）",
+ "teeth": {
+  "POS_expected": "FAMILY_BLOCK",
+  "POS_sample": "r635/w232/agentP-r2",
+  "POS_got": "FAMILY_BLOCK",
+  "NEG_expected": "CLEAN",
+  "NEG_sample": "r635/w231/agentP-r1",
+  "NEG_got": "CLEAN",
+  "pass": true
+ },
+ "missing_teeth_samples": [],
+ "census": {
+  "rounds_scanned": [
+   "r631",
+   "r633",
+   "r634",
+   "r635",
+   "r636"
+  ],
+  "n_agent_runs": 38,
+  "void_runs_excluded": [
+   "r633:w227/agentP-r2"
+  ],
+  "n_void_excluded": 1,
+  "n_family_block": 2,
+  "n_partial_family": 13,
+  "n_clean": 23,
+  "base_rate_family_block": 0.0526,
+  "family_blocked_runs": [
+   "r634:w230/agentP-r3",
+   "r635:w232/agentP-r2"
+  ],
+  "by_round": {
+   "r631": {
+    "n_runs": 12,
+    "n_family_block": 0,
+    "n_partial_family": 6,
+    "n_clean": 6,
+    "blocking_families": {},
+    "runs": [
+     {
+      "win": "w223",
+      "sub": "agentC-r1",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w223",
+      "sub": "agentC-r2",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w223",
+      "sub": "agentC-r3",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w223",
+      "sub": "agentT-r1",
+      "cases": "54/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w223",
+      "sub": "agentT-r2",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w223",
+      "sub": "agentT-r3",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w224",
+      "sub": "agentC-r1",
+      "cases": "56/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w224",
+      "sub": "agentC-r2",
+      "cases": "44/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w224",
+      "sub": "agentC-r3",
+      "cases": "50/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w224",
+      "sub": "agentT-r1",
+      "cases": "51/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w224",
+      "sub": "agentT-r2",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w224",
+      "sub": "agentT-r3",
+      "cases": "46/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     }
+    ]
+   },
+   "r633": {
+    "n_runs": 8,
+    "n_family_block": 0,
+    "n_partial_family": 2,
+    "n_clean": 6,
+    "blocking_families": {},
+    "runs": [
+     {
+      "win": "w225",
+      "sub": "agentP-r1",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w225",
+      "sub": "agentP-r2",
+      "cases": "47/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w225",
+      "sub": "agentP-r3",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w226",
+      "sub": "agentP-r1",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w226",
+      "sub": "agentP-r2",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w226",
+      "sub": "agentP-r3",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w227",
+      "sub": "agentP-r1",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w227",
+      "sub": "agentP-r3",
+      "cases": "55/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     }
+    ]
+   },
+   "r634": {
+    "n_runs": 9,
+    "n_family_block": 1,
+    "n_partial_family": 5,
+    "n_clean": 3,
+    "blocking_families": {
+     "sub": 1
+    },
+    "runs": [
+     {
+      "win": "w228",
+      "sub": "agentP-r1",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w228",
+      "sub": "agentP-r2",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w228",
+      "sub": "agentP-r3",
+      "cases": "49/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w229",
+      "sub": "agentP-r1",
+      "cases": "53/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w229",
+      "sub": "agentP-r2",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w229",
+      "sub": "agentP-r3",
+      "cases": "50/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w230",
+      "sub": "agentP-r1",
+      "cases": "55/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w230",
+      "sub": "agentP-r2",
+      "cases": "53/58",
+      "class": "PARTIAL_FAMILY",
+      "blocked": []
+     },
+     {
+      "win": "w230",
+      "sub": "agentP-r3",
+      "cases": "44/58",
+      "class": "FAMILY_BLOCK",
+      "blocked": [
+       "sub"
+      ]
+     }
+    ]
+   },
+   "r635": {
+    "n_runs": 9,
+    "n_family_block": 1,
+    "n_partial_family": 0,
+    "n_clean": 8,
+    "blocking_families": {
+     "wythoff": 1
+    },
+    "runs": [
+     {
+      "win": "w231",
+      "sub": "agentP-r1",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w231",
+      "sub": "agentP-r2",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w231",
+      "sub": "agentP-r3",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w232",
+      "sub": "agentP-r1",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w232",
+      "sub": "agentP-r2",
+      "cases": "43/58",
+      "class": "FAMILY_BLOCK",
+      "blocked": [
+       "wythoff"
+      ]
+     },
+     {
+      "win": "w232",
+      "sub": "agentP-r3",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w233",
+      "sub": "agentP-r1",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w233",
+      "sub": "agentP-r2",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     },
+     {
+      "win": "w233",
+      "sub": "agentP-r3",
+      "cases": "58/58",
+      "class": "CLEAN",
+      "blocked": []
+     }
+    ]
+   }
+  }
+ },
+ "honest_bounds": [
+  "census 只覆盖**在盘**的冻结跑次；已清理的轮次缺席 ⇒ 分母非全史（缺席单列 missing_teeth_samples 只针对两侧样例）",
+  "VOID 跑次（同质超时 / cli_rc=124）**先剔除并单列**（与判据器同源）⇒ 「挂死」不被读成「整族归零」；首跑（`family-block-census-r636-v1prevoid.json`）缺此步、把 r633:w227/agentP-r2 误列 FAMILY_BLOCK，**留档不翻案**",
+  "各轮的臂名不同（r631 = agentT/agentC；r633–r636 = agentP）⇒ 跨轮只**并列**，禁相减",
+  "本件只判「是否整族归零」形态，**不提供机理归因**（机理归因须另开只读定因轮，承 R622 先例）",
+  "`base_rate` 是**描述性**读数，不作阈值、不进任何 rc"
+ ],
+ "rc": 0,
+ "rc_semantics": "0 两侧有牙且 census 完成 / 2 判据（有牙）失败 / 3 输入缺失（冻结样例不在盘）"
+}

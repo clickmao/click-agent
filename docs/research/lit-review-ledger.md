@@ -688,3 +688,61 @@ Semantic Scholar 无 key ⇒ `HTTP 429` ⇒ 引用数**不可用**，如实记�
 | 状态 | **观察**（不采信为候选；机制只取一句） |
 
 **轮小结**：arXiv query 3/3 · 全文抓取 0 · 摘要 API 1 · **采信 1**（候选 1，待放行）· 已实施（既存）3 · 观察 1 · 证伪 0 · 顺延 0 ⇒ **连续 0 采信计数归零**（1→0，检索不降频）。
+
+## R636 追加（2026-09-22 17:35 · 主线对照轮 R636 · 检索面 = **聚合读数掩盖族级回归 / 判据的缺陷类匹配**）
+
+### 33.1 本轮 arXiv 请求与检索面（**工具面退化第 3 轮**，如实记额）
+
+| # | 形式 | 结果 | 是否计入「0 采信」判定 |
+|---|---|---|---|
+| 前置 | `export.arxiv.org` 探针 | **HTTP 200** | — |
+| R1 | `search_arxiv.py '"all-or-nothing" evaluation code generation hidden tests' --category cs.SE` | **1,249,459 条**，前 6 条全为引力波/头显/宇宙学等无关件 ⇒ 引用式短语被拆散 | **否**（工具面缺陷） |
+| R2 | `search_arxiv.py '"aggregate metrics" subgroup performance evaluation large language models'` | **1,817,825 条**，前 6 条与 R1 同源无关件 | **否**（工具面缺陷） |
+| R3 | `id_list` 摘要 API（2 篇） | 逐字摘要 + `comment`/`journal-ref` 取到 | — |
+| R4 | **`cat:cs.SE` + `sortBy=submittedDate` feed（40 篇）** | **有效**：关键词过滤后 21 篇候选 | 是 |
+
+- 额：本轮 arXiv **请求 5 次**（探针 1 + 检索式 2 + feed 1 + 摘要 1）> 预算 3 次 ⇒ **超额 2 次**，成因 = 前两式零信息量（工具面拆散）后改走 feed；**降频判定不受影响**（按台账既有规则：出口/工具不可用**不计入**空采信）。
+- 工具面塌陷形态与 R623 台账同族（该轮已记「工具面退化，连续第 2 轮」）⇒ 本轮为**第 3 轮**；下一轮检索式**默认改走 `cat:<分类>` feed + 关键词过滤**（引用式短语一律不采信）。
+
+### 33.2 台账（8 列，本轮追加 2 行）
+
+#### L-adopted-8【候选·机制采信】**聚合一栏读数按构造会掩盖族级回归** ⇒ 增益宣称须「总栏 ∧ 最低族栏」双栏并列
+
+| 列 | 内容 |
+|---|---|
+| 日期 | 2026-09-22（采集日） |
+| 检索式 | R4：`cat:cs.SE` 最新 40 篇 feed + 关键词过滤（`eval\|benchmark\|metric\|test\|...`） |
+| 出处（含版本） | **arXiv:2609.23377v1**（2026-09-20；`comment` = "44 pages, including appendices. Model available at https://huggingface.co/Logics-MLLM/Logics-SWE-Qwen3.6-27B"；`journal-ref` **空** ⇒ 纯预印本） |
+| 逐字引文 | "Repository-level software engineering (SWE) comprises heterogeneous task categories, whose progress under pooled agentic reinforcement learning can be uneven: gains in some categories coincide with regressions in others, **while aggregate resolution obscures these changes**." ／ 评测面："We evaluate … through aggregate and per-category resolution, **the minimum category lift over each joint-RL baseline**, and expert-gain recovery." |
+| 机制假设 | 存在**类别跷跷板**（category see-saw）：总体均值上升可与某些类的回退并存，而**聚合读数在原理上不含该信息** ⇒ 「总栏绿」不足以支撑「无回归」；须同时报**逐类分辨率 ∧ 相对基线的最低类提升**。 |
+| 改哪一格 KPI | **质量**（口径**加一列「最低族栏 / per-category 最低提升」**；方向 = 总栏上升**不得**单独出现，必须与最低族栏并列；tokens / 命中率 / 轮数：不预期变化） |
+| 单变量轴 + 判据 | 轴 = **汇报面**（聚合单栏 vs 聚合+最低族双栏，同批冻结读数）；判据 = 同一冻结件两栏**可逐族复算** ∧ 最低族栏随总栏同向 ∧ **可证伪点** = 出现「总栏升 ∧ 某族降」时总栏单独报绿（即判据失效）。 |
+| 状态 | **采信（候选）** + **本仓 R636 已实施其判定侧**（见 33.3：`B_family_block` = 族级独立分类 ∧ 与主判据并读，**非新开发**；论文只提供机制假设，**不作收益证据**） |
+
+#### L-adopted-9【候选·机制采信】判据面须**匹配缺陷类**：终态合法 ≠ 过程合规；且**无变异负控则错误提交被放行**（外部量化实证）
+
+| 列 | 内容 |
+|---|---|
+| 日期 | 2026-09-22（采集日） |
+| 检索式 | 同 R4（`cat:cs.SE` feed） |
+| 出处（含版本） | **arXiv:2609.21562v2**（2026-09-18；`comment` = "36 pages, 9 figures, 13 tables… Code and benchmark: https://github…"；`journal-ref` **空** ⇒ 纯预印本，但**附代码/基准** ⇒ 权威性代理 = 公开可复现 > 纯预印本） |
+| 逐字引文 | "**A game can end in a valid state even after violating its rules during the run.**" ／ "To ensure that the evaluator measures behavior rather than implementation choice, it must accept different correct implementations for each task while **rejecting mutants, implementations with one required capability removed**." ／ "We compared versions of our benchmark evaluator built with and without validation using mutants. **Without this validation, incorrect agent submissions passed.**" ／ 过程面："An automated evaluator **checks each game's rules at every simulation tick**." |
+| 机制假设 | ① **终态断言对「运行途中违规」构造性不可见** ⇒ 判据须下沉到**过程级**（每 tick / 每步），而非仅比对末尾产物；② 判据「有牙」的唯一实证方式是**变异负控**（强制移除一项必需能力）；③ 缺变异校验时，**错误提交会以「可运行」形态通过**（"Most unsuccessful submissions are runnable"）。 |
+| 改哪一格 KPI | **质量**（口径加「过程级断言覆盖面」：被判的对象从**末态**扩到**轨迹**；方向 = 末态绿而过程红的跑次必须能被判出。tokens / 命中率：不预期变化） |
+| 单变量轴 + 判据 | 轴 = **判据粒度**（末态断言 vs 末态+逐 tick 断言，同批冻结轨迹数据）；判据 = 存在**至少一个**「末态合法 ∧ 过程违规」的样例被逐 tick 断言判红（正控）∧ 全合规样例仍判绿（负控）；**可证伪点** = 构造不出「末态合法但过程违规」样例 ⇒ 该轴对本仓题集不适用，须换缺陷类。 |
+| 状态 | **采信（候选）**（**须放行**：逐 tick 过程断言需改题集/夹具 ⇒ 受「禁新增夹具」令约束，本轮**零实施**）；另：其 ② 与 ③ 在本仓**已实施**（判据器影子自检 + 变异负控，见 33.3） |
+
+### 33.3 与本仓现状的代码证据对照（**有代码行 ≠ 生效**；只读核，零产品改动）
+
+| 外部机制 | 本仓对应（证据） | 判定 |
+|---|---|---|
+| 逐族/逐类分列，禁只用聚合 | `eval/rover/r636/judge_r636.py`：`family_block_core()`（本侧跑次**族级归零**独立分类）＋ `main()` 内 `B_family_block` 段**无条件发射** ∧ 与主判据**并读**（`pair_read_ok`）；`eval/rover/r636/family_block_census_r636.py`：跨轮 base rate census（只读冻结跑次） | **已实施（本轮新增）**，与论文机制同构 —— 论文**不作**其收益证据 |
+| 族级读数须可复算 | 同件：`read_cases()` 的 `families` 逐族 `pass/total`；census 分类口径**直接 import 判据器本体**（禁第二实现） | **已实施** |
+| 判据「有牙」须变异负控 | `judge_r636.py --selftest`（8 态影子自检，含 `FAMILY_BLOCK`/`SYNTHETIC`/`PAIR_READ` 两侧有牙）＋ 既有 `selftest-*.json` 行；产线侧「变异负控」= 各轮预注册内的缺陷注入臂 | **已实施（既存）** |
+| 过程级（逐 tick）断言 | `git grep -n 'tick\|per_step\|trajectory' -- eval/rover/r636/judge_r636.py` ⇒ 仅 `trace/轨迹` 类字段用于**成本**计数，**无**「过程合规」断言面 | **真缺口**（候选待放行；本轮零实施） |
+| 最低族栏（minimum category lift） | 判据器报**逐族**读数与族级归零，但**未**把「相对基线的**最低族提升**」作为一条判据列 | **部分**（族级可见、最低族栏未成判据）⇒ 记为候选（L-adopted-8 的实施侧） |
+
+### 33.4 连续 0 采信计数
+
+- 本轮**采信 2 条**（L-adopted-8 / L-adopted-9，均**候选**且各带可证伪点）⇒ 连续 0 采信计数**保持 0**，**不降频**。
+- 诚实边界：两条**均为纯预印本**（`journal-ref` 全空、无同行评审痕迹）⇒ 只作**机制来源**，其自报数字（58.04% / 52.78% 等）**禁**直引为本仓结论或收益证据；采集日 2026-09-22。
