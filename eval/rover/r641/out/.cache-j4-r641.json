@@ -1,0 +1,271 @@
+{
+ "cases_sha256": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+ "blocks": [
+  {
+   "run": "w237/agentP-r3",
+   "src_sha256": "5273c85dc9f33dd692fa417a2ec56eee40da0816c22d1659d84571e4751c6cb6",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 12
+   },
+   "attempts": [
+    {
+     "id": "L7_idx_is_pair_index_not_ratio",
+     "why": "必败位索引应为配对序号 b-a，写成 (b-a)/φ ⇒ 窗口 idx-1..idx+2 在大 n 上取不到真 n",
+     "n_ops": 1,
+     "target_before": 12,
+     "target_after": 15,
+     "others_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "CONFIRMED"
+    }
+   ],
+   "null_rewrite_negctl": {
+    "families": {
+     "life": 14,
+     "sub": 14,
+     "nim": 15,
+     "wythoff": 12
+    },
+    "identical_to_base": true,
+    "still_red": true,
+    "pass": true
+   },
+   "confirmed": [
+    "L7_idx_is_pair_index_not_ratio"
+   ],
+   "state": "能力缺陷（产物侧，行级定因）"
+  },
+  {
+   "run": "w238/agentP-r3",
+   "src_sha256": "5c37e96363f4120548523cc015073ec7bffad45224fb1fcd3ea44cf67d36a8da",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 12
+   },
+   "attempts": [
+    {
+     "id": "L36_frame_swap_left_undone",
+     "why": "solve 内部把两堆排序后**未换回输入帧** ⇒ 着法按排序帧表示（规格要求第一堆 = 读入的 a）",
+     "n_ops": 1,
+     "target_before": 12,
+     "target_after": 15,
+     "others_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "CONFIRMED"
+    }
+   ],
+   "null_rewrite_negctl": {
+    "families": {
+     "life": 14,
+     "sub": 14,
+     "nim": 15,
+     "wythoff": 12
+    },
+    "identical_to_base": true,
+    "still_red": true,
+    "pass": true
+   },
+   "confirmed": [
+    "L36_frame_swap_left_undone"
+   ],
+   "state": "能力缺陷（产物侧，行级定因）"
+  },
+  {
+   "run": "w239/agentP-r1",
+   "src_sha256": "c7062e2639b99834d818e2de0c408c7e15392cff04d93b77c22346c27a698e24",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 4
+   },
+   "attempts": [
+    {
+     "id": "L40_search_range_starts_at_n",
+     "why": "二分区间起点写成 n（谓词在 mid=n 处立即为假 ⇒ 循环零次，函数恒返回 n）",
+     "n_ops": 1,
+     "target_before": 4,
+     "target_after": 0,
+     "others_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "NO_EFFECT"
+    },
+    {
+     "id": "L47_missing_plus_n",
+     "why": "⌊nφ⌋ = n + ⌊n/φ⌋；返回只给 ⌊n/φ⌋ ⇒ 缺 +n 分量",
+     "n_ops": 1,
+     "target_before": 4,
+     "target_after": 3,
+     "others_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "NO_EFFECT"
+    }
+   ],
+   "null_rewrite_negctl": {
+    "families": {
+     "life": 14,
+     "sub": 14,
+     "nim": 15,
+     "wythoff": 4
+    },
+    "identical_to_base": true,
+    "still_red": true,
+    "pass": true
+   },
+   "confirmed": [],
+   "state": "未测到"
+  },
+  {
+   "run": "w239/agentP-r2",
+   "src_sha256": "a92b8a90495b6c8d45f813111bebbb84e635730442ac3a879f6755cc0748426d",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 3
+   },
+   "attempts": [
+    {
+     "id": "L6_00_not_seeded_losing",
+     "why": "(0,0) 被 `continue` 跳过而**未入必败集**（DP 初值缺）⇒ 整张必败集错位",
+     "n_ops": 1,
+     "target_before": 3,
+     "target_after": 4,
+     "others_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "PARTIAL"
+    },
+    {
+     "id": "L32_selection_tests_candidate_not_result",
+     "why": "着法选择判的是候选 (i,j) 自身是否在必败集，而非**走完后的落点** (a-i,b-j)",
+     "n_ops": 1,
+     "target_before": 3,
+     "target_after": 10,
+     "others_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "PARTIAL"
+    }
+   ],
+   "null_rewrite_negctl": {
+    "families": {
+     "life": 14,
+     "sub": 14,
+     "nim": 15,
+     "wythoff": 3
+    },
+    "identical_to_base": true,
+    "still_red": true,
+    "pass": true
+   },
+   "confirmed": [],
+   "state": "未测到"
+  },
+  {
+   "run": "w239/codex",
+   "src_sha256": "e9f6fdef753033909eed049fcea711f3631a2cf53afdc88a12e926ec7f38db51",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 13
+   },
+   "attempts": [
+    {
+     "id": "L22_move_loop_missing_legality_filter",
+     "why": "着法枚举未限定合法着法 ⇒ 非法着法被当候选（真值臂自身缺陷）",
+     "n_ops": 1,
+     "target_before": 13,
+     "target_after": 15,
+     "others_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "CONFIRMED"
+    }
+   ],
+   "null_rewrite_negctl": {
+    "families": {
+     "life": 14,
+     "sub": 14,
+     "nim": 15,
+     "wythoff": 13
+    },
+    "identical_to_base": true,
+    "still_red": true,
+    "pass": true
+   },
+   "confirmed": [
+    "L22_move_loop_missing_legality_filter"
+   ],
+   "state": "能力缺陷（产物侧，行级定因）"
+  }
+ ],
+ "partial": false,
+ "n_targets": 5
+}

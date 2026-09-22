@@ -1,0 +1,108 @@
+{
+ "round": "R641",
+ "block": "J4b_joint_minfix",
+ "kind": "readonly",
+ "declared_in": "prereg-r641.json#addendum_J4b",
+ "note": "只含联合臂；单行臂记录见 out/attrib-r641.json（不回写、不覆盖）",
+ "cases_sha256": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+ "blocks": [
+  {
+   "run": "w239/agentP-r1",
+   "src_sha256": "c7062e2639b99834d818e2de0c408c7e15392cff04d93b77c22346c27a698e24",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 4
+   },
+   "attempts": [
+    {
+     "id": "JOINT_L40+L47",
+     "why": "`lower_wythoff` 合成缺陷：① 搜索区间 `lo, hi = n, 2n+1` ⇒ 谓词在 mid=n 处即假 ⇒ 循环零次（函数恒返回 n）② 返回只给 ⌊n/φ⌋ ⇒ 缺 +n 分量（⌊nφ⌋ = n + ⌊n/φ⌋）",
+     "n_ops": 2,
+     "target_before": 4,
+     "target_after": 15,
+     "others_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "CONFIRMED"
+    }
+   ],
+   "null_rewrite_negctl": {
+    "families": {
+     "life": 14,
+     "sub": 14,
+     "nim": 15,
+     "wythoff": 4
+    },
+    "identical_to_base": true,
+    "still_red": true,
+    "pass": true
+   },
+   "confirmed": [
+    "JOINT_L40+L47"
+   ],
+   "state": "能力缺陷（产物侧，行级定因）"
+  },
+  {
+   "run": "w239/agentP-r2",
+   "src_sha256": "a92b8a90495b6c8d45f813111bebbb84e635730442ac3a879f6755cc0748426d",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 3
+   },
+   "attempts": [
+    {
+     "id": "JOINT_L6+L32",
+     "why": "DP 合成缺陷：① (0,0) 被 `continue` 跳过而**未入必败集**（DP 初值缺 ⇒ 整张必败集错位）② 着法选择判的是候选 (i,j) 自身是否在必败集，而非**落点** (a-i,b-j)",
+     "n_ops": 2,
+     "target_before": 3,
+     "target_after": 15,
+     "others_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "CONFIRMED"
+    }
+   ],
+   "null_rewrite_negctl": {
+    "families": {
+     "life": 14,
+     "sub": 14,
+     "nim": 15,
+     "wythoff": 3
+    },
+    "identical_to_base": true,
+    "still_red": true,
+    "pass": true
+   },
+   "confirmed": [
+    "JOINT_L6+L32"
+   ],
+   "state": "能力缺陷（产物侧，行级定因）"
+  }
+ ],
+ "summary": {
+  "n_targets": 2,
+  "n_confirmed": 2,
+  "null_negctl_pass": true,
+  "residual_unattributed": []
+ }
+}

@@ -1,0 +1,17 @@
+Traceback (most recent call last):
+  File "/home/agentuser/AgentFramework/eval/rover/r641/attrib_r641.py", line 439, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/agentuser/AgentFramework/eval/rover/r641/attrib_r641.py", line 419, in main
+    res["J5_resolution_clause"] = resolution_clause(cases)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agentuser/AgentFramework/eval/rover/r641/attrib_r641.py", line 318, in resolution_clause
+    sample_ok = sum(1 for c in wy if m.solve(c["stdin"]).strip() == c["expected_stdout"].strip())
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/agentuser/AgentFramework/eval/rover/r641/attrib_r641.py", line 318, in <genexpr>
+    sample_ok = sum(1 for c in wy if m.solve(c["stdin"]).strip() == c["expected_stdout"].strip())
+                                     ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/r641mut-ue28fcc_/mut.py", line 29, in solve
+    return "WIN %d %d" % best
+           ~~~~~~~~~~~~^~~~~~
+TypeError: %d format: a real number is required, not NoneType

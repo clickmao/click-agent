@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R640",
+ "updated_round": "R641",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -8137,6 +8137,38 @@
    ],
    "negative_control": "成对/负向控制（现场执行，读数入 `out/precheck-r640-v2.json` / `selftest-r640.json` / `out/attrib-r640.json`）：① **前置器四腿齿证**：POS=机取 6 全绿跑次 ⇒ rc0 ∧ NEG=机取 6 失败跑次 ⇒ rc1 且逐谓词点名 ∧ **合成四臂**（真值树副本 rc0 / 恒 LOSE rc1 / 超预算 rc1 / 进程自杀 rc2）—— 四腿缺一则「恒绿」或「恒红」不可排除；② **v1 双红作为负控留档**：v1 器具（`instruments/wythoff_precheck_v1_r640.py` sha16 `f34c1cd7e856cb38`）对同一冻结面两侧双红 ⇒ 证明该判据对「期望表/归层」这两个自由度**有牙**（改即改输出）；预注册判据照原样判 FAIL、v2 只作事后单列；③ **J0 oracle 正控 15/15 + 变异负控 10/15**（判据器有牙的前提，不绿则整轮弃权）；④ **J9 确定性成对**：5 组两跑逐例逐字节相同（同族多量同时相等，非单计数）；⑤ **判定器影子自检 6/6**（含 S3 器具翻面必 rc2 / S5 交叉校验不符必 rc2 / S6 能力层不得被器具层掩盖）。",
    "note": "轮次工件: eval/rover/r640/{dag,prereg,attrib_r640,wythoff_precheck_r640,instruments/wythoff_precheck_v1_r640,posthoc_r640,judge_r640}.py/json + out/{attrib-r640,precheck-r640-v1,precheck-r640-v2,posthoc-r639,precheck-v2-log,posthoc-log}.json/txt + selftest-r640.json + verdict-r640.json。自捕 **4 条**（E1 手写期望表 = 编造控制 ⇒ 机取、缺源 rc3；E2 超时归层错误 ⇒ 独立谓词 P0_budget；E3/E4 判定器影子自检自身两处缺陷：翻面方向写反 / 未中和器具红致能力层被掩盖）—— 全部**先修器具再加真机读数**，未放宽任何断言；v1 器具字节与读数原样留存、不翻案。**跨轮禁相减**：本轮零新跑次，不与 R639 `D=[−3,0,−9]` 作任何相减。"
+  },
+  {
+   "id": "r641.wythoff-line-level-attribution",
+   "level": "L3",
+   "owner_round": "R641",
+   "capability": "承重缺口族 `wythoff` **行级定因闭合 + 判据面分辨率条款**（零产品源码改动 / 零重测 / 零新臂 / 零远端 / 零新增夹具语义）。冻结面 = R639 w237/w238/w239 × {agentP-r1..r3, codex} **12 跑次**（只读副本执行）。**J4 合计 5/5 定因（R640 遗留「未定因 4/5」⇒ 0/5 闭合）**：单行臂 3/5 CONFIRMED（`w237/agentP-r3` 冷集索引 12→15 · `w238/agentP-r3` 帧表示 12→15 · `w239/codex` 着法合法性 13→15）＋ **联合臂 2/2 CONFIRMED**（`w239/agentP-r1` 4→15 · `w239/agentP-r2` 3→15；两跑次均为**合成缺陷**，单行实验必然 NO_EFFECT/PARTIAL）。**J5 分辨率条款（本仓首次登记）**：采样面（15 例）是规格面（25×25=625 格）的**稀疏子集** ⇒ 见证式构造得采样面 **15/15** 全绿 ∧ 规格面 **610/625 判红**，反向控制（去掉 1 个采样位置）采样面 **14/15 转红**。**J3 帧感知分类（暴露上位器具缺陷）**：新增类 `FRAME_TRANSPOSE`（输出着法的**转置**为必胜着法）= 表示面缺陷，`w238/agentP-r3` **3/3**、`w239/agentP-r2` 1 ⇒ R640 判据器把这批误标为 `nonwinning_move`（帧不感知）。**其余判据**：J0 正控 15/15 ∧ 变异 13/15 判红 · J1 重放↔**机取期望表**（R639 判决件族级 + R640 第二源）`mismatch=0` · J2 守恒 **696=696** · 空重写负控 **7/7** 与 base 逐位相同且仍红 · J8 确定性 12/12 逐位相同 · J9 非平凡性 **7 个互异签名**/12。**自捕器具缺陷 4 条**（E1 J5 mutant 自身抛异常 · E2 无增量落盘致读数丢失 · E3 J9 tuple join · E4 v1 mutant 在 25×25 面**结构上不可触发**＝空心），全部**先修器具再加读数**、未放宽断言；v1 未产出任何读数 ⇒ 无翻案。**rc=0**（全部预注册判据成立）。",
+   "evidence_cmd": "python3 eval/rover/r641/attrib_r641.py && python3 eval/rover/r641/joint_r641.py && python3 -c \"import io,json;d=json.load(io.open('eval/rover/r641/out/attrib-r641.json'));j=json.load(io.open('eval/rover/r641/out/joint-r641.json'));print(d['J4_summary'],d['J5_resolution_clause']['pass'],j['summary'])\" && python3 eval/capability/status_gen.py --check && python3 eval/capability/decl_sweep.py --check",
+   "evidence_path": "docs/evidence/RF0001/R641-line-level-attribution-and-resolution-clause.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "0ae79a9bf594",
+    "instrument": "eval/rover/r641/attrib_r641.py",
+    "instrument_sha12": "1155ea55e8e4",
+    "binding": "audit-pin",
+    "audited_by_round": "R641"
+   },
+   "covers": [
+    "eval/rover/r641/dag-r641.md",
+    "eval/rover/r641/prereg-r641.json",
+    "eval/rover/r641/attrib_r641.py",
+    "eval/rover/r641/joint_r641.py",
+    "eval/rover/r641/out/attrib-r641.json",
+    "eval/rover/r641/out/joint-r641.json",
+    "eval/rover/r622/wythoff_oracle.py",
+    "eval/rover/r639/cases/cases-r521.json",
+    "eval/rover/r641/register_r641.py",
+    "docs/evidence/RF0001/R641-line-level-attribution-and-resolution-clause.md"
+   ],
+   "negative_control": "成对/负向控制（现场执行，读数入 `out/attrib-r641.json` / `out/joint-r641.json`）：① **J0 oracle 两侧有牙** —— 正控 15/15（防恒红）∧ 变异（(6,10) 必败位翻转）13/15 判红（防恒绿）；② **空重写负控 7/7**（v1 未证「凡改即绿」的反面）—— 同字节重写同一文件 ⇒ 三族读数与 base **逐位相同** ∧ 目标族仍 < 15；③ **最小修复实验的差分方向两侧都有** —— 目标族转绿（+）**且**其余三族逐例**不变**（`others_unchanged=True`，排除「凡改必全绿」与「改动外溢」）；④ **J5 分辨率条款两侧样例** —— 见证体（采样面专用解）采样 15/15 ∧ 规格面 610/625 判红（正控：采样面不能自证规格面）∧ 反向控制（去掉 1 个采样位置 ⇒ 采样面 14/15，证明采样面读数**不是恒绿**）；⑤ **J1 期望表两源 fail-closed** —— 主源 R639 判决件族级 ∧ 次源 R640 `per_run_wythoff`，不符即 rc=2 器具层（缺源 rc=3），**禁手写期望表**（承 R640 E1）；⑥ **确定性 ∧ 非平凡性成对** —— J8 12/12 逐位相同（必要条件）**且** J9 跨跑次签名 7 个互异（防恒定输出冒充可复现）；⑦ **增量落盘断点续跑的自证** —— 三次运行（v1 崩 / v2 修 J9 崩 / v3 全绿）中 v2 复用 replay+J4 缓存后仍得**逐位相同**的 J1/J2 读数 ⇒ 缓存不引入漂移。",
+   "note": "轮次工件: eval/rover/r641/{dag-r641.md,prereg-r641.json,attrib_r641.py,joint_r641.py} + out/{attrib-r641.json,joint-r641.json,attrib-log-r641.txt} + 断点续跑缓存（.cache-replay-r641.json / .cache-j4-r641.json）。**预注册时序如实标注**：`written_before_run=false`（v2 进程先起）· `declared_before_any_reading=true`（落盘时 out/ 仅存 v1 traceback 日志、盘上读数 0 件）；J4b 联合臂另有 addendum，**先于该臂起臂**落盘。**起手闸 P3 内存读数 FAIL 如实入档**（2550 MB @3000MB / 2605 MB @2900MB；R639 台账 REQ≈2727 MB），本轮为只读轮 ⇒ 该闸保护对象未触发、**未调闸值**。跳步「构建/AOT」（零 src 改动）与「铁律 11 前置器」[covers 叙述（R2c：covers 只许放存在路径，叙述移入本段）] 冻结题集 sha256 270128eb…（与 r610/r639 逐字节一致）；期望表两源机取（r639 verdict.B_family_block ∧ r640 attrib.per_run_wythoff），不符 rc=2 / 缺源 rc=3；行级锚点逐字取自现盘源码且断言替换次数 == 1（缺失 ⇒ ANCHOR_MISS fail-closed）；只读：一切执行在副本上进行，零写入冻结树（PYTHONDONTWRITEBYTECODE=1）。（无真机臂无降幅宣称），显式声明非跳步掩盖。**跨轮禁相减**：本轮零新跑次，不与 R639 `D=[−3,0,−9]` 亦不与 R640 任何读数相减。"
   }
  ],
  "aot_check_policy": "release_tag_only",

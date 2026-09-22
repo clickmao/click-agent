@@ -1,0 +1,143 @@
+{
+ "round": "R641",
+ "title": "R640 遗留「J4 未定因 4/5」逐行定因 ＋ 判据面分辨率条款 ＋ J6v2 机取期望表（承 R640 下轮候选 ①②③④ 并轮）",
+ "kind": "readonly-attribution+instrument-face",
+ "regenerated_from": "机取（脚本 eval/rover/r641/attrib_r641.py 自产；手写数字仅出现在本文件的判据阈值处）",
+ "written_before_run": false,
+ "declared_before_any_reading": true,
+ "timing": {
+  "v1_instrument_launched": "2026-09-23T00:05+08:00",
+  "v1_instrument_crashed": "2026-09-23T00:07:54+08:00",
+  "v2_instrument_launched": "2026-09-23T00:09:3x+08:00",
+  "prereg_written": "2026-09-23T00:10+08:00",
+  "pre_prereg_out_dir_listing": [
+   "attrib-log-r641.txt (v1 traceback, 1106 B, mtime 00:07:54)"
+  ],
+  "readings_on_disk_at_prereg_time": 0,
+  "note": "本文件晚于 v2 进程启动、**先于任何读数被读取**落盘。证据 = 落盘时 `eval/rover/r641/out/` 只有 v1 的 traceback 日志，无 cache/结果文件（见 pre_prereg_out_dir_listing）。诚实标注 written_before_run=false，不包装成「声明先于跑」。",
+  "addendum_J4b_declared": "2026-09-23T00:13+08:00"
+ },
+ "supersedes": {
+  "instrument_v1_sha256": "v1 = 首版 attrib_r641.py（未留档副本；其缺陷形态已由本文件的 v1_defect 逐条记录）",
+  "instrument_v2_sha256": "821d4a91b1b25575e515661340dae5629463fc0d70182dbd712dbd4bd99cbee8",
+  "v1_failures_not_reexamined": true,
+  "note": "v1 判 FAIL 的对象 = 器具自身（J5 mutant 构造会抛异常 ∧ 无增量落盘 ⇒ J4 读数丢失），**非被测对象**。v1 未产出任何读数（out/ 从未出现结果文件）⇒ 无旧判定需翻案，v2 独立重跑。"
+ },
+ "v1_defect": [
+  {
+   "id": "E1_mutant_self_crash",
+   "desc": "J5 分辨率条款的 mutant 自身会抛 TypeError（best=None 时 `'WIN %d %d' % best`）⇒ 探针自崩，把「判据面」读数掩盖成器具崩溃",
+   "class": "器具层（探针/缺陷信息构造自身不得抛异常）"
+  },
+  {
+   "id": "E2_no_incremental_save",
+   "desc": "v1 只在脚本末尾一次性写结果 JSON ⇒ 晚段崩溃丢掉已得的昂贵读数（J4 已跑完但未落盘）",
+   "class": "器具层（长跑须分块增量落盘）"
+  }
+ ],
+ "v2_fixes": [
+  "J5 改为**见证式非 crash 构造**：采样面专用解（命中采样位置返回采样答案，其余位置返回良构错答案）——构造上不可能抛异常",
+  "**分块增量落盘**（post-replay / post-J4 / post-J5 / 末尾各写一次）＋ replay 与 J4 的**断点续跑缓存**（按 cases sha256 键控）"
+ ],
+ "frozen_inputs": {
+  "cases": "eval/rover/r639/cases/cases-r521.json",
+  "cases_sha256": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+  "snapshots": "eval/rover/r639/snapshots/{w237,w238,w239}/{agentP-r1,agentP-r2,agentP-r3,codex}/g1",
+  "n_runs": 12,
+  "n_cases": 58,
+  "oracle": "eval/rover/r622/wythoff_oracle.py（26×26 表；与题集面同源族、与被测零共享代码）"
+ },
+ "budget": {
+  "P0_budget": "只读档（no-remote / no-build / no-new-arm）",
+  "remote_calls_declared": 0,
+  "product_source_changes_declared": 0,
+  "new_fixture_semantics_declared": 0,
+  "local_subprocess_upper_bound": 3600,
+  "note": "零远端调用 ⇒ 本轮无 token/成本降幅宣称；本地子进程只读复算，不进入主线 token 口径。"
+ },
+ "judgments": {
+  "J0_oracle_control": {
+   "pass": "positive == 15/15 ∧ mutant_teeth == true",
+   "class": "器具面（oracle 有牙）"
+  },
+  "J1_replay_cross_validation": {
+   "pass": "与机取期望表 mismatch == 0",
+   "expectation_source_primary": "r639.verdict.B_family_block.by_run（R639 自身族级分类器产物）",
+   "expectation_source_secondary": "r640.attrib.per_run_wythoff（codex 跑次第二源）",
+   "consistency_gate": "两源族级读数不符 ⇒ rc=2 器具层 fail-closed"
+  },
+  "J2_conservation": {
+   "pass": "total == 12*58 == 696 ∧ 每跑次 n == 58",
+   "rationale": "条目总数守恒（改写/分类不得弄丢样本）"
+  },
+  "J3_per_case_attribution": {
+   "declared": "帧感知分类；`FRAME_TRANSPOSE`（输出着法的转置为必胜着法）预期非零，R640 判据器把它误标为 nonwinning_move",
+   "no_threshold": true
+  },
+  "J4_line_level_minfix": {
+   "pass": "每处最小修复：target_after == 15 ∧ others（life/sub/nim）逐族不变 ⇒ CONFIRMED",
+   "anchor_miss": "锚点缺失 ⇒ 记「未测到」fail-closed，禁读作「无缺陷」",
+   "null_negctl": "同字节重写 ⇒ families 与 base 逐位相同 ∧ 目标族仍 < 15"
+  },
+  "J5_resolution_clause": {
+   "pass": "sample_face == 15/15 ∧ grid_face_violations > 0 ∧ reverse_control.sample_face_red == true",
+   "clause": "采样面（15 例）⊂ 规格面（25×25=625 格）且为稀疏子集 ⇒ 采样面全绿原理上不构成规格面通过"
+  },
+  "J8_determinism": {
+   "pass": "12 跑次重放逐位相同"
+  },
+  "J9_non_triviality": {
+   "pass": "跨跑次读数签名互异（distinct_signatures >= 2）",
+   "rationale": "确定性必须与非平凡性成对，防恒定输出冒充可复现"
+  }
+ },
+ "rc_semantics": {
+  "0": "全判据成立（器具可用 + 归因完成）",
+  "2": "器具层（锚点缺失 / 期望表两源不符 / 负控失败 / 确定性或非平凡性失败）",
+  "3": "输入缺失 fail-closed（期望表源缺失 / cases sha 不符）"
+ },
+ "claims": {
+  "any_downgrade_claim": false,
+  "any_quality_claim_about_product": false,
+  "three_tier_goal_readings_touched": false,
+  "note": "只读复算 ⇒ 读数只对 R639 冻结面成立；行级定因来自副本上的最小修复实验 ⇒ 只证「缺陷在被改那一行」；无单变量轴 / 无新窗集 ⇒ 跨轮禁相减。"
+ },
+ "step_skips": [
+  {
+   "name": "构建/AOT",
+   "reason": "本轮无被测二进制（只读复算冻结快照），显式声明非跳步掩盖"
+  },
+  {
+   "name": "铁律 11 前置器 exec_precondition",
+   "reason": "无真机臂、无降幅/质量宣称 ⇒ 无「可验收对比数据」可验"
+  }
+ ],
+ "addendum_J4b": {
+  "declared_at": "2026-09-23T00:13+08:00",
+  "declared_before_run_of_these_arms": true,
+  "evidence_at_declaration": "J4 单行块读数已落盘（post-J4 save）：w239/agentP-r1 两条候选均 NO_EFFECT（4->0 / 4->3）· w239/agentP-r2 两条候选均 PARTIAL（3->4 / 3->10）⇒ 单行实验不足以定因",
+  "rationale": "逐字读现盘源码后判定这两跑次属**多行合成缺陷**：r1 的 `lower_wythoff` 同时缺「搜索区间错误（lo=n）⇒ 循环零次」与「返回缺 +n 分量」两处；r2 的 DP 同时缺「(0,0) 未入必败集」与「着法选择判的是候选自身而非落点」两处。单行实验对合成缺陷必然 NO_EFFECT/PARTIAL（合成缺陷的定义）。",
+  "arms": [
+   {
+    "run": "w239/agentP-r1",
+    "id": "JOINT_L40+L47",
+    "ops": [
+     "lo, hi = n, 2*n+1 -> lo, hi = 0, n",
+     "return lo -> return lo + n"
+    ],
+    "expected": "target_after == 15 ∧ others 不变 ⇒ CONFIRMED"
+   },
+   {
+    "run": "w239/agentP-r2",
+    "id": "JOINT_L6+L32",
+    "ops": [
+     "(0,0) 入 los（补 DP 初值）",
+     "着法选择改判落点 (a-i,b-j) ∈ los"
+    ],
+    "expected": "target_after == 15 ∧ others 不变 ⇒ CONFIRMED"
+   }
+  ],
+  "single_line_records_retained": true,
+  "null_negctl_required": true
+ }
+}

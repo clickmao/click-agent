@@ -873,3 +873,21 @@ Semantic Scholar 无 key ⇒ `HTTP 429` ⇒ 引用数**不可用**，如实记�
 
 ### 37.3 反空转计数
 - **连续 0 采信计数 = 1**（上轮 §36.5 归零 ⇒ 本轮 0）⇒ 未达 3 ⇒ **不降频**；连续 3 轮 0 ⇒ 转 `cat:` feed 默认档并在此计数。
+
+---
+
+## 38. R641 文献小步（采集日 2026-09-23；arXiv 检索 3 次 query —— 含 1 次因检索器缺陷作废，见 §38.2）
+
+| 日期 | 检索式 | 出处（含版本） | 逐字引文 | 机制假设 | 改哪一格 KPI | 单变量轴 + 判据 | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-23 | `abs:"fault localization" AND abs:"automated repair"` | arXiv **2507.03659v3**（Specification-Guided Repair of Arithmetic Errors in Dafny Programs using LLMs；采集日 2026-09-23；无 comment/journal-ref ⇒ 纯预印本；引用数**不可用**） | "traditional APR techniques often rely on test suites for validation, but these may not capture all possible scenarios." | **验证面必须含规格导向判据**：只靠采样测试（test suite）作验证面，会系统性漏掉采样未覆盖的场景 ⇒ 采样面全绿不构成规格面通过 | 质量（判据面/判别力），方向 ↑ | 轴 = 判据器的**验证面**（采样面 vs 规格面）；判据 = 须存在「采样面全绿 ∧ 规格面判红」的**见证体**，且反向控制（去掉 1 个采样位置）能令采样面变红。**已实施**：R641 `J5_resolution_clause`（见证式非 crash 构造，本仓读数 15/15 采样 ∧ 规格面判红 ∧ 反向控制采样面转红） | 已实施（只读器具；零产品改动） |
+| 2026-09-23 | `abs:"fault localization" AND abs:"automated repair"` | arXiv **2111.07739v1**（Beep: Fine-grained Fix Localization by Learning to Predict Buggy Code Elements；采集日 2026-09-23；无 comment/journal-ref ⇒ 纯预印本；引用数**不可用**） | "The state-of-the-art fault localization techniques, however, produce coarse-grained results that can deter manual debugging or mislead automated repair tools." | **定因粒度必须下沉到代码元素/行**：族级（整族转绿/转红）粗粒度归因会把修复预算投向错误位置 | 质量（定因面）↑，修复命中率 ↑ | 轴 = 归因粒度（族级 vs **行级锚点**）；判据 = 行级锚点须使「最小修复 ⇒ 目标族转绿 ∧ **其它族逐例不变**」且**空重写负控**（同字节重写）仍全败。**已实施**：R641 `J4_line_level_minfix`（承 R640「候选补丁全不生效」→ 读源码定行） | 已实施（只读器具；零产品改动） |
+
+### 38.1 与主线（铁律 10/11）的关系
+- 两条均**只提供机制假设**，未作收益证据；实施读数全部来自本仓只读器具（零产品改动、零重测、零新臂 ⇒ 不占用主线真机对照预算）。
+- 与主线判据（同一轮任务总 token ↓≥30% ∧ 对照四硬条件）**无重叠**：本轮改的是**自检器具的判别力**，不改产品行为，故不得计入主线降幅。
+
+### 38.2 反空转 / 顺延计数（本轮更新）
+- **采信 = 2**（上两行）⇒ 「连续 0 采信计数」由 1 **归零**；未达 3 ⇒ **维持每轮检索频次**，不降频。
+- 证伪 = 0 · 顺延 = 0（文献小步未被主线吃满）。
+- **检索器缺陷（本轮自捕，记账）**：`scripts/search_arxiv.py` 传**带引号短语**给 `--category` 检索时返回 6 条**全部不相关**结果（实测 `'"fault localization" minimal repair'` rc=0 但命中面为零），改用原始 API `search_query=abs:"…" AND abs:"…"`（quote 后 POST-free GET）后同一查询面命中正常。**判读纪律**：「脚本 rc=0 ∧ 结果数 >0」不得当作「检索有效」——须逐条读标题/摘要（本轮据此作废 1 次 query，未污染台账）。
