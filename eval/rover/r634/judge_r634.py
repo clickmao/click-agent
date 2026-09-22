@@ -513,9 +513,13 @@ def main():
                                   REPO, "eval/rover/r634/prereg-r634.json"), "rb").read()).hexdigest()
                               if os.path.isfile(os.path.join(REPO, "eval/rover/r634/prereg-r634.json")) else None},
         "M1_anchor_premise": m1,
+        # E4 自捕（R634）：`quality_core` 已算 `truth_self_failed_cases` / `truth_ran_per_window`，但汇总裁剪时
+        # **未发射** ⇒ 判据算出的关键列在判决件里读不到（「自败例逐条单列」不可判）。修 = 无条件发射全部键
+        # （承「verdict 键必须无条件计算/显式取值」纪律），判据本体与阈值**零改动**。
         "Q1_quality_paired": {"pass": q["pass"], "state": q["state"], **{k: q[k] for k in
                               ("D_list", "D_median", "valid_windows", "median_floor", "per_window_floor",
-                               "unreliable_windows", "missing_windows", "truth_per_window", "product_per_window")}},
+                               "unreliable_windows", "missing_windows", "truth_per_window", "product_per_window",
+                               "truth_ran_per_window", "truth_self_failed_cases")}},
         "Q2_all_pass_secondary": q["Q2"],
         "W_floor": {"valid_windows": valid, "state": q["state"],
                     "rule": "有效窗 ≥2 方可判；∈{0,1} ⇒ NO_RESOLUTION + rc=3（禁下调阈值）"},

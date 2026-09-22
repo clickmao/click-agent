@@ -37,13 +37,14 @@
   **证伪**（同时是**假阴性负控 = 0**）；codex 侧 `stdout_diff = 2`（即 LD 两条真失败）。
 - 复算数**与冻结判分器逐条同数**（w228 58/58/58/49、w229 56/53/58/50、w230 58/55/53/44）⇒ 判分器读数**可复现**。
 
-## 3. 本轮自捕（器物 / 声明层，共 3 条）
+## 3. 本轮自捕（器物 / 声明层，共 4 条）
 
 | # | 缺陷 | 处置 |
 |---|---|---|
 | E1 | 判据器沿袭串漂移：`posthoc.frozen_fail_modes` 仍写 R633 的「13/14/15 条全为 rc=1」 | 改为**由复算件逐行派生**（`codex_rc_ne_stdout_ok` / `all_arms_rc_ne_stdout_ok`），禁手打；器具改后重跑 `decl_sweep --check` ⇒ `checked=30 drifted=0`；判据器 sha 重钉入 registry 行 |
 | E2 | **预注册缺 `evidence_scope`**（前置器验收面声明键）⇒ `SCOPE_SOURCE=None PREREG=False POLICY_ACTIVE=False reason=no_policy_key` ⇒ 验收面退化为**全局**（任一臂-题不许错），而真值自身在 w229 自败 56/58 ⇒ 验收面**恒不可满足**（与 R633 同族：判据落不可满足/不可判区） | **本轮按原文照判 rc=1，不事后激活**（事后激活 = 翻案）；修正形态下沉 R635 预注册（见 §4） |
 | E3 | 跳步「roundcheck preflight 工具口径」 | 起手闸由 run 脚本自带 gate-margin A1/A2/B 承担（内存/磁盘/key 三闸实测 PASS，闸条款落盘）；`roundcheck.py preflight` 未调用（R631–R633 同） |
+| E4 | 判据器**汇总裁剪未发射**已算字段：`truth_self_failed_cases` / `truth_ran_per_window` 在 `quality_core` 里算出却在组装 `Q1_quality_paired` 时被**漏发** ⇒ 「自败例逐条单列」在判决件里读不到（判据自己的**静默丢列**，属「verdict 键必须无条件发射」族） | 修 = **无条件发射该两键**（判据本体/阈值**零改动**）；修后 `rc=1 / valid=3 / D=[0,−3,−5]` **逐值不变**，`w229.truth_self_failed_cases={"codex":2}` 现身；registry 行重钉 sha（`af6bc106→a922f8f0`，定向 1 行 / numstat 2-2 / 幂等） |
 
 ## 4. 下次起手清单（R635，声明先于跑）
 
