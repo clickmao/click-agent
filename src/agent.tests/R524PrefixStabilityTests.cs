@@ -263,4 +263,73 @@ public sealed class R524PrefixStabilityTests
         // 负控：新块**必须仍含**「顶层必填」句（措辞轴真正的承重句），否则本轴改的不是被登记的自由度
         Assert.Contains("回复顶层必填字段", neu, StringComparison.Ordinal);
     }
+
+    // ---- R630 单变量轴**第四档** `spec`（治理臂 = 缺省块 + 规格保真自检尾块；只加厚） ---------------------
+    [Fact]
+    public void R630_缺省档_逐位等于R617冻结pin_无治疗时行为不变()
+    {
+        var cur = agent.contract.StructuredPrompt.PrefixForCode(0);
+        Assert.Equal(15796, cur.Length);
+        Assert.Equal("25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+            agent.contract.StructuredPrompt.Sha256Of(cur));
+        Assert.Equal(agent.contract.StructuredPrompt.PrefixSha256Pinned, agent.contract.StructuredPrompt.Sha256Of(cur));
+        // 轴关（未设 / 近似拼写）⇒ 一律缺省档 ⇒ 治疗段的清零是构造性的，不是运行期判断
+        Assert.Equal(0, agent.contract.StructuredPrompt.AxisCode(null));
+        Assert.Equal(0, agent.contract.StructuredPrompt.AxisCode(""));
+        Assert.Equal(0, agent.contract.StructuredPrompt.AxisCode("spec0"));
+    }
+
+    [Fact]
+    public void R630_轴判定_仅spec字样翻档_近似拼写落缺省档()
+    {
+        var f = agent.contract.StructuredPrompt.IsSpecValue;
+        Assert.True(f("spec"));
+        Assert.True(f(" SPEC "));
+        Assert.True(f("Spec"));
+        // 负控：近似但不等于 ⇒ 缺省档（不得把拼写错误读成治疗臂）
+        Assert.False(f("specs"));
+        Assert.False(f("spec_block"));
+        Assert.False(f("r615"));
+        Assert.False(f("legacy"));
+        Assert.False(f(""));
+        Assert.False(f(null));
+        // 轴编码四档映射（纯函数，互斥）
+        Assert.Equal(3, agent.contract.StructuredPrompt.AxisCode("spec"));
+        Assert.Equal(0, agent.contract.StructuredPrompt.AxisCode("specs"));
+        Assert.Equal(1, agent.contract.StructuredPrompt.AxisCode("r615"));
+        Assert.Equal(2, agent.contract.StructuredPrompt.AxisCode("legacy"));
+        Assert.Equal(0, agent.contract.StructuredPrompt.AxisCode(null));
+    }
+
+    [Fact]
+    public void R630_治疗档_只加厚_插入点在闭合标签前且前段逐位不变()
+    {
+        var cur = agent.contract.StructuredPrompt.PrefixForCode(0);
+        var spec = agent.contract.StructuredPrompt.PrefixForCode(3);
+        var start = agent.contract.StructuredPrompt.PrefixSpecAppendStart;
+        // 只加厚不变量：首次分歧下标之前的字节逐位相同（0..start-1 未动）
+        Assert.True(start > 0);
+        Assert.Equal(cur[..start], spec[..start]);
+        Assert.NotEqual(cur[start], spec[start]);
+        // 插入内容 = 规格保真尾块；闭合标签仍在末尾
+        Assert.Contains("<spec_fidelity>", spec, StringComparison.Ordinal);
+        Assert.EndsWith("</prefix>", spec, StringComparison.Ordinal);
+        Assert.Equal(agent.contract.StructuredPrompt.PrefixSpecChars, spec.Length);
+        Assert.Equal(16182, spec.Length);
+        Assert.Equal(agent.contract.StructuredPrompt.PrefixSpecSha256Pinned, agent.contract.StructuredPrompt.Sha256Of(spec));
+        Assert.Equal(agent.contract.StructuredPrompt.Sha256PinnedForCode(3), agent.contract.StructuredPrompt.Sha256Of(spec));
+        // 严格加厚 + 仍在 97% 缓存下限之上；四档 sha 互异（负控：任何两档不得同 sha）
+        Assert.True(spec.Length > cur.Length);
+        Assert.True(spec.Length >= agent.contract.StructuredPrompt.PrefixMinCharsForCache97);
+        var shas = new[]
+        {
+            agent.contract.StructuredPrompt.Sha256Of(cur),
+            agent.contract.StructuredPrompt.Sha256Of(spec),
+            agent.contract.StructuredPrompt.PrefixR615Sha256Pinned,
+            agent.contract.StructuredPrompt.PrefixLegacySha256Pinned,
+        };
+        Assert.Equal(4, System.Linq.Enumerable.Distinct(shas).Count());
+        // 承重句存在性（若尾块被删空，本轴改的不是被登记的自由度）
+        Assert.Contains("判定覆盖全集", spec, StringComparison.Ordinal);
+    }
 }

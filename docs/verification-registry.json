@@ -6986,9 +6986,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "b2da9e8fd123",
     "instrument": "tools/r1gen/gen_csharp.py",
-    "instrument_sha12": "d33b0e70a332",
+    "instrument_sha12": "4c078395ab2f",
     "binding": "audit-pin",
-    "audited_by_round": "R617"
+    "audited_by_round": "R630"
    },
    "negative_control": "① 前态锚有牙（承重）: 同一契约在前态提交字节上判红（has_point=false, sha16 699008bc63e83379）而现盘判绿 ⇒ 判据非恒真门；② 器具自捕留档: 键集扫描窗口含点位名字面量 ⇒ 首跑 extra=['nlp_shape'] rc=1 假红，定因=器具读法错（非被测不符），修器具**不放宽判据**，首跑读数留档不翻案。",
    "note": "R615 **重审**（R2e 触发的正当重钉，非行为回归）：本轮为新增单变量轴改写了器具 `tools/r1gen/gen_csharp.py`（sha12 4272751e1861 → 76a81b019053），触发 R2e「器具已改, 引用它的证据须重审」。重审动作与读数：① 重跑器具同源闸 `python3 tools/r1gen/gen_csharp.py --check` ⇒ `R1GEN_DRIFT_FILES=0 / R1GEN_EXIT=0`；② 本行承重面复跑 `dotnet test --filter FullyQualifiedName~Supplement` ⇒ **10/10 绿**（补充注入的可变区落点未受影响）；③ 本行 capability 里记录的 `chars=15291 / sha=f1280f71…` 是 **R580 当时读数，原样保留不改写**；当前冻结前缀 = chars **15794** / sha `8b8be6b8070e92a9…`（另见 `F_env.prefix.chars` / `F_env.prefix.sha256`，源 `eval/rover/r615/prefix-r615.json`）⇒ 两者不可混读。阈值与判据一字未改。 【R617 重审】（R2e 触发的第二次正当重钉，非行为回归）：本轮为新增尾块单变量轴再次改写同一器具 `tools/r1gen/gen_csharp.py`（sha12 76a81b019053 → **d33b0e70a332**），触发 R2e「器具已改, 引用它的证据须重审」。重审动作与读数：① 重跑器具同源闸 `python3 tools/r1gen/gen_csharp.py --check` ⇒ `R1GEN_DRIFT_FILES=0 / R1GEN_EXIT=0` ∧ `GEN_PREFIX chars=15796 sha=25c97bef…`；② 本行承重面复跑 `dotnet test --filter FullyQualifiedName~Supplement` ⇒ **10/10 绿**（与 R615 同读数）；③ 本行 capability 里记录的 `chars=15291 / sha=f1280f71…` 仍是 **R580 当时读数，原样保留不改写**；当前冻结前缀 = chars **15796** / sha `25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052`（另见 `F_env.prefix.chars` / `F_env.prefix.sha256`，源 `eval/rover/r617/prefix-r617.json`；R617 对照臂锚 = chars 15794 / sha `8b8be6b8…`，见 `F_env.prefix.r615_anchor`）⇒ 三者不可混读。阈值与判据一字未改。"
@@ -7776,6 +7776,26 @@
    "runs": 3,
    "verdict": "器件面 PASS（修前红/修后绿成对 ∧ 负控有牙）；**能力面未测**（只读轮、零产品源码改动、零真机臂）⇒ 主判据读数 median_D_task −0.3333（阈值 −0.34，valid 窗 2）取自 R628 冻结快照，**禁当 R629 能力结论**（R628 判决不翻案）。",
    "aot": "未跑（只读归因轮：产品源码零改动、未构建未发布新产物）⇒ 证据阶梯按实定级 **L2**，不升级；AOT 校验按 registry `aot_check_policy` 仅在【发布 tag】时执行。"
+  },
+  {
+   "id": "r630.spec-fidelity-tail-block",
+   "level": "L3",
+   "owner_round": "R630",
+   "capability": "恒前缀**尾部追加块**（规格保真自检）作为单变量轴第四档 `AGENTFRAMEWORK_R1_ACTION_PROMPT=spec`: 缺省块正文逐位保留 + 386 字符 <spec_fidelity> 尾块（15796→16182）；AOT 发布件双档装载冒烟无 rc=6 prefix_drift；真机 2 窗 × reps3：J0/J1（轴生效且两档可区分）/J4（C 档逐位等于缺省 pin）全绿，J2 质量中位持平，**轴裁定 = 定案关闭**（swing=8 ≥ effect=0，非承重变量，禁调阈值）。**诚实边界: 无同窗 codex 真值臂；铁律 11 前置器 rc=3 ⇒ 成本列只作并列观测、不宣称降幅。**",
+   "evidence_cmd": "bash eval/rover/r630/aot_r630.sh && bash eval/rover/r630/run_r630.sh && python3 eval/rover/r630/judge_r630.py --selftest && python3 eval/rover/r630/judge_r630.py --D $HOME/.agentframework/harness/runs/r630 --pd eval/rover/r630 --win w211 --win w212 --out eval/rover/r630/judge-r630.json",
+   "evidence_path": "docs/evidence/RF0001/R630-spec-fidelity-axis.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r630/judge_r630.py",
+    "instrument_sha12": "9354f251ebda",
+    "binding": "audit-pin",
+    "audited_by_round": "R630"
+   },
+   "negative_control": "① 影子自检 7 态夹具回放（`judge_r630.py --selftest` rc=0）: S1 正常⇒0 / **S2 变异（T 档落回缺省档）⇒判 VOID rc=2** / S3 质量劣⇒1 / S4 字段缺失⇒弃权 3 / S5 单窗⇒停链 3 / **S6 全跑次未达模型⇒2（防假绿）** / S7 计划未跑完不得判 VOID⇒0；② 前缀不变量负控: 四档 sha 互异 + C 档逐位等于缺省 pin（`gen_prefix_r630.py` rc=0）；③ 器具自捕留档不翻案: v1 判据假绿 / v2 判据误判 VOID 两件并列在档。",
+   "note": "轮次工件: eval/rover/r630/{prereg,prefix,cost,judge,gate-margin,report}-r630.* + snapshots/。"
   }
  ],
  "aot_check_policy": "release_tag_only",

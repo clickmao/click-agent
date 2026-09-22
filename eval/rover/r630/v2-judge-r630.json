@@ -1,0 +1,219 @@
+{
+ "rc": 3,
+ "label": "停链(有效窗<2, 禁下调阈值)",
+ "J0": true,
+ "J1": false,
+ "J2": true,
+ "J3": true,
+ "J4": true,
+ "per_window": {
+  "w211": {
+   "T_median_pass": 58,
+   "C_median_pass": 58.0,
+   "T_allpass": 1.0,
+   "C_allpass": 1.0,
+   "total": 58,
+   "T_spread": [
+    56,
+    58
+   ],
+   "C_spread": [
+    58,
+    58
+   ]
+  },
+  "w212": {
+   "note": "窗内臂样本缺（有效窗剔除）"
+  }
+ },
+ "cost": {
+  "T": {
+   "runs": 3,
+   "calls": 4,
+   "prompt_tokens": 37504,
+   "completion_tokens": 16222,
+   "cache_hit_tokens": 23936,
+   "cache_miss_tokens": 4772
+  },
+  "C": {
+   "runs": 4,
+   "calls": 9,
+   "prompt_tokens": 81734,
+   "completion_tokens": 35937,
+   "cache_hit_tokens": 33536,
+   "cache_miss_tokens": 3880
+  }
+ },
+ "completion_inflation_T_over_C": 0.501,
+ "anchors": {
+  "default": [
+   15796,
+   "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052"
+  ],
+  "spec": [
+   16182,
+   "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36"
+  ]
+ },
+ "defects": [],
+ "notes": [
+  "有效窗 = 1 (<2) ⇒ 按 §3 停链先造窗, 禁作能力结论"
+ ],
+ "missing_runs": [],
+ "recs": [
+  {
+   "win": "w211",
+   "sub": "agentT-r1",
+   "fmt_expected": "spec",
+   "prefix_chars": 16182,
+   "prefix_sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "rc": 0,
+   "stage": "done",
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 1,
+   "prompt_tokens": 8796,
+   "completion_tokens": 4861,
+   "cache_hit_tokens": 6912,
+   "cache_miss_tokens": 1884,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w211",
+   "sub": "agentT-r2",
+   "fmt_expected": "spec",
+   "prefix_chars": 16182,
+   "prefix_sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "rc": 0,
+   "stage": "done",
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 1,
+   "prompt_tokens": 8796,
+   "completion_tokens": 4676,
+   "cache_hit_tokens": 8576,
+   "cache_miss_tokens": 220,
+   "cases": [
+    56,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w211",
+   "sub": "agentT-r3",
+   "fmt_expected": "spec",
+   "prefix_chars": 16182,
+   "prefix_sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "rc": 0,
+   "stage": "done",
+   "reason": "全部步骤执行完毕 (9 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 2,
+   "prompt_tokens": 19912,
+   "completion_tokens": 6685,
+   "cache_hit_tokens": 8448,
+   "cache_miss_tokens": 2668,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w211",
+   "sub": "agentC-r1",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 0,
+   "stage": "done",
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 2,
+   "prompt_tokens": 18700,
+   "completion_tokens": 9106,
+   "cache_hit_tokens": 8448,
+   "cache_miss_tokens": 1683,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w211",
+   "sub": "agentC-r3",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 0,
+   "stage": "done",
+   "reason": "全部步骤执行完毕 (12 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 1,
+   "prompt_tokens": 8569,
+   "completion_tokens": 3789,
+   "cache_hit_tokens": 8320,
+   "cache_miss_tokens": 249,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w212",
+   "sub": "agentC-r1",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 0,
+   "stage": "done",
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 3,
+   "prompt_tokens": 27188,
+   "completion_tokens": 10310,
+   "cache_hit_tokens": 8320,
+   "cache_miss_tokens": 323,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w212",
+   "sub": "agentC-r3",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 0,
+   "stage": "done",
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 3,
+   "prompt_tokens": 27277,
+   "completion_tokens": 12732,
+   "cache_hit_tokens": 8448,
+   "cache_miss_tokens": 1625,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  }
+ ]
+}

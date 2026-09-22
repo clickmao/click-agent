@@ -37,6 +37,20 @@ LEGACY_NCHARS = len(r1prompt.PREFIX_LEGACY)
 R615_PREFIX_V = verbatim(r1prompt.PREFIX_R615)
 R615_SHA = r1prompt.prefix_sha_r615()
 R615_NCHARS = len(r1prompt.PREFIX_R615)
+SPEC_PREFIX_V = verbatim(r1prompt.PREFIX_SPEC)
+SPEC_SHA = r1prompt.prefix_sha_spec()
+SPEC_NCHARS = len(r1prompt.PREFIX_SPEC)
+
+
+def _first_divergence(a, b):
+    """只加厚不变量的机检量：缺省块与治疗档前缀的**首次分歧下标**（= 插入点）。"""
+    i = 0
+    while i < min(len(a), len(b)) and a[i] == b[i]:
+        i += 1
+    return i
+
+
+SPEC_APPEND_START = _first_divergence(r1prompt.PREFIX, r1prompt.PREFIX_SPEC)
 
 # 生成期自检（fail-closed）：前缀里教的每个 <good_response> 必须**自己过契约** ——
 # 否则等于教模型一个非法形态（R536 实测：示例 #2 的 JSON 里内嵌未转义引号 ⇒ 根本不是合法 JSON）。
@@ -187,6 +201,14 @@ public static class StructuredPrompt
     public const int PrefixR615Chars = __R615_NCHARS__;
     public const string PrefixR615Sha256Pinned = "__R615_SHA__";
     public const string PrefixR615 = __R615_PREFIX__;
+    // ---- R630 单变量轴**第四档** `spec`（治疗臂 = 缺省块 + 规格保真自检尾块；只加厚） ----------------
+    /// <summary>缺省块的**逐字节**副本 + R630 规格保真自检尾块的插入（插入点在 `&lt;/prefix&gt;` 之前，
+    /// 前 __APPEND_PREFIX__ 字符逐位不变 = 只加厚不变量）。环境开关
+    /// <c>AGENTFRAMEWORK_R1_ACTION_PROMPT=spec</c> ⇒ 生效前缀 == 本常量。</summary>
+    public const int PrefixSpecAppendStart = __SPEC_APPEND_START__;
+    public const int PrefixSpecChars = __SPEC_NCHARS__;
+    public const string PrefixSpecSha256Pinned = "__SPEC_SHA__";
+    public const string PrefixSpec = __SPEC_PREFIX__;
 
     /// <summary>轴名（遥测/臂表用）。</summary>
     public const string AxisEnvKey = "AGENTFRAMEWORK_R1_ACTION_PROMPT";
@@ -203,13 +225,19 @@ public static class StructuredPrompt
         return v is not null && v.Trim().ToLowerInvariant() == "r615";
     }
 
-    /// <summary>轴三档编码（纯函数）：0 = 缺省新块 / 1 = r615 / 2 = legacy。判据只认精确取值，拼写近似落缺省档。</summary>
-    public static int AxisCode(string? v)
+    /// <summary>R630 轴取值判定（纯函数）。仅 "spec"（大小写/空白不敏感）⇒ 缺省块 + 规格保真自检尾块。</summary>
+    public static bool IsSpecValue(string? v)
     {
-        return IsLegacyValue(v) ? 2 : (IsR615Value(v) ? 1 : 0);
+        return v is not null && v.Trim().ToLowerInvariant() == "spec";
     }
 
-    /// <summary>生效前缀：缺省 = 新块；r615 = R615 块；legacy = R610–R614 块。</summary>
+    /// <summary>轴四档编码（纯函数）：0 = 缺省块 / 1 = r615 / 2 = legacy / 3 = spec。判据只认精确取值，拼写近似落缺省档。</summary>
+    public static int AxisCode(string? v)
+    {
+        return IsLegacyValue(v) ? 2 : (IsR615Value(v) ? 1 : (IsSpecValue(v) ? 3 : 0));
+    }
+
+    /// <summary>生效前缀：缺省 = 新块；r615 = R615 块；legacy = R610–R614 块；spec = 缺省块 + 规格保真自检尾块。</summary>
     public static string EffectivePrefix()
     {
         return PrefixForCode(AxisCode(System.Environment.GetEnvironmentVariable(AxisEnvKey)));
@@ -217,7 +245,7 @@ public static class StructuredPrompt
 
     public static string PrefixForCode(int code)
     {
-        return code == 2 ? PrefixLegacy : (code == 1 ? PrefixR615 : Prefix);
+        return code == 2 ? PrefixLegacy : (code == 1 ? PrefixR615 : (code == 3 ? PrefixSpec : Prefix));
     }
 
     public static string PrefixFor(bool legacy)
@@ -233,7 +261,7 @@ public static class StructuredPrompt
 
     public static int CharsForCode(int code)
     {
-        return code == 2 ? PrefixLegacyChars : (code == 1 ? PrefixR615Chars : PrefixChars);
+        return code == 2 ? PrefixLegacyChars : (code == 1 ? PrefixR615Chars : (code == 3 ? PrefixSpecChars : PrefixChars));
     }
 
     public static int CharsFor(bool legacy)
@@ -248,7 +276,7 @@ public static class StructuredPrompt
 
     public static string Sha256PinnedForCode(int code)
     {
-        return code == 2 ? PrefixLegacySha256Pinned : (code == 1 ? PrefixR615Sha256Pinned : PrefixSha256Pinned);
+        return code == 2 ? PrefixLegacySha256Pinned : (code == 1 ? PrefixR615Sha256Pinned : (code == 3 ? PrefixSpecSha256Pinned : PrefixSha256Pinned));
     }
 
     public static string Sha256PinnedFor(bool legacy)
@@ -363,7 +391,7 @@ public static class StructuredPrompt
             + "它只证明公开输入/输出契约被满足, **不能**据以收尾或宣称完成; 剩余缺口以下列**执行器实测**证据为准。";
     }
 }
-""".replace("__NCHARS__", str(NCHARS)).replace("__SHA__", SHA).replace("__PREFIX__", PREFIX_V).replace("__LEGACY_NCHARS__", str(LEGACY_NCHARS)).replace("__LEGACY_SHA__", LEGACY_SHA).replace("__LEGACY_PREFIX__", LEGACY_PREFIX_V).replace("__R615_NCHARS__", str(R615_NCHARS)).replace("__R615_SHA__", R615_SHA).replace("__R615_PREFIX__", R615_PREFIX_V)
+""".replace("__NCHARS__", str(NCHARS)).replace("__SHA__", SHA).replace("__PREFIX__", PREFIX_V).replace("__LEGACY_NCHARS__", str(LEGACY_NCHARS)).replace("__LEGACY_SHA__", LEGACY_SHA).replace("__LEGACY_PREFIX__", LEGACY_PREFIX_V).replace("__R615_NCHARS__", str(R615_NCHARS)).replace("__R615_SHA__", R615_SHA).replace("__R615_PREFIX__", R615_PREFIX_V).replace("__SPEC_APPEND_START__", str(SPEC_APPEND_START)).replace("__SPEC_NCHARS__", str(SPEC_NCHARS)).replace("__SPEC_SHA__", SPEC_SHA).replace("__SPEC_PREFIX__", SPEC_PREFIX_V)
 
 FILES["StructuredContract.cs"] = """using System.Collections.Generic;
 using System.Text.Json;

@@ -1,0 +1,58 @@
+{
+ "round": "R630",
+ "instrument": "tools/r1gen/r1prompt.py + tools/r1gen/gen_csharp.py",
+ "source_sha12": {
+  "tools/r1gen/r1prompt.py": "32c4bac56007",
+  "tools/r1gen/gen_csharp.py": "4c078395ab2f",
+  "src/agent/contract/StructuredPrompt.cs": "1c6c90cb413c"
+ },
+ "pin_current": {
+  "chars": 15796,
+  "sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+  "role": "产品缺省 = R617 现盘块（轴关/近似拼写档）"
+ },
+ "pin_r615_anchor": {
+  "chars": 15794,
+  "sha256": "8b8be6b8070e92a9d5d5bef697759c186c93b8ccafe47d55540b3393d95d351b",
+  "role": "第一锚 = R615 冻结块（由 git show 派生）"
+ },
+ "pin_legacy_anchor": {
+  "chars": 15675,
+  "sha256": "a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e",
+  "role": "第二锚 = R610–R614 冻结 pin"
+ },
+ "pin_spec_tier": {
+  "chars": 16182,
+  "sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+  "role": "R630 治疗档 = 缺省块正文 + 规格保真自检尾块（**只加厚**）"
+ },
+ "block_analysis": {
+  "first_divergence_at": 15788,
+  "insert_at_body_end": 15787,
+  "inserted_chars": 386,
+  "inserted_lines": 8,
+  "delta_chars": 386,
+  "identical_before_insert": true
+ },
+ "checks": {
+  "body_append_only": true,
+  "four_tiers_distinct": true,
+  "spec_longer_than_default": true,
+  "default_bytes_unchanged": true,
+  "closing_tag_preserved": true,
+  "min_chars_gate": true,
+  "inserted_block_wellformed": true,
+  "inserted_block_substantive": true
+ },
+ "verdict": {
+  "rc": 0,
+  "label": "PASS（只加厚 ∧ 四档互异 ∧ 前段/尾段逐位保留）"
+ },
+ "honest_bounds": [
+  "本件只证**前缀结构与轴锚**；不证任何质量/成本收益（收益面在真机臂）",
+  "尾块是唯一被测自由度；到达面遥测（R1Transcript）为器具，两臂同开",
+  "跨轮禁相减：R615/R617 pin 与 R630 各档并列",
+  "R1Transcript 的 `prefix_pinned` 布尔字段仍按**缺省档**钉值比较 ⇒ spec 档恒 false（标签面缺陷，本轮只登记不改，见 report 遗留）"
+ ],
+ "written_at": "2026-09-22T08:51:46+08:00"
+}

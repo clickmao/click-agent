@@ -560,3 +560,13 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 - **口径纪律（本轮关键）**：该文 "roughly **50x faster** than the embedding-retrieval step" 是**相对嵌入检索步**的加速，**不是**相对 LLM 调用的加速 ⇒ **禁直引为本仓结论**、**禁**用于支撑铁律 14② 的「快 50×」（那条的口径是终局目标读数、外部出处 TabAgent）。本仓对照读数另列。
 - 本轮**采信 1 条**（机制侧候选）· **观察 1 条**；连续 0 采信计数**归零**（前一轮 = 1）⇒ **不降频**。近月预印本 `cited_by_count`：Semantic Scholar 无 key ⇒ **不可用，不编造**。
 - **与本仓现状对照（代码证据）**：采信项的「子群分类先行」与本仓 R629 候选② 归因结果**同向**——`wythoff` 族失败**非单一机理**（`APPROX_COLD_SET` 3 / `TERMINAL_EXCLUDED` 1 / `CRASH_NONE` 2 / `ILLEGAL_MOVE` 1，`eval/rover/r629/attribution-r629.json`）⇒ 主族 = 冷点集近似构造。**但**该文只提供**机制假设**，**不得当收益证据**（R629 零真机跑次 ⇒ 无新 KPI 读数）。
+
+## R630（2026-09-22）· 检索面：**逐族分辨率**（aggregate 掩盖族级回归）
+
+| 日期 | 检索式 | 出处(含版本) | 逐字引文 | 机制假设 | 改哪一格 KPI | 单变量轴 + 判据 | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-22 | `"self-verification" "specification compliance" LLM agent code`（cs.CL, sort=date, 6 条；逐条读标题/摘要；本轮 2 query 预算内用 1） | arXiv **2609.23377v1**（cs.SE/cs.CL/cs.LG；comment=`44 pages, including appendices. Model available at https://huggingface.co/Logics-MLLM/Logics-SWE-Qwen3.6-27B`；journal-ref=`n/a`） | "Repository-level software engineering (SWE) comprises heterogeneous task categories, whose progress under pooled agentic reinforcement learning can be uneven: gains in some categories coincide with regressions in others, while **aggregate resolution obscures these changes**."（另："We evaluate Pooled RL and Balanced RL, expert development, and single-model integration **through aggregate and per-category resolution**"） | 判据只在**总体**层面上聚合（总通过数中位）时，族级符号相反的位移会互相抵消 ⇒ 零效应假象；**按题族分列 + 族级最小值（minimum category lift）**才是可判据形态 | 质量（回复质量轴）：`J2` 由「总体通过数中位差」→「逐族配对差 + 族级最小值」 | 单变量 = **判据聚合形态**（总体计数 → 按族分列）；判据 = 同一批 run 上两形态给出**不同符号**的族级读数（至少 1 族 T 劣 / 1 族 C 劣），且族级中位差可复算；前置 = 族标签来自冻结题集（`wythoff#NN-public/hidden` 已含族名） | 候选（下轮；本轮不实施） |
+
+- **权威性代理（逐条写明）**：纯**预印本**（无 EMNLP/NeurIPS 类 comment、无 journal-ref）+ **公开产物**（HF 模型链接、可复现性有据）⇒ 介于「公开代码/可复现」与「预印本」之间；**不得当收益证据**，只作机制来源。近月预印本 `cited_by_count` = Semantic Scholar 无 key ⇒ **不可用，不编造**。
+- **与本仓现状对照（代码证据）**：本仓**已有**族级材料但**未进判据**——`eval/rover/r610/cases/run_cases_r521.py:50` 逐用例打印 `CASE <name> PASS|FAIL`，名字里带族前缀（`wythoff#43-public` 等，见 R630 实跑 `runs/r630/w212/agentT-r2/g1/cases.txt` 8 条 FAIL）；而 R630 判据器 `eval/rover/r630/judge_r630.py` 的 `J2` 只用 `R521_CASES p/t` 聚合数 ⇒ **判据面是 aggregate resolution**，候选正是把已有的族标签接进判据。
+- **本轮采信 0 条 · 观察 1 条 · 证伪 0 条**：检索面未命中「与本仓管线同轴且**未实施**」的机制（命中项多属已实施族：逐例归因/族分列已知但未进判据）。连续 0 采信计数 = **1**（未达 3 ⇒ **不降频**）。

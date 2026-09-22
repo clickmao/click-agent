@@ -1,0 +1,399 @@
+{
+ "rc": 0,
+ "label": "机制 PASS ∧ 能力面不劣于对照（中位持平；见 swing_vs_effect 的轴裁定）",
+ "J0": true,
+ "J1": true,
+ "J2": true,
+ "J3": true,
+ "J4": true,
+ "per_window": {
+  "w211": {
+   "T_median_pass": 58,
+   "C_median_pass": 58,
+   "T_allpass": 1.0,
+   "C_allpass": 1.0,
+   "total": 58,
+   "T_min_pass": 56,
+   "C_min_pass": 58,
+   "T_fails": 2,
+   "C_fails": 0,
+   "T_spread": [
+    56,
+    58
+   ],
+   "C_spread": [
+    58,
+    58
+   ]
+  },
+  "w212": {
+   "T_median_pass": 58,
+   "C_median_pass": 58,
+   "T_allpass": 1.0,
+   "C_allpass": 1.0,
+   "total": 58,
+   "T_min_pass": 50,
+   "C_min_pass": 54,
+   "T_fails": 8,
+   "C_fails": 4,
+   "T_spread": [
+    50,
+    58
+   ],
+   "C_spread": [
+    54,
+    58
+   ]
+  }
+ },
+ "cost": {
+  "T": {
+   "runs": 6,
+   "calls": 11,
+   "prompt_tokens": 103667,
+   "completion_tokens": 46482,
+   "cache_hit_tokens": 49536,
+   "cache_miss_tokens": 9012
+  },
+  "C": {
+   "runs": 6,
+   "calls": 13,
+   "prompt_tokens": 119670,
+   "completion_tokens": 54340,
+   "cache_hit_tokens": 50432,
+   "cache_miss_tokens": 7782
+  }
+ },
+ "completion_inflation_T_over_C": 0.679,
+ "anchors": {
+  "default": [
+   15796,
+   "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052"
+  ],
+  "spec": [
+   16182,
+   "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36"
+  ]
+ },
+ "defects": [],
+ "notes": [],
+ "swing_vs_effect": {
+  "swing": 8,
+  "effect": 0
+ },
+ "axis_verdict": "定案关闭（摆动 8 >= 效应 0 ⇒ 该轴非承重变量，禁调阈值）",
+ "plan_incomplete": {
+  "agentC-r2": {
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "steps": "7"
+  },
+  "agentT-r1": {
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "steps": "7"
+  },
+  "agentT-r2": {
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "steps": "7"
+  },
+  "agentT-r3": {
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "steps": "7"
+  }
+ },
+ "void_runs": [],
+ "missing_runs": [],
+ "recs": [
+  {
+   "win": "w211",
+   "sub": "agentT-r1",
+   "fmt_expected": "spec",
+   "prefix_chars": 16182,
+   "prefix_sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "rc": 0,
+   "stage": "done",
+   "steps_executed": 14,
+   "plan_steps_total": 14,
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 1,
+   "prompt_tokens": 8796,
+   "completion_tokens": 4861,
+   "cache_hit_tokens": 6912,
+   "cache_miss_tokens": 1884,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w211",
+   "sub": "agentT-r2",
+   "fmt_expected": "spec",
+   "prefix_chars": 16182,
+   "prefix_sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "rc": 0,
+   "stage": "done",
+   "steps_executed": 14,
+   "plan_steps_total": 14,
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 1,
+   "prompt_tokens": 8796,
+   "completion_tokens": 4676,
+   "cache_hit_tokens": 8576,
+   "cache_miss_tokens": 220,
+   "cases": [
+    56,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w211",
+   "sub": "agentT-r3",
+   "fmt_expected": "spec",
+   "prefix_chars": 16182,
+   "prefix_sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "rc": 0,
+   "stage": "done",
+   "steps_executed": 9,
+   "plan_steps_total": 9,
+   "reason": "全部步骤执行完毕 (9 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 2,
+   "prompt_tokens": 19912,
+   "completion_tokens": 6685,
+   "cache_hit_tokens": 8448,
+   "cache_miss_tokens": 2668,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w211",
+   "sub": "agentC-r1",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 0,
+   "stage": "done",
+   "steps_executed": 14,
+   "plan_steps_total": 14,
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 2,
+   "prompt_tokens": 18700,
+   "completion_tokens": 9106,
+   "cache_hit_tokens": 8448,
+   "cache_miss_tokens": 1683,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w211",
+   "sub": "agentC-r2",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "steps_executed": 7,
+   "plan_steps_total": 10,
+   "reason": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls": 2,
+   "prompt_tokens": 19244,
+   "completion_tokens": 10913,
+   "cache_hit_tokens": 8448,
+   "cache_miss_tokens": 2227,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w211",
+   "sub": "agentC-r3",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 0,
+   "stage": "done",
+   "steps_executed": 12,
+   "plan_steps_total": 12,
+   "reason": "全部步骤执行完毕 (12 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 1,
+   "prompt_tokens": 8569,
+   "completion_tokens": 3789,
+   "cache_hit_tokens": 8320,
+   "cache_miss_tokens": 249,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w212",
+   "sub": "agentT-r1",
+   "fmt_expected": "spec",
+   "prefix_chars": 16182,
+   "prefix_sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "steps_executed": 7,
+   "plan_steps_total": 11,
+   "reason": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls": 2,
+   "prompt_tokens": 19592,
+   "completion_tokens": 12684,
+   "cache_hit_tokens": 8576,
+   "cache_miss_tokens": 2220,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w212",
+   "sub": "agentT-r2",
+   "fmt_expected": "spec",
+   "prefix_chars": 16182,
+   "prefix_sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "steps_executed": 7,
+   "plan_steps_total": 10,
+   "reason": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`.....\n.....\n.....\n.###.\n.....\n.....\n..#..\n.#.#.\n...#.\n..#..\n.....`, 实测=``)",
+   "calls": 3,
+   "prompt_tokens": 27600,
+   "completion_tokens": 11075,
+   "cache_hit_tokens": 8448,
+   "cache_miss_tokens": 421,
+   "cases": [
+    50,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w212",
+   "sub": "agentT-r3",
+   "fmt_expected": "spec",
+   "prefix_chars": 16182,
+   "prefix_sha256": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "steps_executed": 7,
+   "plan_steps_total": 8,
+   "reason": "step s6 stdout 与 expect_stdout 不符 (rc=1, 期望=`WIN 15 15`, 实测=``)",
+   "calls": 2,
+   "prompt_tokens": 18971,
+   "completion_tokens": 6501,
+   "cache_hit_tokens": 8576,
+   "cache_miss_tokens": 1599,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w212",
+   "sub": "agentC-r1",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 0,
+   "stage": "done",
+   "steps_executed": 14,
+   "plan_steps_total": 14,
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 3,
+   "prompt_tokens": 27188,
+   "completion_tokens": 10310,
+   "cache_hit_tokens": 8320,
+   "cache_miss_tokens": 323,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w212",
+   "sub": "agentC-r2",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 5,
+   "stage": "expect_stdout_exhausted",
+   "steps_executed": 7,
+   "plan_steps_total": 14,
+   "reason": "step s7 stdout 与 expect_stdout 不符 (rc=1, 期望=`WIN 15 15`, 实测=``)",
+   "calls": 2,
+   "prompt_tokens": 18692,
+   "completion_tokens": 7490,
+   "cache_hit_tokens": 8448,
+   "cache_miss_tokens": 1675,
+   "cases": [
+    54,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  },
+  {
+   "win": "w212",
+   "sub": "agentC-r3",
+   "fmt_expected": "default",
+   "prefix_chars": 15796,
+   "prefix_sha256": "25c97befa2124549b52991c0338324ceee7f7702a6348641ed917d3b7b658052",
+   "rc": 0,
+   "stage": "done",
+   "steps_executed": 14,
+   "plan_steps_total": 14,
+   "reason": "全部步骤执行完毕 (14 步) + 题面公开用例回放 8/8 过（管道自产证据）",
+   "calls": 3,
+   "prompt_tokens": 27277,
+   "completion_tokens": 12732,
+   "cache_hit_tokens": 8448,
+   "cache_miss_tokens": 1625,
+   "cases": [
+    58,
+    58
+   ],
+   "tr_err": null,
+   "cases_err": null,
+   "fmt_match": true
+  }
+ ]
+}

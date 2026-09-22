@@ -436,6 +436,36 @@
    "ground_rule": "唯一自由度 = 判据的**比较形态**（单路 vs 同形融合）；产品源码零改动、冻结件逐字节复用（语料 1299 / 查询 120 / `eval/rover/r624/vec/*` / `eval/rover/r625/out/B10.json`）。oracle 独立性 = stdlib 纯 Python、零 import 本仓；**向量源不独立（冻结件，同源性由 R624 G0 覆盖）** ⇒ 该 oracle 与产品**同形**，只作**器具自证**，不得当作能力面的独立 oracle（能力面用**异形**信号 BM25 + 块粒度 dense，见 R626）。",
    "check_cmd": "python3 -c \"import io,json;o=json.load(io.open('eval/rover/r627/oracle-r627.json',encoding='utf-8'));a=o['readings']['agreement_vs_product_B10'];assert a['POS']==1.0 and o['readings']['oracle_hits']['POS']==88;print('OK')\"",
    "updated_round": "R627"
+  },
+  {
+   "id": "F_env.prefix.spec_chars",
+   "face": "F_env",
+   "kind": "frozen_invariant",
+   "metric": "R630 治疗档（规格保真尾块）恒前缀字符数",
+   "value": 16182,
+   "unit": "chars",
+   "source_path": "eval/rover/r630/prefix-r630.json",
+   "source_sha12": "23dc7ce32e1f",
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r630/prefix-r630.json'));print(d['pin_spec_tier']['chars'])\"",
+   "threshold": "只许加厚：缺省档 15796 → spec 档 16182（正文逐位为前缀 ∧ 只追加 <spec_fidelity> 尾块）",
+   "threshold_source": "eval/rover/r630/prefix-r630.json:pin_spec_tier.chars",
+   "ground_rule": "跨轮禁相减；治疗档只作**轴档锚**，不得当作收益读数（R630 实测摆动 8 ≥ 效应 0 ⇒ 该轴定案关闭）",
+   "negative_control": "eval/rover/r630/judge_r630.py --selftest（S2 变异：T 档落回缺省档 ⇒ 判 VOID rc=2）"
+  },
+  {
+   "id": "F_env.prefix.spec_sha256",
+   "face": "F_env",
+   "kind": "frozen_invariant",
+   "metric": "R630 治疗档恒前缀 sha256",
+   "value": "b687c6dddfa940e075e904835305d247e4d39892ee242b2e891726bff1c99c36",
+   "unit": "hex64",
+   "source_path": "eval/rover/r630/prefix-r630.json",
+   "source_sha12": "23dc7ce32e1f",
+   "check_cmd": "python3 -c \"import io,json;d=json.load(io.open('eval/rover/r630/prefix-r630.json'));print(d['pin_spec_tier']['sha256'])\"",
+   "threshold": "四档 sha 互异（default/r615/legacy/spec）由 eval/rover/r630/gen_prefix_r630.py 机检 rc=0",
+   "threshold_source": "eval/rover/r630/prefix-r630.json:pin_spec_tier.sha256",
+   "ground_rule": "逐跑次 transcript.prefix_sha256 必须逐位等于本锚（T 档）；不等即轴未生效 ⇒ 整轮 VOID",
+   "negative_control": "同 F_env.prefix.spec_chars（影子自检 7 态）"
   }
  ],
  "faces": {

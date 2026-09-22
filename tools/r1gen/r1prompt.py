@@ -323,6 +323,18 @@ why 一句话说明该动作在整条计划里的作用。
 声明**不得**含请求未要求的动作。
 </action_candidates>"""
 
+# R630（契约语义加厚 v3）**规格保真自检**尾块 —— 恒前缀**尾部追加**块（RF0004 §131 尾部载体原则）。
+# 内容 = R555 §8 候选 2，逐条由 R555 §4 三类产物缺陷 + R629 `wythoff` 族机理分类派生（禁任务特异性提示）。
+# 单变量轴 = **既有** `AGENTFRAMEWORK_R1_ACTION_PROMPT=spec`（第四档）⇒ 缺省档逐位不变（零回归由构造保证）。
+SPEC_FIDELITY = """<spec_fidelity>
+**规格保真自检**（写产物前逐条对照请求原文；`expect_stdout` 是**自述**，不作交付依据）：
+1) **动作集闭合**：产物可选的走法/分支/取值集合必须不超出请求原文列出的集合；原文未列出的走法一律不得引入。
+2) **判定覆盖全集**：任何结论（分类/胜负/取值）必须对**原文允许的全部输入**成立；不得用近似公式、有限范围预计算表或截断窗口替代原文给出的定义式判定。
+3) **可执行**：产物必须能被原文示例输入**实际执行**且不抛异常、不返回空值；「未自验的产物」不得当交付。
+4) **约定逐字对齐**：原文给出的输出格式、大小写、分隔符与多解取法必须逐字落实。
+5) **一致性**：对同一输入两次独立计算必须一致；不一致 => 判定链含隐藏状态或近似，先修再用。
+</spec_fidelity>"""
+
 PREFIX = "\n\n".join([
     "<prefix version=\"%s\">" % R1_VERSION,
     # 段序（R536 与现盘逐字节对齐）：hard_gates 紧跟 role，位于契约段**之前** —— 安全前置优先，
@@ -351,6 +363,19 @@ PREFIX_LEGACY = "\n\n".join([
 
 def prefix_sha_r615():
     return hashlib.sha256(PREFIX_R615.encode("utf-8")).hexdigest()
+
+
+# R630 治疗档（R617 现盘块 + 规格保真自检尾块，**只加厚**）。
+PREFIX_SPEC = "\n\n".join([
+    "<prefix version=\"%s\">" % R1_VERSION,
+    ROLE, HARD_GATES + OUTPUT_CONTRACT, SEMANTICS_DICT, TOOL_MENU, ENVIRONMENT, EXAMPLES,
+    SPEC_APPENDIX, ACTION_CANDIDATES, SPEC_FIDELITY,
+    "</prefix>",
+])
+
+
+def prefix_sha_spec():
+    return hashlib.sha256(PREFIX_SPEC.encode("utf-8")).hexdigest()
 
 
 def prefix_sha_legacy():
