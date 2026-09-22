@@ -1442,3 +1442,35 @@ python3 eval/run_round.py <新轮号> "revert-verify <原commit>" --quick   # �
 - **下轮候选 (R632)**: ① 判决件判据族与预注册对齐（`judge_r631.py` 声明滞后修复，**禁跨轮相减**）② 起臂前声明 `unreliable_policy`
   （R529 J4b 未行使 ⇒ 真值自败窗未机检降级）③ `run_r631.sh` 头部声明刷为实盘值（w223/w224 · 49795 · REQ 2769）④ `wythoff` 族冷点集构造
   单变量修法轮（候选仍在，须先预注册 + 引 `baselines`）⑤ 文献小步（本轮采信 2 条 ⇒ 连续 0 采信计数归 0，不降频）。
+
+## R632 (2026-09-22) — 器件面收口轮（判据族对齐 / `unreliable_policy` 声明 / 驱动器声明刷新）＋ 文献小步 · **零真机臂 · 零远端调用 · 零产品源码改动 · 零新增夹具 · 零新增开关** · 重审 R631 冻结面 **rc=3（有效窗=1 ⇒ 停链先造窗）**
+
+- 轮形: 器件/判决面收口轮（同 R629 先例）⇒ 单变量轴**不适用**（预注册自陈，禁计为单变量轮）；数据面 = R631 冻结快照，**零重测**
+  （承 RF0005 §10「缺派生件时重跑的是后处理，不是测量」）。跳步: 构建/AOT（无新二进制）、真机跑（零真机臂）—— 均已在 prereg `skip_steps` 写明。
+- 判据族 D1–D5（+W）: **D1 判据族对齐 pass**（键集合逐键相等 8/8 ∧ `primary_criterion_key=J1_fallback_exercised` 机读绑定 ∧ 全键带声明状态）；
+  **D2 informational**（声明先行 ∧ 机检三态 ∧ 缺键 fail-closed；对 R631 既有窗 `POLICY_ACTIVE=false` —— B2 **拒绝追溯套用** ⇒ authority 记 **R4 人工口径**，不得读作机检行使）；
+  **D3 pass**（驱动器声明修前 6/6 漂移 → 修后 0/6；修法**只改注释**，实盘段 sha256 逐字节不变）；
+  **D4 pass**（`verdict-r631` / `verdict-j4ab-r631` / `kpi-table-r631` / `prereg-r631` 四件与 HEAD blob 逐字节相等）；
+  **D5 pass**（arXiv 面**顺延**：出口 429 ⇒ 不计 0 采信，连续 0 采信保持 1、不降频；第二来源 2 篇=采信 0/观察 1；台账 577→608 行 numstat 31/0）；
+  **W not_applicable**（零真机臂）。本件**自身**过同一同源律（`r632_family_self_check.keys_equal=true`）。
+- 重审读数（R631 冻结面）: `J0 ✅ · J1 ✅（fallback_runs=6）· J4a ❌ · J4b ✅ · J3 ❌ · J6 informational · W ❌（valid_windows=1）· P11 ✅（前置器 rc=1）`
+  ⇒ 判决 **rc=3**（由 W 抬升；次级红 J4a/J3 只对应 rc1 档）；`verdict_source` 显式谓词（禁从 `blocked` 反解）。
+  铁律 11 前置器 rc=1 ⇒ R631 质量/成本列**仍标「参考（未可验收）」**，本轮**不翻案、不改写**。
+- 负控（有牙）: 披露式三步 **STEP1 修前必红（缺 5/多 15 + 两机读字段缺席）/ STEP2 修后必绿 / STEP3 变体 10/10 必转红**；
+  声明检查器四态 **合成一致头 PASS ∧ 字段注入 5/5 DECL_DRIFT ∧ 空头 DECL_ABSENT** ⇒ 非恒红、非恒绿、fail-closed。
+- **本轮新捕四条（全部入档）**: ① D4 取数层**假红**（`git show` + `.strip()` 丢尾字节 ⇒ 四件 sha 必不等；修法 = `git cat-file blob` + bytes 管道，判据未放宽）；
+  ② 声明检查器对**空声明件判绿**（假绿 ⇒ 改三态 verdict + 退出码只读 verdict）；③ **同名判据两套谓词**（R631 行把 `J1_fallback_exercised` 读作 `NOT_EXERCISED`，
+  按 prereg-r631 同一键名谓词重审得 **pass / fallback_runs=6** ⇒ 旧读数**证伪**，纠偏只落本轮、**不改写历史行**）；
+  ④ 文献台账初稿自带假断言（称 `prefix_tokens` 未落盘/无消费者 —— 实有生产者 `src/agent.modelqueue/LocalSessionCacheLedger.cs:86,100,111,112` 与消费者 `eval/rover/r411/verify.py:43`）⇒ 同轮勘误；
+  附 ⑤ 缺陷条目初稿把 live 值由**假设**写就（49792/208→223/PREV_SWING 2769）⇒ 改为从落盘件字段**逐字段抄录**。
+- 器具: 新增 `eval/rover/r632/{prereg-r632.json,judge_align_r632.py,policy_gate_r632.py,decl_driver_check_r632.py,negctl_r632.py,refresh_driver_decl_r632.py,report-r632.md,verdict-r632.json,evidence/**}`
+  ＋ `docs/evidence/RF0001/R632-instrument-closure.md`；**修既有** `eval/rover/r631/run_r631.sh` **注释声明块**（实盘段零字节改动）；
+  registry 行 `r632.instrument-declaration-closure`（L2，带 `evidence_generated_with` 冻结 pin）；kpi 行带 7 条 `baselines` 引用；
+  台账 `docs/research/lit-review-ledger.md` 追加 R632 段。收口: `status_gen --check` **PASS**（违规 0/漂移 0/缺源 0）· `decl_sweep --check` **0 漂移** · 形式门禁 **14/14**。
+- 诚实边界: 零真机臂 ⇒ 对**质量轴零信息量**；rc=3 只说明「R631 面上的能力结论不可判、须先造窗」，**不得**读作「器件已修好=能力达标」或「能力变差」；
+  `unreliable_policy` 的**追溯适用**被 B2 拒绝（既有窗先于声明）；文献面两条均判「已实施/观察」⇒ **无新候选**，
+  `required_prefix_tokens=4224` 属本仓自标定，禁与厂商 1,024 互换（承「禁照抄外部默认参数」）。
+- **下轮候选 (R633)**: ① **造窗**（与历史不相交的新窗集）—— 主判据 rc=3 的解除条件，且须同步预注册 `unreliable_policy`（本轮已机制化，下轮起为**声明先行**）；
+  ② 承重缺口靶点 = `wythoff` 族（R621 记录真值 45/45 vs 本侧缺口；R630 候选② 已把主族定位到 `APPROX_COLD_SET`，行号级证据在案）⇒ 单变量修法轮（须先预注册 + 引 `baselines`）；
+  ③ 文献小步（候选队列：**远端侧前缀长度打点**的可达性 = 前置条件，否则「恒前缀 ≥ 门限」判据在远端语料上无可达数据面）；
+  ④ 「信息类工具回执 / 序依赖面」与面 4 放行仍**待用户裁定**（非本侧可自决）。

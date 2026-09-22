@@ -1,0 +1,146 @@
+{
+ "round": "R632",
+ "kind": "披露式负控（三步）—— 判据族对齐判据的牙证明",
+ "rc": 0,
+ "step1_pre_fix_red": true,
+ "step2_post_fix_green": true,
+ "step3_teeth": true,
+ "rows": [
+  {
+   "step": "STEP1_pre_fix",
+   "expect": "RED(判据族不同源+两机读字段缺席)",
+   "red": true,
+   "detail": {
+    "keys_equal": false,
+    "judge_keys_missing": [
+     "J1_fallback_exercised",
+     "J4a_capability_replication",
+     "J4b_capability_vs_truth",
+     "J6_equivalence_face",
+     "P11_precondition_face"
+    ],
+    "judge_keys_extra": [
+     "C1_task_face_v3",
+     "J1_exec_face_consumed",
+     "J1a_exec_face_driven",
+     "J1b_conservation_non_vacuous",
+     "J1c_arms_distinguishable",
+     "J1d_exec_face_forms_zeroed",
+     "J1e_fallback_three_state",
+     "J1e_red_only_on_empty",
+     "J2_repair_convergence",
+     "J2b_selection_conservation",
+     "J4_capability_secondary",
+     "J5_cross_windowset_same_direction",
+     "J6_state",
+     "J6_zero_regression_equivalence",
+     "LD_low_discrimination"
+    ],
+    "primary_criterion_key_present": false,
+    "verdict_source_present": false,
+    "declared_primary_in_prereg": true
+   }
+  },
+  {
+   "step": "STEP2_post_fix",
+   "expect": "GREEN(D1 pass ∧ 来源显式)",
+   "green": true,
+   "detail": {
+    "keys_equal": true,
+    "primary_key_readable": true,
+    "all_keys_present_with_declared_state": true,
+    "primary_criterion_key": "J1_fallback_exercised",
+    "verdict_source_present": true,
+    "verdict_source": "J4a_capability_replication;J3_cost"
+   }
+  },
+  {
+   "step": "STEP3_teeth",
+   "expect": "全部变体转红",
+   "teeth": true
+  }
+ ],
+ "variants": [
+  {
+   "variant": "drop:J0_arm_axis_effective",
+   "expect": "keys_equal=False",
+   "got": false
+  },
+  {
+   "variant": "drop:J1_fallback_exercised",
+   "expect": "keys_equal=False",
+   "got": false
+  },
+  {
+   "variant": "drop:J3_cost",
+   "expect": "keys_equal=False",
+   "got": false
+  },
+  {
+   "variant": "drop:J4a_capability_replication",
+   "expect": "keys_equal=False",
+   "got": false
+  },
+  {
+   "variant": "drop:J4b_capability_vs_truth",
+   "expect": "keys_equal=False",
+   "got": false
+  },
+  {
+   "variant": "drop:J6_equivalence_face",
+   "expect": "keys_equal=False",
+   "got": false
+  },
+  {
+   "variant": "drop:P11_precondition_face",
+   "expect": "keys_equal=False",
+   "got": false
+  },
+  {
+   "variant": "drop:W_floor_resolution_floor",
+   "expect": "keys_equal=False",
+   "got": false
+  },
+  {
+   "variant": "add:J9_invented_extra",
+   "expect": "keys_equal=False",
+   "got": false
+  },
+  {
+   "variant": "dup:primary×2",
+   "expect": "primary_key_readable=False",
+   "got": false
+  }
+ ],
+ "note": "修前读数**原样保留、不翻案**：旧裁判件判决仍不予采用（R631 自捕 D2）",
+ "old_judge_keys": [
+  "C1_task_face_v3",
+  "J0_arm_axis_effective",
+  "J1_exec_face_consumed",
+  "J1a_exec_face_driven",
+  "J1b_conservation_non_vacuous",
+  "J1c_arms_distinguishable",
+  "J1d_exec_face_forms_zeroed",
+  "J1e_fallback_three_state",
+  "J1e_red_only_on_empty",
+  "J2_repair_convergence",
+  "J2b_selection_conservation",
+  "J3_cost",
+  "J4_capability_secondary",
+  "J5_cross_windowset_same_direction",
+  "J6_state",
+  "J6_zero_regression_equivalence",
+  "LD_low_discrimination",
+  "W_floor_resolution_floor"
+ ],
+ "prereg_keys": [
+  "J0_arm_axis_effective",
+  "J1_fallback_exercised",
+  "J3_cost",
+  "J4a_capability_replication",
+  "J4b_capability_vs_truth",
+  "J6_equivalence_face",
+  "P11_precondition_face",
+  "W_floor_resolution_floor"
+ ]
+}

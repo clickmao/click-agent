@@ -1,0 +1,103 @@
+{
+ "round": "R632",
+ "written_before_run": true,
+ "written_at": "2026-09-22T11:30:00+0800",
+ "author": "cron self-check loop (AgentFramework capability cycle)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9；本轮为**器件面收口轮**（无真机臂）⇒ 跳步声明见 skip_steps",
+ "claim": "器件面收口轮：关闭 R631 自捕三缺陷（①判据族与预注册不同源 ②unreliable_policy 未声明 ③驱动头部声明滞后）＋ 候选⑤ 文献小步。**零产品源码改动 / 零真机臂 / 零新增夹具 / 零新增开关 / 零远端调用**。",
+ "skip_steps": {
+  "起手闸": "已跑（PASS，非跳步）：`roundcheck.py preflight --round R632 --min-avail-mb 2769` rc=0（P1–P8 全 PASS，MemAvailable 2870MB / disk 4GB / 无在飞执行体 / R632 空闲）",
+  "构建/AOT": "跳步 构建/AOT —— 本轮零产品源码改动（`git diff --stat src/` 空），被测件 = R630 AOT 件（sha16 cefd045e8d1d）原样复用，无新二进制可构建。",
+  "真机跑": "跳步 真机跑 —— 本轮为零真机臂的器件/判决面收口轮；全部读数取自 **R631 冻结快照**（`eval/rover/r631/evidence/windows/**` + `eval/rover/r631/snapshots/**`），零重测（RF0005 §1「后处理必须能从原始落盘数据幂等重算」）。"
+ },
+ "single_variable": {
+  "axis": "无",
+  "why": "本轮无真机臂 ⇒ 单变量轴不适用；按 RF0005 §1 硬约束 1，本轮不计为「单变量轮」，只计为**器面收口轮**（同 R629 先例）。"
+ },
+ "arms": {},
+ "no_arm_reason": "器件面收口轮：三个待修项全部是判决/声明/策略面缺陷，修法不产生被测读数；引入真机臂会把「器件面是否修好」与「质量轴是否变化」混为同一读数（RF0005 §1 硬约束 6 机制面/能力面分离）。",
+ "windows": {
+  "set": [],
+  "source": "无新窗；本轮只读 R631 冻结窗集 w223/w224",
+  "disjoint_from_history": true,
+  "note": "不新增窗集 ⇒ 不消耗窗号；R633 起臂时窗集 = w225..（与历史 w184..w224 不相交）"
+ },
+ "criterion_version": "v4-layer? 无；本轮判据族 = 对齐面（D 族）",
+ "criteria": {
+  "D1_judge_family_aligned": {
+   "kind": "instrument",
+   "primary": true,
+   "need": "同轮裁判件的**判据键集合 == 预注册 `criteria` 键集合**（逐键相等，禁子集/超集）∧ `primary_criterion_key` 由**机读字段**绑定（禁扫描中文字面「主判据」）∧ `verdict_source` 显式落盘（禁从 `blocked` 反解）∧ 每个判据键**无条件计算**（未行使的记 `informational`/`null`，禁键缺失）",
+   "fail_action": "rc=2 器具缺陷（禁作被测结论）；对齐件判决**替代**判据族不同源的旧判决件（旧件保留在盘、不翻案、不改写）"
+  },
+  "D2_unreliable_policy_declared": {
+   "kind": "instrument",
+   "need": "预注册含 `unreliable_policy` 键（`rule` + `declared_before_run: true` + `policy_declared_ts` + `bars` B1–B3）∧ 机检器给出 `POLICY_ACTIVE` 三态，且「缺键 ⇒ 拒绝生效（fail-closed）」∧ 策略对 R631 冻结窗 w224（外侧 codex 自败 56/58）**机械降级**为 unreliable 单列、本侧失败一条不吞",
+   "fail_action": "缺键/背时序 ⇒ 策略不生效（rc 保持，不判绿）；把「未声明」读成「已行使」= 器具缺陷 rc=2"
+  },
+  "D3_driver_declaration_consistent": {
+   "kind": "instrument",
+   "need": "轮驱动器的**头部声明块**与**实盘赋值**逐项一致（窗号/端口/摆动余量/被测件 sha 等），不一致 ⇒ 判红并逐项点名；修法 = 刷新声明（**只改声明文本，不改任何阈值/判据/判决**），修前声明原文归档留痕",
+   "fail_action": "不一致且未刷新 ⇒ D3 FAIL（声明滞后）；修后仍不一致 ⇒ rc=2"
+  },
+  "D4_no_history_rewrite": {
+   "kind": "instrument",
+   "need": "本轮修法**不改写任何历史判决**：`verdict-r631.json` / `verdict-j4ab-r631.json` / `kpi-table-r631.json` / `prereg-r631.json` 四件 sha256 逐字节不变（与轮前 pin 比对）",
+   "fail_action": "任一历史件被改写 ⇒ rc=2 器具缺陷 + 本轮全部结论作废"
+  },
+  "D5_lit_step": {
+   "kind": "process",
+   "need": "文献小步行使（arXiv ≤3 query / 全文 ≤2 篇 / 间隔 ≥4s）∧ 每条引用带出处（含版本）+ 逐字引文 + 采集日 ∧ 台账**追加**（`io.open(...,'a')`）且 `tail`+`wc -l` 复核",
+   "fail_action": "出口不可达 ⇒ 记「文献小步顺延 <原因>」并计入顺延计数（禁静默跳过）；取不到原文 ⇒ 记「未取到原文 ⇒ 不采信」"
+  },
+  "W_floor_resolution_floor": {
+   "kind": "resolution",
+   "need": "本轮无真机臂 ⇒ 有效窗判据**不适用**（记 `not_applicable`，禁读作 PASS 亦禁读作红）",
+   "fail_action": "把「不适用」读作通过 = 假绿"
+  }
+ },
+ "thresholds_cite_baselines": [
+  "F_merge.quality.cases_median_truth",
+  "F_merge.quality.allpass",
+  "F_merge.gate.precondition_rc",
+  "F_env.gate.prev_swing_mb",
+  "F_env.gate.ceiling_mb"
+ ],
+ "unreliable_policy": {
+  "rule": "truth_arm_window_unavailable",
+  "declared_before_run": true,
+  "policy_declared_ts": "2026-09-22T03:27:16Z",
+  "truth_arm_patterns": [
+   "*/codex"
+  ],
+  "effect": "该窗外侧(codex)臂未全对 ⇒ 该窗对照列标 unreliable 并**从配对/验收面移出**，只单列；本侧(agent*)臂的任何失败一律不得被本规则吞掉。",
+  "bars": [
+   "B1 本侧(agent*)臂的任何失败一律不得被本规则吞掉（始终进 blocked_scoped）",
+   "B2 策略须在起臂前声明：任一窗 artifacts.json 的 mtime 早于 policy_declared_ts ⇒ 策略整体拒绝生效，rc 保持",
+   "B3 规则不得改变历史轮 rc（R631 冻结件 sha256 逐字节不变；R529 及更早无本键的轮次逐位不变）"
+  ],
+  "posthoc_forbidden": "不得事后收窄 evidence_scope / 不得事后追加本键",
+  "applied_this_round_to": "R631 冻结窗 w224（外侧 codex 56/58 未全对 ⇒ 标 unreliable、从 J4b 配对移出，只单列）",
+  "note": "R631 曾未声明本键（`POLICY_ACTIVE=False reason=no_policy_key`）⇒ 该窗由人工按 R4 单列；本轮把同一语义**机制化**（声明先行 + 机检 + 三态），并对 R631 冻结件**重放**该策略（不重测、不改历史判决）。"
+ },
+ "falsification": [
+  "① D1 若对齐件判据键集合与 prereg-r631 的 `criteria` 键集合**不相等**（子集/超集/缺键）⇒ D1 FAIL，本轮器件修复不成立（rc=2），禁宣称「判据族已对齐」。",
+  "② D1 若 `primary_criterion_key` 或 `verdict_source` 任一缺失、或任一判据键在未行使分支下**键缺失**（而非 None/informational）⇒ 命中评审「假绿形态①」（verdict 键在条件分支内计算）⇒ D1 FAIL。",
+  "③ D2 若把 R631 的（无键）预注册喂给机检器时不报 `POLICY_MISSING`（即负控不红）⇒ 机检器无牙 ⇒ D2 FAIL（禁宣称策略已机制化）。",
+  "④ D2 若策略生效后 w224 **本侧**失败条目减少（被吞掉）⇒ 违反 B1 ⇒ D2 FAIL。",
+  "⑤ D3 若刷新声明后 `run_r631.sh` 的 `set -uo pipefail` 之后**任何实盘赋值被改动**（非注释行 diff）⇒ D4 FAIL（改写历史轮语义），本轮作废。",
+  "⑥ D4 若四个历史件任一 sha256 变化 ⇒ rc=2，本轮全部结论作废（禁 rewrite 历史凑绿）。"
+ ],
+ "artifacts_required": [
+  "eval/rover/r632/prereg-r632.json",
+  "eval/rover/r632/judge_align_r632.py",
+  "eval/rover/r632/policy_gate_r632.py",
+  "eval/rover/r632/decl_driver_check_r632.py",
+  "eval/rover/r632/negctl_r632.py",
+  "eval/rover/r632/verdict-r632.json",
+  "eval/rover/r632/report-r632.md",
+  "eval/rover/r632/evidence/instrument-defects-r632.json",
+  "docs/evidence/RF0001/R632-instrument-closure.md"
+ ],
+ "evidence_scope": "本轮为器件面收口 ⇒ 产出**器面**读数（对齐 rc / 策略三态 / 声明一致性 / 历史件不变）；**不产出**能力与成本读数（无真机臂）。质量/成本面结论一律沿用 R631 冻结件，且按铁律 11 标「参考（未可验收）」——本轮**不新增**任何能力宣称。"
+}

@@ -1,0 +1,61 @@
+{
+ "round": "r631",
+ "driver": "eval/rover/r631/run_r631.sh",
+ "driver_sha256": "ec98bb59d792d6af3f3e417a8640688f89ea66411e3aff8826cb0ae9f4e21beb",
+ "header_sha256": "b81ad3eb2c4ba00fc8108ea6164043cb95174e0aa985a192dcdac536f9ba8e85",
+ "body_sha256": "69d9e898744b16486d826d04656f15920bd1dbe3be869fcffb27a7659e6053c1",
+ "items": [
+  {
+   "item": "port",
+   "label": "端口",
+   "declared": 49793,
+   "live": 49795,
+   "verdict": "drift"
+  },
+  {
+   "item": "win0",
+   "label": "窗号 WIN0",
+   "declared": 211,
+   "live": 223,
+   "verdict": "drift"
+  },
+  {
+   "item": "win_set",
+   "label": "窗集",
+   "declared": [
+    "w211",
+    "w212",
+    "w213"
+   ],
+   "live": [
+    "w223",
+    "w224"
+   ],
+   "verdict": "drift"
+  },
+  {
+   "item": "prev_swing_mb",
+   "label": "PREV_SWING(MB)",
+   "declared": 125,
+   "live": 119,
+   "verdict": "drift"
+  },
+  {
+   "item": "min_avail_mb",
+   "label": "--min-avail-mb",
+   "declared": 2775,
+   "live": 2769,
+   "verdict": "drift"
+  },
+  {
+   "item": "bin_sha16",
+   "label": "被测件 sha16",
+   "declared": "886db888d744a619",
+   "live": "cefd045e8d1d4258",
+   "verdict": "drift"
+  }
+ ],
+ "drifted": 6,
+ "checked": 6,
+ "verdict": "DECL_DRIFT"
+}

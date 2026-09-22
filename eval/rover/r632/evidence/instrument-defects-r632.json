@@ -1,0 +1,90 @@
+{
+ "round": "R632",
+ "kind": "器件面自捕缺陷清单（含**本轮新捕**；每条带判别形态 + 修法 + 状态）",
+ "round_shape": "零真机臂 / 零远端调用 / 零产品源码改动；全部读数取自 R631 冻结快照（零重测）",
+ "defects": [
+  {
+   "id": "D2-judge-family-misaligned",
+   "origin": "R631 自捕（本轮=修法轮）",
+   "symptom": "同轮裁判件的**判据键族**与预注册 `criteria` 键族不同源：旧件 15 个键（J1_exec_face_consumed / J1a..J1e / J2 / J2b / J4_capability_secondary / J5 / J6_zero_regression / v3 / C1_task_face_v3 / J6_state / LD_low_discrimination）vs 预注册 8 键（J0 / J1_fallback_exercised / J3_cost / J4a / J4b / J6_equivalence_face / P11 / W_floor）⇒ 缺 5 / 多 15",
+   "discriminating_form": "键集合比对（逐键相等，禁子集/超集）+ `primary_criterion_key` 由**机读字段**绑定（禁扫描中文字面）+ `verdict_source` 显式落盘",
+   "evidence": {
+    "step1_pre_fix_red": "eval/rover/r632/evidence/negctl-r632.json → rows[STEP1_pre_fix] red=true, judge_keys_missing=5, judge_keys_extra=15, primary_criterion_key_present=false, verdict_source_present=false",
+    "step3_teeth": "变体注入 10/10 转红（逐键删除 8 + 多键 1 + 主判据键多重 1）"
+   },
+   "fix": "eval/rover/r632/judge_align_r632.py（判据层完全重写；解析层复用 judge_r631.py 的 read_transcript/read_cases 单一实现防漂移）",
+   "state": "closed（旧判决件保留在盘、不采用、不翻案）"
+  },
+  {
+   "id": "D3-driver-declaration-lag",
+   "origin": "R631 自捕（本轮=修法轮）",
+   "symptom": "轮驱动器 `eval/rover/r631/run_r631.sh` 头部**派生声明块**逐项与实盘赋值不一致：修前 **6/6 项漂移**（标题主题「等价面分辨率取证（reps 3→6）+ 判据分级」vs 实盘「执行面轴跨窗复现轮」；端口 49793 vs **49795**；窗号 WIN0 211（w211..w213）vs **223**（w223..w224）；`PREV_SWING` 125MB vs **119MB**；`--min-avail-mb` 2775 vs **2769**；被测件 sha16 886db888d744a619 vs **cefd045e8d1d4258**）",
+   "discriminating_form": "声明块与实盘段**同文件内**逐项比对（窗号/端口/摆动余量/被测件 sha）；缺声明 ≠ 一致（fail-closed）",
+   "evidence": {
+    "before": "eval/rover/r632/evidence/decl-before-r631.json（checked=6 drifted=6 verdict=DECL_DRIFT）",
+    "after": "eval/rover/r632/evidence/decl-after-r631.json（checked=6 drifted=0 absent=0 verdict=PASS）",
+    "selftest_teeth": "eval/rover/r632/decl_driver_check_r632.py --selftest → 8/8 判中（合成一致头必 PASS / 逐字段注入 5/5 必 DECL_DRIFT / 空声明件必 DECL_ABSENT）"
+   },
+   "fix": "eval/rover/r632/refresh_driver_decl_r632.py --apply（**只改注释声明文本**；`set -uo pipefail` 之后实盘段 sha256 **逐字节不变** ⇒ body_unchanged=true；幂等；写后读回复核 readback_matches=true）",
+   "state": "closed（历史判决/读数未改写；修前声明原文归档在 decl-refresh-r631.json）",
+   "correction": "**同轮自捕**：本条目初稿把 live 值写成「49792 / WIN0 208→223 / PREV_SWING 实盘 2769」——**三处均由假设写就而非从落盘件抄录**。修法 = 从 `evidence/decl-before-r631.json` / `decl-after-r631.json` 的 `items[].declared/live` **逐字段抄录**后重写；教训：凡「修前/修后」对照数字，一律由**落盘件的字段**派生，禁经人手转写（与「长度代数是第二独立读数」同族）。"
+  },
+  {
+   "id": "D4-strip-false-red",
+   "origin": "**R632 新捕（本轮器具自伤）**",
+   "symptom": "D4「历史件未被改写」首版实现判 **fail**（rc=2），实为**测量层假红**：用 `git show HEAD:<path>` + `.strip()` 取 HEAD 侧字节 ⇒ 尾换行/行尾处理差异 ⇒ 与现盘 sha256 必然不等 ⇒ 四件全部 `unmodified_vs_head=false`",
+   "discriminating_form": "同一判据的**两条独立取数路径**（现盘 sha256 vs `git cat-file blob` 的 **bytes** 管道）必须逐位一致；不一致先怀疑取数层，不怀疑被测（承「采集侧假失败 ≠ 断言失败」）",
+   "evidence": {
+    "before_fix_rc": 2,
+    "after_fix_rc": 3,
+    "after_fix_all_four_equal": true,
+    "detected_by": "D4 逐件 sha256 打印（四件 head 侧同值异常 ⇒ 指向取数而非文件）"
+   },
+   "fix": "`_git_blob_sha()`：`git cat-file blob HEAD:<path>` + `capture_output(bytes)` ⇒ 不再经 text/strip 变换",
+   "state": "closed（判据本身未放宽：比对仍为逐字节相等）"
+  },
+  {
+   "id": "decl-checker-absent-header-false-green",
+   "origin": "**R632 新捕（本轮器具自捕）**",
+   "symptom": "`decl_driver_check_r632.py` 首版对**无声明块的驱动器**判 `PASS`（把「缺声明」读成「一致」）⇒ 假绿；且首版负控只注入**单一字段**、且把「现盘 r631 漂移」当负控（正控/负控定位错）",
+   "discriminating_form": "四态成对：①**合成一致头必 PASS**（证明非恒红）② 逐字段注入 5 种必 DECL_DRIFT ③ 空头必 **DECL_ABSENT**（缺声明≠一致，fail-closed）④ 现盘读数只作 INFO",
+   "evidence": {
+    "selftest_rc": 0,
+    "teeth": true,
+    "cases": 8,
+    "file": "eval/rover/r632/evidence/decl-selftest-r632.json"
+   },
+   "fix": "判定改三态 verdict（PASS / DECL_DRIFT / DECL_ABSENT）+ 退出码只读 verdict 字段（禁按 drifted==0 判绿）",
+   "state": "closed"
+  },
+  {
+   "id": "ledger-claim-false-prefix-tokens",
+   "origin": "**R632 新捕（文献台账初稿自带假断言）**",
+   "symptom": "台账 R632 段初稿写「前缀长度字段当前**未落盘**（`git grep` 无消费者）」——**该断言为假**",
+   "truth": "生产者 `src/agent.modelqueue/LocalSessionCacheLedger.cs:86`（`prefixOk = prefixTokens >= RequiredPrefixTokens`）与 100/111/112 行落盘 `prefix_tokens` / `prefix_length_satisfied`；消费者 `eval/rover/r411/verify.py:43`（J5 绝对长度判据）；阈值件 `eval/rover/r410/prefix-reuse.json:3` `required_prefix_tokens: 4224`",
+   "discriminating_form": "判「未实现」必须**按类名/键名双向核**（`git grep -n <key>` + `git grep -n <Class>`）并排除自身目录；**一次 grep 无命中 ≠ 不存在**（与「有代码行 ≠ 生效」互为反面）",
+   "evidence": {
+    "correction_landed": "docs/research/lit-review-ledger.md（勘误行 + 改写该断言；numstat 31/0 ⇒ 纯追加）",
+    "git_grep_prefix_tokens_in_src": "唯一命中 src/agent.modelqueue/LocalSessionCacheLedger.cs ⇒ **本地 llamacpp 路径**有；远端中继路径只有 cache_hit_tokens/cache_miss_tokens/cache_hit_rate（PromptCacheKpi.cs）"
+   },
+   "fix": "勘误动作 = 逐字复核后**改写该断言**（不改机制假设、不改状态栏）；候选状态由「候选」改判「**已实施（同形机制本仓既有）**」",
+   "state": "closed（原文位置保留，勘误同轮落档）"
+  },
+  {
+   "id": "J1-same-name-different-predicate",
+   "origin": "**R632 新捕（重审冻结尾发现：同名判据的两套谓词）**",
+   "symptom": "R631 的 kpi 行把 `J1_fallback_exercised` 读作 `NOT_EXERCISED（回退 0 行使）⇒ 单列`；按 prereg-r631 的**同一键名**谓词重审冻结件得 **pass（fallback_runs=6 ∧ 回退跑次 executed>0 全部 ∧ T 面覆盖全）** ⇒ **同名键、两套语义**，旧读数为**假**",
+   "discriminating_form": "旧件族的 `J1_exec_face_consumed` 与预注册族的 `J1_fallback_exercised` **键名相近而谓词不同**（前者问「执行面是否被消费」，后者问「回退是否被行使 ∧ 形态守恒」）⇒ 只看键名或只看旧行自报都会沿用错读数；判别 = 用**预注册谓词**在冻结件上复算",
+   "evidence": {
+    "rejudge": "eval/rover/r632/verdict-r632.json → criteria.J1_fallback_exercised.state=pass, fallback_runs=6, fallback_exec_ok=true",
+    "old_row": "eval/capability/kpi.jsonl R631 行 readings.J1_fallback_exercised = \"NOT_EXERCISED（回退 0 行使）⇒ 单列, 不判 PASS 不判红（同 R621 口径）\""
+   },
+   "fix": "**不改写** R631 历史行（承「禁改写历史判决」）；把重审读数写进 R632 行 + 本清单（旧读数标作废、单列）",
+   "state": "closed（历史件 sha256 逐字节不变；纠偏只落新轮）"
+  }
+ ],
+ "self_check": {
+  "rule": "每条缺陷必须带「判别形态」+ 可机读证据指针 + 修法范围；**修法不得改阈值/判据宽度**（禁放宽凑绿）",
+  "fix_scope_audit": "本轮全部修法只动：判据族对齐件（新增）、声明文本（注释）、取数层（bytes 管道）、判定三态（fail-closed）；**零** 阈值下调 / **零** 判据放宽 / **零** 历史判决改写（D4 逐件 sha256 相等）"
+ }
+}

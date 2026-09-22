@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R629",
+ "updated_round": "R632",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7816,6 +7816,40 @@
    },
    "negative_control": "① 前置器通配声明修复的**两侧样例**（R631 自捕器件缺陷 D1）: 正控 = 修后 `--round r631` 输出 `DECLARED_ABSENT=-` （修前 2 条假红 `w223/agentT-r*`/`w224/agentT-r*`，而 `snapshots/w223/{agentT-r1,r2,r3}` 在盘）且 rc 不变=1；负控 = 注入字面缺席名 `w223/agentT-r9` ⇒ 仍报 `DECLARED_ARM_ABSENT w223/agentT-r9`（牙在）并附判 `VERDICT_POSTHOC_ONLY`；② **历史判决审计**（判决中性证明）: r550 修后重放 `declared_absent` 3→3、rc 1→1 不变（该轮 3 条为字面名 `agentR550on2-g1`，与本修无关）⇒ 本修只消除通配声明的假红，不改写任何既有判决；③ 判决面**不采信裁判件自报**: `judge_r631.py` 判据族与预注册不同源，改用冻产后处理复算（幂等、零重测）并披露；④ `decl_sweep --apply` ⇒ `checked=30 drifted=0`（登记面零漂移）。",
    "note": "轮次工件: eval/rover/r631/{prereg,judge,kpi-table,verdict,verdict-j4ab,bins,gate-margin,premise}-r631.* + dag-r631.md + evidence/windows/** + snapshots/**。未行使 R529 J4(b) `unreliable_policy`（`POLICY_ACTIVE=False reason=no_policy_key`）⇒ w224 真值自败窗未被机检降级，列入 R632 起手清单。跨轮禁相减（RF0005 §6 红线 4）。"
+  },
+  {
+   "id": "r632.instrument-declaration-closure",
+   "owner_round": "R632",
+   "level": "L2",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "d0cca7a84c12",
+    "instrument": "eval/rover/r632/judge_align_r632.py",
+    "instrument_sha12": "cacd933fa194",
+    "binding": "audit-pin",
+    "audited_by_round": "R632"
+   },
+   "capability": "器件面收口（R631 自捕三缺陷关闭 + 本轮新捕四条）：①**判据族同源**——同轮裁判件判据键集合必须**逐键等于**预注册 `criteria` 键集合（禁子集/超集），主判据键由**机读字段** `primary == true` 绑定（禁扫描中文字面「主判据」），`verdict_source` 显式落盘（禁从 `blocked` 反解）；本件**自身**也过同一律（`r632_family_self_check.keys_equal=true`）。②**策略声明先行**——`unreliable_policy` 须含 `rule`+`declared_before_run`+`policy_declared_ts`+三条 bars，且机检三态、缺键 fail-closed；对**既有窗**受 B2 约束 ⇒ 本轮实测 `POLICY_ACTIVE=false`、authority 记 **R4 人工口径**（不把人工判断包装成机检）。③**驱动器声明一致**——轮驱动器头部派生声明块与实盘赋值逐项比对（修前 6/6 漂移 → 修后 0/6），修法**只改注释**、实盘段 sha256 逐字节不变。④**历史判决不可改写**——四件（verdict-r631 / verdict-j4ab-r631 / kpi-table-r631 / prereg-r631）与 HEAD blob 逐字节相等。**本轮新捕**：D4 取数层假红（`git show`+`.strip()` 丢尾字节）、声明检查器对空声明件判绿（假绿）、**同名判据两套谓词**（R631 行 `J1_fallback_exercised` 读数被证伪：重审得 `fallback_runs=6` 全通过）、文献台账初稿自带假断言（`prefix_tokens` 实有生产者/消费者）⇒ 同轮勘误。**诚实边界**：零真机臂 ⇒ 对质量轴零信息量；重审 R631 面 **rc=3（有效窗<2 ⇒ 停链造窗）**，铁律 11 前置器 rc=1 ⇒ R631 质量/成本列仍标「参考（未可验收）」，本轮**不翻案、不改写**。",
+   "evidence_path": "eval/rover/r632/verdict-r632.json",
+   "evidence_cmd": "python3 eval/rover/r632/decl_driver_check_r632.py --selftest; python3 eval/rover/r632/decl_driver_check_r632.py --sh eval/rover/r631/run_r631.sh --round r631; python3 eval/rover/r632/negctl_r632.py; python3 eval/rover/r632/policy_gate_r632.py; python3 eval/capability/decl_sweep.py --check",
+   "negative_control": "四条成对控制：① 披露式三步（`negctl_r632.py`）——修前窗口**必判红**（键族缺 5/多 15 + 两机读字段缺席）、修后窗口**必判绿**、STEP3 单变量变体 **10/10 必转红**（逐键删除 8 + 多键 1 + 主判据键多重 1）⇒ 证明 D1 非恒真门；② 声明检查器四态——**合成一致头必 PASS**（非恒红）、**逐字段注入 5 种必 DECL_DRIFT**（端口/窗号/摆动余量/内存余量/被测件 sha）、**空声明件必 DECL_ABSENT**（缺声明≠一致，fail-closed；v1 曾在此判绿 ⇒ 本轮自捕）；③ 策略背时序——R631 窗 artifacts 早于 `policy_declared_ts` ⇒ `POLICY_ACTIVE=false`（B2 拒绝追溯套用），且**不得**被读成行使；④ 历史件字节闸——四件 sha256 与本轮前后核对一致（首版取数层缺陷造成的**假红**已修，判据本身未放宽）。",
+   "covers": [
+    "eval/rover/r632/judge_align_r632.py",
+    "eval/rover/r632/decl_driver_check_r632.py",
+    "eval/rover/r632/negctl_r632.py",
+    "eval/rover/r632/policy_gate_r632.py",
+    "docs/evidence/RF0001/R632-instrument-closure.md",
+    "判据族与预注册同源可机检（键集合逐键相等、主判据键机读绑定、判决来源显式）",
+    "策略与豁免类规则的声明先行与 fail-closed（缺键不生效、背时序拒绝追溯套用）",
+    "轮驱动器「声明 == 现盘」一致性（缺声明 fail-closed），且修法不改实盘段",
+    "历史判决与读数不可改写（四件逐字节相等），支撑跨轮并列禁相减",
+    "检索面：出口可用性与空结果分离（出口 429 的轮次不计降频判定）"
+   ],
+   "runs": 0,
+   "verdict": "器件面 PASS（D1–D5 全绿 ∧ 负控有牙 ∧ 自身同源律成立）；**能力面未测**（零真机臂 / 零远端 / 零产品源码改动）⇒ 重审 R631 冻结面 rc=3（有效窗<2），该读数**禁当 R632 能力结论**，R631 判决不翻案。",
+   "aot": "未跑（零产品源码改动、未构建未发布新产物）⇒ 证据阶梯按实定级 **L2**，不升级；AOT 校验按 registry `aot_check_policy` 仅在【发布 tag】时执行。"
   }
  ],
  "aot_check_policy": "release_tag_only",

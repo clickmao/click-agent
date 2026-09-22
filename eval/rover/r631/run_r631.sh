@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# R631 驱动器（RF0004.2 · M3 **第五刀 = 等价面分辨率取证（reps 3→6）+ 判据分级**）——
+# R631 驱动器（RF0004.2 · M3 **执行面轴 `AGENTFRAMEWORK_R1_ACTION_EXEC` 跨窗复现轮**: 2 窗 × reps3 × 2 臂 + codex 真值 ×1/窗）——
 # 派生 = eval/rover/r617/run_r617.sh（结构复用）+ 下列**逐条声明的差异**:
-#   ① 轮号/命名空间 R617→R631、r617→r631；D=$HOME/.agentframework/harness/runs/r631；端口 49792→49793。
-#   ② 窗号 WIN0 208→**211**（w211..w213；与历史窗集 w184..w210 **不相交**）。题集 = r617 冻结件逐字节复制件（sha e0c667c2…）。
-#   ③ 被测件变更（$HOME/.agentframework/artifacts/pub_r630/agenthost；本轮 src/ 有改动 ⇒ AOT 重发布件，sha 886db888d744a619…）
+#   ① 轮号/命名空间 R617→R631、r617→r631；D=$HOME/.agentframework/harness/runs/r631；端口 49792→49795。
+#   ② 窗号 WIN0 208→**223**（w223..w224；与历史窗集 w184..ww222 **不相交**）。题集 = r617 冻结件逐字节复制件（sha e0c667c2…）。
+#   ③ 被测件变更（$HOME/.agentframework/artifacts/pub_r630/agenthost；本轮 src/ 有改动 ⇒ AOT 重发布件，sha cefd045e8d1d4258…）
 #      ⇒ 与 R585–R617 冻结件轮**禁相减**，只并列。
 #   ④ **单变量改写**：新轴 `AGENTFRAMEWORK_R1_ACTION_EXEC`（产品缺省 **off**）
 #      T 档 显式 `=1`（执行面 = 采纳候选映射出的节点）vs C 档 `unset`（产品缺省 = 旧行为：执行面读 `plan`）。
@@ -13,11 +13,12 @@
 #      —— 四字段由**产品侧轴**决定（轴关恒缺席），不是臂注入。
 #   ⑥ 判据器 = eval/rover/r631/judge_r631.py（import kpi_r599.py helpers + r604 的 J3 v2 公式模块；
 #      J0/J1 块按本轮单变量重写，J2/J2b/J3/J4/J5/W_floor/LD 逐字继承）。
-#   ⑦ 起手闸摆动余量 PREV_SWING = **125MB**（口径 = R631 起手闸 `--min-avail-mb 2775` − 产品门槛 2650；
+#   ⑦ 起手闸摆动余量 PREV_SWING = **119MB**（口径 = R631 起手闸 `--min-avail-mb 2769` − 产品门槛 2650；
 #      同源实测 = r617 同态在飞窗 run-samples n=377 swing 81MB ⇒ 125 为含观测台阶的上界值）；
 #      本轮运行期另落采样供下轮派生。
 #   ⑧ J5 前表指针 → eval/rover/r617/kpi-table-r617.json（并列、禁相减）；其余沿用
 #      （bins 落盘块 / 逐跑次洁净工作区 / 收尾 bin sha 一致性检查 / 铁律 11 前置器）一字未改。
+#   ⑨ **声明刷新（R632 器件面收口 · 候选③）**：本头部声明块逐项与实盘赋值对齐（器 `eval/rover/r632/decl_driver_check_r632.py`；修前 6/6 漂移，见 `eval/rover/r632/evidence/decl-before-r631.json`）。**只改注释**，`set -uo pipefail` 之后实盘段逐字节未动。
 # 用法: bash eval/rover/r631/run_r631.sh
 set -uo pipefail
 REPO=/home/agentuser/AgentFramework

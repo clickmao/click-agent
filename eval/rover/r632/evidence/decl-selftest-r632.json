@@ -1,0 +1,51 @@
+{
+ "selftest": "decl_driver_check_r632",
+ "rc": 0,
+ "teeth": true,
+ "rows": [
+  {
+   "case": "POS_synth_consistent",
+   "expect": "PASS",
+   "got": "PASS",
+   "drifted": 0,
+   "absent": 0
+  },
+  {
+   "case": "NEG_inject_port",
+   "expect": "DECL_DRIFT",
+   "got": "DECL_DRIFT"
+  },
+  {
+   "case": "NEG_inject_win0",
+   "expect": "DECL_DRIFT",
+   "got": "DECL_DRIFT"
+  },
+  {
+   "case": "NEG_inject_prev_swing_mb",
+   "expect": "DECL_DRIFT",
+   "got": "DECL_DRIFT"
+  },
+  {
+   "case": "NEG_inject_min_avail_mb",
+   "expect": "DECL_DRIFT",
+   "got": "DECL_DRIFT"
+  },
+  {
+   "case": "NEG_inject_bin_sha16",
+   "expect": "DECL_DRIFT",
+   "got": "DECL_DRIFT"
+  },
+  {
+   "case": "NEG_empty_header",
+   "expect": "DECL_ABSENT",
+   "got": "DECL_ABSENT"
+  },
+  {
+   "case": "INFO_current_r631",
+   "expect": "-",
+   "got": "PASS",
+   "drifted": 0
+  }
+ ],
+ "note": "四态齐备才算有牙：合成一致头必 PASS（非恒红）/ 逐字段注入必红 / 空头必 DECL_ABSENT（缺声明≠一致）"
+}

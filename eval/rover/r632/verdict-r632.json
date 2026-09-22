@@ -1,0 +1,371 @@
+{
+ "round": "R632",
+ "kind": "候选① 判据族对齐件：按 prereg-r631 的判据族**重审** R631 冻结读数（零重测、零产品改动、零阈值改动）；旧裁判件 judge_r631.py 的判决保留在盘、不采用、不翻案",
+ "path_mode": "runs-dir(A)",
+ "criterion_source": {
+  "prereg": "eval/rover/r631/prereg-r631.json",
+  "prereg_sha256": "5a6ac2238af5c267134a40ed2c4f43603f76016f32cf59a82e0ca4a175020593",
+  "criteria_keys_source": [
+   "J0_arm_axis_effective",
+   "J1_fallback_exercised",
+   "J3_cost",
+   "J4a_capability_replication",
+   "J4b_capability_vs_truth",
+   "J6_equivalence_face",
+   "P11_precondition_face",
+   "W_floor_resolution_floor"
+  ],
+  "criteria_keys_judge": [
+   "J0_arm_axis_effective",
+   "J1_fallback_exercised",
+   "J3_cost",
+   "J4a_capability_replication",
+   "J4b_capability_vs_truth",
+   "J6_equivalence_face",
+   "P11_precondition_face",
+   "W_floor_resolution_floor"
+  ],
+  "primary_criterion_key": "J1_fallback_exercised",
+  "primary_criterion_key_source": "prereg.criteria[<k>].primary == true（机读字段，禁扫描中文字面）"
+ },
+ "D1_judge_family_aligned": {
+  "pass": true,
+  "keys_equal": true,
+  "primary_key_readable": true,
+  "all_keys_present_with_declared_state": true,
+  "judge_keys_extra": [],
+  "judge_keys_missing": []
+ },
+ "verdict_source": {
+  "key": "J4a_capability_replication;J3_cost",
+  "drove_rc": [
+   "J4a_capability_replication",
+   "J3_cost"
+  ],
+  "kind": "capability_secondary/mechanism",
+  "rule": "explicit predicate over the criterion states (NOT reverse-inferred from `blocked`)"
+ },
+ "unreliable_policy": {
+  "active": false,
+  "source": "prereg-r632.json",
+  "policy_declared_ts": "2026-09-22T03:27:16Z",
+  "declared_for_future_rounds": true,
+  "gate_reading": "eval/rover/r632/evidence/policy-retro-r631.json",
+  "gate_reason": "RUN_PREDATES_DECLARATION(post-hoc retro)",
+  "applied_to_windows": [
+   "w224"
+  ],
+  "authority": "R4 manual single-listing（B2 拒绝追溯套用既有窗）",
+  "effect": "该窗对照列移出 J4b 配对、只单列；本侧(agent*)臂失败一条不吞（B1）"
+ },
+ "evidence_sha256": {
+  "transcripts": {
+   "w223/codex/g1/transcript.json": null,
+   "w223/agentT-r1/g1/transcript.json": "683f21128aa679855f01cb79a661285da60f216235fb14768f747fdeb7b76d94",
+   "w223/agentC-r1/g1/transcript.json": "cc1ef6974af5be6fb9cde5f13a2e901d6f6164e7719118f878c73e94df7fb557",
+   "w223/agentT-r2/g1/transcript.json": "01d78b082ade64ef18fb84f03c70e29f31f9391d372e4533e60ba5b3685184dc",
+   "w223/agentC-r2/g1/transcript.json": "65485f4cd5485fdd01c00c77f1815b2e2edffe913374eaa70c201283c6fdfaf7",
+   "w223/agentT-r3/g1/transcript.json": "3cc2b0ba5ff985cac1568a28d2b55c928dda20b69ad0ea52a58a9e845249a777",
+   "w223/agentC-r3/g1/transcript.json": "a46dea636e4aaa0b7f8f65d7e281d7c863a214b72a138f98303c7331044b6ec9",
+   "w224/codex/g1/transcript.json": null,
+   "w224/agentT-r1/g1/transcript.json": "d6c6a1a5ee835abe18e70b188835881418ea24fae3284640da6055be700f6cc6",
+   "w224/agentC-r1/g1/transcript.json": "57b18f5ae4a6e6424615504ed31d70703540579d861408fb92c3da677d6c9d94",
+   "w224/agentT-r2/g1/transcript.json": "5a8b47d833e2c377a20393fbb3a8973620c79ff81cc0c66c116a6e6c398603c7",
+   "w224/agentC-r2/g1/transcript.json": "dca6ce71981859ccf62794aa609c41ec02776cfe9bcfb6d2f1d2fb933252c487",
+   "w224/agentT-r3/g1/transcript.json": "70bbd83b3931d2e7b9789b067c28d622fc8818564ffe0b1feea58f8275fd9917",
+   "w224/agentC-r3/g1/transcript.json": "7323a8597989604fdf4764be8e638e8d468c63e70882d319f55d8a2ef5f77e5d"
+  },
+  "runs_jsonl": "f0f956a7d02d61da4b88dd7082fedeb5d90c954ac6cdf806ff6a280431542a13"
+ },
+ "per_window": {
+  "w223": {
+   "T_allpass_rate": 0.6666666666666666,
+   "C_allpass_rate": 1.0,
+   "T_cases_median": 58,
+   "C_cases_median": 58,
+   "C1_cases_median": 58,
+   "C1_all_pass": true,
+   "reps": {
+    "T": 3,
+    "C": 3,
+    "C1": 1
+   },
+   "D_T_minus_C_cases_median": 0,
+   "D_product_minus_truth_cases_median": 0
+  },
+  "w224": {
+   "T_allpass_rate": 0.3333333333333333,
+   "C_allpass_rate": 0.0,
+   "T_cases_median": 51,
+   "C_cases_median": 50,
+   "C1_cases_median": 56,
+   "C1_all_pass": false,
+   "reps": {
+    "T": 3,
+    "C": 3,
+    "C1": 1
+   },
+   "D_T_minus_C_cases_median": -2,
+   "D_product_minus_truth_cases_median": -5
+  }
+ },
+ "criteria": {
+  "J0_arm_axis_effective": {
+   "kind": "mechanism",
+   "state": "pass",
+   "pass": true,
+   "T_exec_source": [
+    "plan_fallback",
+    "plan_fallback",
+    "plan_fallback",
+    "plan_fallback",
+    "plan_fallback",
+    "plan_fallback"
+   ],
+   "T_prefix_set": [
+    "a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e"
+   ],
+   "C_prefix_set": [
+    "a9792fdbe5b22f394a3149ca1bf3c1ba70927c1e537adabf36bbaed23f9dbc4e"
+   ],
+   "C_new_fields_absent_runs": 6,
+   "C_runs": 6,
+   "T_runs": 6,
+   "need": "T 逐跑次 `exec_source` ∈ {candidates, plan_fallback} ∧ C 档五字段全缺席 ∧ 两臂 `prefix_sha256` 同源 ∧ **两臂前缀 == legacy 锚** ∧ 每臂非全缺席"
+  },
+  "J1_fallback_exercised": {
+   "kind": "mechanism",
+   "primary_from_prereg": true,
+   "state": "pass",
+   "pass": true,
+   "T_face_covered": true,
+   "fallback_runs": 6,
+   "fallback_exec_ok": true,
+   "conservation_only_on_candidates_source": [],
+   "conservation_ok": true,
+   "not_exercised_note": null,
+   "need": "同 R621：面覆盖 T 全部跑次 ∈ {candidates, plan_fallback} ∧ 回退跑次 ≥1 ∧ 回退跑次 executed>0 全部 ∧ 守恒（仅在 candidates 源上有定义）"
+  },
+  "J4a_capability_replication": {
+   "kind": "capability_secondary",
+   "state": "fail",
+   "pass": false,
+   "D_cases_median_by_window": {
+    "w223": 0,
+    "w224": -2
+   },
+   "median": -1.0,
+   "nonneg_frac": 0.5,
+   "power_note": "n=2 窗 ⇒ 欠功率，只作趋势不作能力结论",
+   "need": "逐窗用例通过数配对 Δ := **T − C**（排序后配对，`delta_median_T_minus_C`）；复现判据 = Δ 中位 **> 0** ∧ 逐窗符号非负占比 ≥ 1/2（n=2 窗 ⇒ 欠功率，**只作趋势不作能力结论**）"
+  },
+  "J4b_capability_vs_truth": {
+   "kind": "capability",
+   "state": "pass",
+   "pass": true,
+   "D_by_window": {
+    "w223": 0
+   },
+   "windows_used": [
+    "w223"
+   ],
+   "unreliable_windows": [
+    "w224"
+   ],
+   "policy_active": false,
+   "policy_active_for_this_window_set": false,
+   "policy_declared_for_future_rounds": true,
+   "exclusion_authority": "R4 manual single-listing（策略声明晚于本窗集 ⇒ B2 拒绝追溯套用）",
+   "median": 0,
+   "power_note": "可靠窗 n=1 ⇒ 欠功率（R4：真值自败窗单列不筛窗）",
+   "need": "逐窗 D := 产品 − codex 真值（用例通过数）；D 中位 ≥ −2 ∧ 无窗 ≤ −15（阈值引 `F_merge.quality.cases_median_truth`）"
+  },
+  "J3_cost": {
+   "kind": "cost",
+   "state": "fail",
+   "pass": false,
+   "sum_calls": {
+    "T": 11,
+    "C": 11
+   },
+   "per_window_calls": {
+    "w223": {
+     "T": 5,
+     "C": 5
+    },
+    "w224": {
+     "T": 6,
+     "C": 6
+    }
+   },
+   "new_prompt_sum": {
+    "T": 9330,
+    "C": 9077,
+    "C1": 8390
+   },
+   "completion_sum": {
+    "T": 26947,
+    "C": 26602,
+    "C1": 7744
+   },
+   "per_call_new_prompt": {
+    "T": 848.1818181818181,
+    "C": 825.1818181818181
+   },
+   "clauses": {
+    "a1_sum_calls_T_le_C": true,
+    "a2_per_window_T_le_C": true,
+    "b1_unit_new_prompt_T_le_C": false
+   },
+   "need": "三列分列（调用 / 新算 prompt / completion，口径 = 中继逐调用 usage）∧ v2 三条款（Σcalls T ≤ C ∧ 逐窗 Σcalls T ≤ C ∧ 单位调用新算 prompt T ≤ C）；阈值零改动"
+  },
+  "J6_equivalence_face": {
+   "kind": "mechanism_secondary",
+   "state": "informational",
+   "pass": null,
+   "closed_by": "R621 定案关闭（NO_RESOLUTION / 摆动 ≥ 效应）",
+   "note": "prereg 逐字：本轮只登记、不作主判据、禁为同一缺口再加轮；如再现 NO_RESOLUTION ⇒ 保持关闭，不翻案",
+   "need": "已由 R621 定案关闭（NO_RESOLUTION / 摆动 ≥ 效应）⇒ 本轮**只登记、不作主判据、禁为同一缺口再加轮**"
+  },
+  "W_floor_resolution_floor": {
+   "kind": "resolution",
+   "state": "fail",
+   "pass": false,
+   "valid_windows": 1,
+   "all_windows": [
+    "w223",
+    "w224"
+   ],
+   "unreliable_excluded": [
+    "w224"
+   ],
+   "rule": "有效窗 <2 ⇒ rc=3 停链（禁下调阈值）",
+   "need": "有效窗 <2 ⇒ rc=3 停链（禁下调阈值）"
+  },
+  "P11_precondition_face": {
+   "kind": "acceptance",
+   "state": "pass",
+   "pass": true,
+   "precond_path": "/home/agentuser/.agentframework/harness/runs/r631/precond-r631.json",
+   "precond_sha256": "5af49f57f7d0ac43fcd61444a61cc8b52c20f309888981c0ef397fc8673af0fa",
+   "precond_rc": 1,
+   "named_blocked_entries": 14,
+   "discover_fail": false,
+   "need": "`exec_precondition.py --round r631` **给出 named 阻塞**（逐臂逐用例）而非 DISCOVER_FAIL ⇒ 验收面可归属；rc 由该器判定（引 `F_merge.gate.precondition_rc`：rc≠0 ⇒ 质量/成本列标「参考（未可验收）」）"
+  }
+ },
+ "r632_criteria": {
+  "D1_judge_family_aligned": {
+   "state": "pass",
+   "keys_equal": true,
+   "primary_key_readable": true,
+   "all_keys_present_with_declared_state": true
+  },
+  "D2_unreliable_policy_declared": {
+   "state": "informational",
+   "active": false,
+   "authority": "R4 manual（B2 拒绝追溯套用）"
+  },
+  "D3_driver_declaration_consistent": {
+   "state": "pass",
+   "verdict": "PASS",
+   "checked": 6,
+   "drifted": 0,
+   "absent": 0,
+   "items_drifted": [],
+   "refresh_evidence": "eval/rover/r632/evidence/decl-refresh-r631.json",
+   "refresh_body_unchanged": true,
+   "refresh_header_sha_before": "b81ad3eb2c4ba00fc8108ea6164043cb95174e0aa985a192dcdac536f9ba8e85",
+   "refresh_header_sha_after": "9c414b74c7ae04ec60bb53801d3a1b00ef5755225cf516d5ef0d7d1ce6c013a8",
+   "fix_scope": "只改注释声明文本；`set -uo pipefail` 之后实盘段 sha256 逐字节不变（D4 机检）"
+  },
+  "D4_no_history_rewrite": {
+   "state": "pass",
+   "files": [
+    {
+     "file": "eval/rover/r631/verdict-r631.json",
+     "sha256_disk": "4f25a84e1abe539a0ea1707c586e9d434a30a84abdf6f1395cdfa0650c519510",
+     "sha256_head": "4f25a84e1abe539a0ea1707c586e9d434a30a84abdf6f1395cdfa0650c519510",
+     "unmodified_vs_head": true
+    },
+    {
+     "file": "eval/rover/r631/verdict-j4ab-r631.json",
+     "sha256_disk": "eb36d22b06f6b9b73d8a9e04591aed91c8a9749eb0b13272999c3373548bfc9c",
+     "sha256_head": "eb36d22b06f6b9b73d8a9e04591aed91c8a9749eb0b13272999c3373548bfc9c",
+     "unmodified_vs_head": true
+    },
+    {
+     "file": "eval/rover/r631/kpi-table-r631.json",
+     "sha256_disk": "8ebee8bcebfcd69ab3cb65abc3547188fd5fe30b6d19c1adb0624c8219cfd419",
+     "sha256_head": "8ebee8bcebfcd69ab3cb65abc3547188fd5fe30b6d19c1adb0624c8219cfd419",
+     "unmodified_vs_head": true
+    },
+    {
+     "file": "eval/rover/r631/prereg-r631.json",
+     "sha256_disk": "5a6ac2238af5c267134a40ed2c4f43603f76016f32cf59a82e0ca4a175020593",
+     "sha256_head": "5a6ac2238af5c267134a40ed2c4f43603f76016f32cf59a82e0ca4a175020593",
+     "unmodified_vs_head": true
+    }
+   ],
+   "head_commit_and_ts_for_pin_source": "af9bb7aeba61389573d05ca4cd3d337330165142",
+   "pin_rule": "轮前 pin = HEAD 上该文件的 blob sha256；HEAD 提交时刻须早于本轮 prereg 的 written_at",
+   "driver_sh_not_in_scope": "eval/rover/r631/run_r631.sh **不在** D4 清单内（它是声明刷新的对象；其实盘段 sha 由 D3 件单独钉住）"
+  },
+  "D5_lit_step": {
+   "state": "pass",
+   "ledger": "docs/research/lit-review-ledger.md",
+   "ledger_sha256": "3f34c1190f51c5727310b1576de19fa6edea2c1a3dc098c4b3677f69e1151a31",
+   "ledger_lines": 608,
+   "r632_section_present": true,
+   "arxiv_query_available_now": true,
+   "exit_probe_http": {
+    "https://export.arxiv.org/api/query?search_query=all:test&max_results=1": "200",
+    "https://arxiv.org/abs/2402.03300": "200",
+    "https://api.semanticscholar.org/graph/v1/paper/arXiv:2402.03300?fields=title": "429"
+   },
+   "deferred_recorded": true,
+   "verdict": "arXiv 面顺延（出口 429；不计 0 采信）＋ 第二来源 2 篇（采信 0 / 观察 1）",
+   "rule": "空结果必须与出口可用性分离：出口不可达的轮次不计入空采信/降频判定"
+  },
+  "W_floor_resolution_floor": {
+   "state": "not_applicable",
+   "why": "本轮无真机臂（零远端）；有效窗判据不适用，禁读作 PASS 亦禁读作红",
+   "rejudged_face_valid_windows": 1
+  }
+ },
+ "r632_family_self_check": {
+  "keys_prereg": [
+   "D1_judge_family_aligned",
+   "D2_unreliable_policy_declared",
+   "D3_driver_declaration_consistent",
+   "D4_no_history_rewrite",
+   "D5_lit_step",
+   "W_floor_resolution_floor"
+  ],
+  "keys_computed": [
+   "D1_judge_family_aligned",
+   "D2_unreliable_policy_declared",
+   "D3_driver_declaration_consistent",
+   "D4_no_history_rewrite",
+   "D5_lit_step",
+   "W_floor_resolution_floor"
+  ],
+  "keys_equal": true,
+  "rule": "本件自身也须满足 D1 同源律：自有判据族键集合 == prereg-r632.criteria 键集合"
+ },
+ "verdict": {
+  "rc": 3,
+  "rc_semantics": "分层：0 = 预注册主判据族无红 / 1 = 次级判据红（能力或机制次级）/ 2 = 器具缺陷（禁作被测结论）/ 3 = 输入缺失或分辨率不足（有效窗<2）",
+  "label": "判据不可判（有效窗<2）",
+  "truth_arm_rc_reference": "铁律 11 前置器 rc 另见 criteria.P11_precondition_face.precond_rc （rc≠0 ⇒ 质量/成本列标「参考（未可验收）」）"
+ },
+ "honest_bounds": [
+  "本件为**重审**（re-judge）：全部读数取自 R631 冻结件（transcript/cases/runs.jsonl 逐件 sha256 落盘），**零重测**；旧件 verdict-r631.json 保留在盘、不采用、不翻案（RF0005 §3 R7：判据器跨轮改版禁相减）",
+  "解析层复用 judge_r631.py 的 read_transcript/read_cases/load_helpers（单一实现防漂移）；判据层完全重写并与 prereg-r631 键集合断言相等",
+  "D1 只证「判据族与预注册同源 + 来源可机读」；**不等于**质量轴达标，亦不改变 R631 的铁律 11 rc",
+  "两条独立路径（runs-dir / frozen-extract）应给出逐位相同的 criteria 读数——不符即 rc=2（器具缺陷）"
+ ],
+ "checks_posthoc": [
+  "旧裁判件判据族 = J1_exec_face_consumed/J1a..J1e/J2/J2b/J4_capability_secondary/J5/J6_zero_regression/v3/C1_task_face_v3；预注册族 = J0/J1_fallback_exercised/J4a/J4b/J3/J6_equivalence_face/W_floor/P11 ⇒ 旧判决不予采用（R631 自捕 D2）"
+ ]
+}

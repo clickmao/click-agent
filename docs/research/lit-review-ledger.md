@@ -575,3 +575,34 @@ R607 = 采信 1（arXiv:2609.20804v1 组件级消融口径等）⇒ **本 R608 =
 | 2026-09-22 | `abs:"agent benchmark" AND abs:"variance"`（第 3 次检索，逐条读题） | arXiv 2609.24194v1（61 页 / 4 图 / 40 表，代码公开 github.com/wdi1024/residualization-audit；无 venue ⇒ 预印本） | 「Evaluation scores used around LLM systems -- including reward models, rerankers, and LLM judges -- can track surface form instead of the quality they claim to measure.」「a public preference reward model selects the correct one no better than a coin flip (0.507).」 | 打分器可被**表面形式**驱动而非质量 ⇒ 机械判分器必须绑结构语义（非词面），且收益宣称必须挂**独立真值对照** | 质量判据器（本仓 = task 冻结期望的机械判分 + codex 外部真值臂） | 轴 = 判分器读法（结构解析 vs 文本/词面匹配）；判据 = 「格式不同但语义等价」判绿 ∧ 注入缺陷判红（成对两侧样例；可证伪点：结构解析器对等价样本判红 ⇒ 读法缺陷） | 已实施（本轮 J1 判据器即结构解析版；R631 起为该读法） |
 
 - **R631 文献小步小结（2026-09-22）**：3 次检索 / 逐条读题；**采信 2 条**（2609.19607v1 开发期子集 A/B + 配对 p 值；2609.24238v1 族间方差与措辞效应 ⇒ 判据按族分列）+ **已实施对照 1 条**（2609.24194v1 打分器跟踪表面形式 ⇒ 支持本轮 J1 结构解析判据器）；**证伪 0**；**顺延 0**（预算未吃满，1 次额外 id_list 摘要抓取，未开子 agent）。连续 0 采信计数归 **0**（本行起）。候选去向：C1（baselines 引用义务/Δ_min 口径）与 C3（1/8 抽样不代理 8/8）已在 `docs/plans/RF0005-completion-protocol.md` §1 候选行；C2（按族分列进判据）排入 R632 候选。
+
+
+## R632（2026-09-22）· **arXiv 出口 429 ⇒ 顺延**（非「0 采信」，不计降频判定）＋ 第二来源（官方工程文档）2 篇
+
+**出口可用性探针（先于检索，全部落盘为证）**：`search_arxiv.py` 三式全部 `HTTP 429 Rate exceeded.`（脚本内置 3 次退避重试亦 429）；
+raw curl 逐目标 **HTTP 000 timeout（30s）×2** ＋ **HTTP 429** ×2；同窗对照 `https://arxiv.org/abs/2402.03300` = **HTTP 200**（1.68s）、
+`https://hf-mirror.com` = 200、`https://gh-proxy.com` = 200 ⇒ **出口可达但 export API 限流** ⇒ 按「空结果必须与出口可用性分离」纪律：
+**本轮 arXiv 面记「顺延（出口 429）」**，**不计入连续 0 采信计数**（顺延计数 +1；上一次顺延 = R632 为首次）。
+Semantic Scholar 无 key ⇒ `HTTP 429` ⇒ 引用数**不可用**，如实记，不编造。
+
+**第二来源（官方工程文档；只作机制来源，不当收益证据）**
+
+| 日期 | 检索式 | 出处（含版本/采集日） | 逐字引文(≤2 句) | 机制假设 | 改哪一格 KPI(预期方向) | 单变量轴 + 判据(阈值/可证伪点) | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-22 | 直取官网（非 arXiv） | OpenAI《Prompt caching》官方文档 `https://platform.openai.com/docs/guides/prompt-caching`（采集日 2026-09-22） | "Cache reuse requires the entire rendered prefix to match. If content or a relevant setting changes before a breakpoint, the prefix after that change cannot match the existing cache entry." · "A prompt prefix must meet the model's **minimum cacheable token length** before it can be cached. … The minimum cacheable prompt length is **1,024 tokens** for GPT-5.6 and later and varies by request settings for earlier models." | **最小可缓存长度是「门」而不是「斜率」**：恒前缀短于门限 ⇒ 命中率**结构性 = 0**（不是没优化好）；且「渲染后整段前缀」才作数 | 命中率（预期方向：把「恒前缀 ≥ 门限」变成**前置条件**而非结论） | **只读轴**：从既有中继 dump 取各臂**渲染后恒前缀长度**分布 × 命中率，判据 = 「前缀 < 门限 的臂命中率 = 0」；**证伪点** = 任一短前缀臂出现非零命中 ⇒ 该门在本仓中继侧不成立（记证伪，不改产品） | **已实施（同形机制本仓既有；阈值本仓自标定 4224 ≠ 厂商 1024，禁直引）** |
+| 2026-09-22 | 同上 | vLLM 官方文档《Automatic Prefix Caching》`https://docs.vllm.ai/en/latest/features/automatic_prefix_caching.html`（采集日 2026-09-22） | "APC only reduces the time of processing the queries (**the prefilling phase**) and does not reduce the time of generating new tokens (the decoding phase)." · "APC does not bring performance gain when … new queries do not share the same prefix with any of existing queries" | **命中率的天花板由 prefill 占比决定**：生成占主导时命中率再高也不产生端到端收益 ⇒ 命中率**不得单独**当收益判据（与既有 L2 同向，但给出**机制侧的独立措辞**） | 成本/命中率（预期方向：命中率↑ 但端到端成本不变 ⇒ 报告须分列） | **观察项**：与既有 L2 同族（前缀连续性=成本硬约束），无新增单变量轴 ⇒ **不重复立候选**，仅登记为 L2 的**外部机制侧旁证** | 观察（不采信为新增候选） |
+
+- **匹配粒度旁证**：vLLM 文档给出 `--prefix-match-unit 64`（混合模型共享前缀检查点）⇒ 前缀匹配在块粒度上量化 ⇒ 命中率对前缀长度呈**阶跃**而非线性（与上表 OpenAI「整段前缀才作数」互补）。
+- **本轮小结**：arXiv 面 **顺延 1 次（出口 429）**· 第二来源 **采信 0 条（两条均判「已实施/观察」，无一进候选队列）/ 观察 1 条 / 新候选 0 条**；
+  连续 0 采信计数 **保持 1**（未达 3 ⇒ **不降频**）；顺延计数 **1**（首见）。
+- **与本仓现状对照（代码证据，逐条核过）**：**同形机制本仓既有** —— `src/agent.modelqueue/LocalSessionCacheLedger.cs:86`
+  `var prefixOk = prefixTokens >= RequiredPrefixTokens;`（第 100/111/112 行落盘 `prefix_tokens` / `prefix_length_satisfied`，并在越线诊断里给出
+  「常驻前缀本身不足 ⇒ 无论引擎多好都不可能稳定达线（R410: 比值不是 KPI，绝对长度才是）」）＋ 阈值件 `eval/rover/r410/prefix-reuse.json:3`
+  `"required_prefix_tokens": 4224`（消费者 `eval/rover/r411/verify.py:43` 判 J5）⇒ 上表第 1 行**不是候选**，判「**已实施（同形机制既有）**」。
+  余下**真缺口**是**数据面归属**：`prefix_tokens` 打点**只存在于本地 llamacpp 路径**（`git grep -n "prefix_tokens" -- src` 唯一命中该文件）；
+  远端中继路径只发 `cache_hit_tokens`/`cache_miss_tokens`/`cache_hit_rate`（`src/agent.modelqueue/PromptCacheKpi.cs`）⇒ 本仓 KPI 的命中率来自**远端 usage**，
+  而「前缀绝对长度」字段在**远端侧无可达读数** ⇒ 若要在远端面行使该门，前置条件 = 远端侧补一个默认关的长度打点；否则该判据在远端语料上**无可达数据面**
+  （承 EXP1-Q11 第五型：判据作用域 < 语料面 ⇒ 结构性不可判）。
+- **勘误（同轮自捕，原文保留其位）**：本小节初稿曾写「前缀长度字段当前**未落盘**（`git grep` 无消费者）」——**该断言为假**：
+  `prefix_tokens` 确有生产者（`LocalSessionCacheLedger.cs`）与消费者（`eval/rover/r411/verify.py`）。**勘误动作 = 逐字复核后改写该断言**
+  （不改机制假设、不改状态栏），因为「有代码行 ≠ 生效」的反面同样成立：**「一次 grep 无命中」≠「不存在」**，判「未实现」前必须按类名/键名双向核。
