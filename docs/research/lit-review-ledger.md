@@ -655,3 +655,36 @@ Semantic Scholar 无 key ⇒ `HTTP 429` ⇒ 引用数**不可用**，如实记�
 **注（检索面）**：本轮 2 个检索式均返回「Found N results」极大值（10,208 / 280,567）且 top-6 **逐条读标题/摘要后大多无关** ⇒ 依「结果数不是判据」纪律，采信仅取 API 精取件（`id_list`）的摘要，非检索 top 结果。
 
 **轮小结**：arXiv query 2/3 · 全文抓取 0 · 摘要 API 1 · 候选 **1**（含旁证 1 条）· 采信作机制 **0**（未改 KPI ⇒ 不得记已实施）· 证伪 0 · 顺延 0。**连续 0 采信计数 = 1**（未达 3 ⇒ 不降频）。
+
+## R635 追加（2026-09-22 16:03 · 主线对照轮 R635 · arXiv query 3/3 · 全文抓取 0 · 摘要 API 1 次）
+
+### L-adopted-7【候选·机制采信】递归自改进的增益必须**同时**报「调参面」与「留出面」；只报调参面增益不构成证据
+
+| 列 | 内容 |
+|---|---|
+| 日期 | 2026-09-22 |
+| 检索式 | `"agent harness"`（303 条，top-2 逐条读题后命中）；`"execution feedback" code repair`（194,570 条 ⇒ 日期序噪声，top-6 仅 1 条相关）；`"hidden tests" code generation evaluation`（1,230,151 条 ⇒ top-6 **全无关**，不采信）|
+| 出处（含版本） | arXiv:2609.24972v1（2026-09-21 提交；`comment` 空 ∧ `journal-ref` 空 ⇒ **纯预印本、无同行评审记录**；**代码公开** `github.com/google-research/rrsi` ⇒ 权威代理第二项「公开代码/可复现」满足；采集日 2026-09-22） |
+| 逐字引文 | "However, such recursive evolution may overfit by memorizing the training tasks, showing large in-distribution gains that shrink or even vanish on out-of-distribution benchmarks." / "the pruner, removes changes that are too small, too expensive, or no longer useful."（≤2 句；取自 arXiv API `summary`；**未取全文**） |
+| 机制假设 | 自改进/自演化的增益**必须分两栏报**（进化所用题面 vs 未参与题面）；只有前者 ⇒ 不能排除「记住训练题」；候选提案须**限制可打包编辑数**（预算退火），选择须**剔除过小/过贵/失效**的改动 ⇒ 偏向可复用机制而非题面专用件。 |
+| 改哪一格 KPI | **质量**（口径**加一列「留出族复现率」**；方向 = 增益宣称须在**未参与选靶的族**上复现，否则标「未复现」）。tokens / 命中率 / 轮数：不预期变化（该文自报 30 percent fewer policy tokens 属**他仓**读数，禁直引） |
+| 单变量轴 + 判据 | 轴 = **汇报面**（单栏 in-dist vs 双栏 in-dist+holdout）并列，非同源口径；判据 = 同一批冻结读数下两栏**逐族可复算** ∧ 留出集成员由**预注册**给出（机检：某族不得同时 ∈ 选靶集 ∧ ∈ 留出集 ⇒ 划分泄漏即 FAIL）。可证伪点 = 出现族级重叠，或留出栏读数不可从冻结件复算。 |
+| 状态 | **候选**（**须放行**：族划分/新增族 = 动题集划分 ⇒ 受「禁新增夹具」令约束，本轮零实施） |
+
+**本仓现状（代码证据）**：
+- **已实施（既存，非新候选）三条**（逐条给证据，禁记作本轮采信）：① 「唯一单变量、禁打包多项」= `docs/plans/RF0005-completion-protocol.md:37`（§1 硬约束 1）；② 「证伪即收窄 ⇒ 撤回未提交 src、净产品改动 0」= 同文件 `:71`（§3 R1）；③ 「摆动 ≥ 效应 ⇒ 加 reps/扩窗、禁调阈值」（= pruner 的 too-small / no-longer-useful 语义）= 同文件 `:75`（§3 R5）。
+- **真缺口 = 留出族列**：本仓已有**族分列**读数（`eval/rover/r634/judge_r634.py:115` 输出 `families`、`:323` 落 `fail_families`），但**无**留出族划分 —— `git grep -ln 'holdout|held_out' -- eval/rover` = **0 文件**（主线对照面零命中）；`eval/` 全局另有 **7 文件**命中，全部属 exp1 符号级「留出符号」观察（`eval/capability/exp1-q3/*`）与分母自检（`exp1-q40/selftest_q40_denom.*`），**非题族留出** ⇒ 「族分列」≠「留出族」（前者可含被用于选靶的族，本仓 `wythoff` 正是被反复选靶的族）。
+- 口径诚实：14.1 pt（in-dist）/ 4.7 pt（OOD，5 benchmarks）/ 30 percent token 均为**他仓**读数，**禁**直引为本仓结论；本仓无对应统计。
+
+### L-observed-3【观察·不采信】harness 增益**绑在 harness 上**（同模型换 harness 即变），蒸馏进权重方可迁移
+
+| 列 | 内容 |
+|---|---|
+| 出处 | arXiv:2609.24974v1（2026-09-21；`comment` / `journal-ref` 均空 ⇒ 纯预印本；采集日 2026-09-22） |
+| 逐字引文 | "Because the best harness varies across domains, instances, and models, a general-purpose agent must either settle for a suboptimal shared harness or route among an ever-growing set of specialized ones." |
+| 机制假设 | 同 backbone 的读数**只在同一 harness 内可比** ⇒ 支持本仓「换器件 ≠ 进度」与「同件同窗只并列、禁跨轮相减」。 |
+| 改哪一格 KPI | 无（**观察**，不作候选） |
+| 单变量轴 + 判据 | 不适用（该文机制 = 把 harness 行为**蒸进模型权重**：本仓无训练面 ∧ 触及权重 ⇒ 不在本仓可实施集内） |
+| 状态 | **观察**（不采信为候选；机制只取一句） |
+
+**轮小结**：arXiv query 3/3 · 全文抓取 0 · 摘要 API 1 · **采信 1**（候选 1，待放行）· 已实施（既存）3 · 观察 1 · 证伪 0 · 顺延 0 ⇒ **连续 0 采信计数归零**（1→0，检索不降频）。

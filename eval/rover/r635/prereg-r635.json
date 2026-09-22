@@ -1,0 +1,166 @@
+{
+ "round": "R635",
+ "written_before_run": true,
+ "written_at": "2026-09-22T16:02:30+0800",
+ "author": "cron self-check loop (AgentFramework capability cycle)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9；本轮 = 主线对照轮（新窗集）+ 验收面声明收口轮 ⇒ 跳步声明见 skip_steps",
+ "claim": "主线对照轮：**同件同题集、只换窗集**（w231..w233 × 每窗 codex 真值 ×1 + 产品默认档 ×3）。**本轮实质变化 = 预注册同批携带 `evidence_scope` + `unreliable_policy`（前置器两把机读键）**（R634 E2 的直接解除条件，**声明先于跑**）＋ 零产品源码改动 / 零新增夹具 / 零新增开关。行使 R634 §4 候选 ①②。",
+ "skip_steps": {
+  "构建/AOT": "跳步 构建/AOT —— 本轮**零产品源码改动**（`git diff --stat src/` 空）；被测件 = R630 AOT 件（sha16 cefd045e8d1d，与 R631/R633/R634 逐字节同），无新二进制可构建。",
+  "理由": "本轮唯一实质自变量 = 预注册声明面（验收面 + 策略键）+ 窗集（样本侧）；按 RF0005 §2 步 6 语义「只在改产品码时构建」⇒ 跳步并声明原因。"
+ },
+ "single_variable": {
+  "axis": "无",
+  "why": "主线对照轮：无 env 开关剂量 / 无产品代码改动 ⇒ 按 RF0005 §1 硬约束 1 **不计为单变量轮**（同 R589/R628/R633/R634 先例）。判据器与 R634 同源派生 ⇒ 承 R7：**与 R634 读数禁相减**，只并列。"
+ },
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "what": "外部真值（codex-cli，另一套真 agent 框架，同真实模型 deepseek-flash）",
+   "env": {},
+   "note": "同题面 / 同夹具 / 同窗；未全对的窗由 `unreliable_policy` 逐窗移出验收面（单列 `unreliable`），**不得**读作本侧收益"
+  },
+  "P": {
+   "side": "agent",
+   "what": "产品默认档（唯一的本侧档位）",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1"
+   },
+   "env_note": "剂量键（MAX_REPAIR / MAX_EXEC_REPAIR / MAX_PROBE_REPAIR / EARLY_STOP_PFAIL / ARTIFACT_CARRYOVER / ACTION_CANDIDATES / ACTION_EXEC）**全部 unset** = 产品缺省；ACTION_PROMPT=legacy 与 PUBLIC_SELFCHECK=1 为 held-constant（保与 R617–R634 前缀面可比）。"
+  }
+ },
+ "windows": {
+  "set": [
+   "w231",
+   "w232",
+   "w233"
+  ],
+  "disjoint_from_history": true,
+  "history_up_to": "w230（R634 用 w228..w230；本轮起 w231，与历史窗集 w184..w230 不相交）",
+  "note": "窗 = 独立会话命名空间；窗集只增不复用。"
+ },
+ "criterion_version": "v6-scope-and-policy-declared（承 v5 窗有效性修正；本轮新增：验收面声明 evidence_scope 与策略键同批预注册 ⇒ 前置器 SCOPE_SOURCE!=None ∧ POLICY_ACTIVE=True；器具改版 ⇒ 与 R634 禁相减）",
+ "evidence_scope": {
+  "declare_rationale": "承 R634 E2：预注册缺 `evidence_scope` ⇒ 前置器验收面**退化为全局**（任一臂-题不许错）⇒ 而外部真值现实中常有自败例 ⇒ 验收面在原理上**恒不可满足**（与 R633 的不可判族同源）。修正形态 = 预注册**显式声明**验收面成员（两侧全臂；**禁**事后 `--scope` 补声明 = 翻案）。",
+  "require": [
+   "w231/agentP-r1",
+   "w231/agentP-r2",
+   "w231/agentP-r3",
+   "w231/codex",
+   "w232/agentP-r1",
+   "w232/agentP-r2",
+   "w232/agentP-r3",
+   "w232/codex",
+   "w233/agentP-r1",
+   "w233/agentP-r2",
+   "w233/agentP-r3",
+   "w233/codex"
+  ],
+  "nonrequired": [],
+  "note": "声明两侧全臂为验收面成员；外部真值臂**未全对**的窗由 `unreliable_policy` 自动移出（`policy=unreliable_excluded`，单列 `unreliable_windows`）；**本侧臂失败不受该规则影响** ⇒ 本侧不因声明而放水。"
+ },
+ "unreliable_policy": {
+  "declared_before_run": true,
+  "policy_declared_ts": "2026-09-22T16:02:30+0800",
+  "rule": "truth_arm_window_unavailable",
+  "rule_note": "窗**有效** ⟺ 真值侧**跑通**（有跑次 ∧ 用例面完整 cases_total == 58，即非挂死/VOID）∧ **非自败例 ≥1**；真值**自败的例**（cases_total − cases_pass > 0）逐条单列（机读字段 `Q1_quality_paired.truth_self_failed_cases`），**不**构成窗失效。窗**无效** ⟺ 真值侧缺席 ∨ 真值跑次用例面不完整。`valid_windows` < 2 ⇒ rc=3 停链先造窗（禁下调阈值）。",
+  "rule_note_correction": "修正对象 = R633 的构造缺陷：窗有效性曾被绑定在「真值*整题全对*」上 ⇒ 真值现实读数 43–45/58 时有效窗恒 0、主判据在原理上恒不可判。**声明先于跑**；R633/R634 判决一律不翻案。",
+  "truth_arm_patterns": [
+   "*/codex"
+  ],
+  "effect": "真值臂在**未全对**的窗 ⇒ `blocking=False` + `policy=unreliable_excluded`（从验收面移出、单列 `unreliable_windows`）；本侧臂失败不受本规则影响；策略**只对本轮声明之后产生的窗生效**（拒绝追溯套用）。",
+  "bars": {
+   "B1": "窗有效判据 = 「真值跑通 ∧ 非自败例 ≥1」（**不得**含「整题全对」条件）；自败例单列可见",
+   "B2": "**每窗双侧必检**：修正必须同时证明 ①自败但跑通的窗**转为有效**（影子自检 TRUTH_SELF_FAIL_NOW_VALID.valid == 3）②真值挂死/VOID 窗**仍被剔除**（TRUTH_VOID.valid == 2 ∧ unreliable == [\"w232\"]）——只证一侧 = 放宽判据",
+   "B3": "**拒绝追溯套用**：本策略只对本轮起声明之后产生的窗生效；R634 及更早的既有判决一律不翻案、不改写",
+   "B4": "缺键/背时序/`rule` 非机读常量 ⇒ 策略不生效（fail-closed，不判绿）；起臂前由 run_r635.sh 第 0 步机检闸断言本段 ∧ `evidence_scope` 段"
+  }
+ },
+ "thresholds_cite_baselines": [
+  "F_merge.quality.cases_median_truth",
+  "F_merge.quality.allpass",
+  "F_orch.cost.calls_sum",
+  "F_merge.cost.new_prompt_sum",
+  "F_merge.cache.hit_v_all",
+  "F_merge.gate.precondition_rc",
+  "F_env.prefix.legacy_anchor",
+  "F_orch.wythoff.pass_r606",
+  "F_merge.ld.frozen_list"
+ ],
+ "criteria": {
+  "M1_anchor_premise": {
+   "kind": "instrument",
+   "primary": false,
+   "need": "P 档逐跑次 `prefix_sha256 == F_env.prefix.legacy_anchor`（a9792fdb…）∧ 题集规范 sha == e7ddce02… ∧ 题集**文件** sha == e0c667c2…（冻结件逐字节）",
+   "fail_action": "锚面/题集不匹配 ⇒ rc=2 器具缺陷（禁作被测结论）；缺项跑次若为 VOID/超时 ⇒ 弃权单列不抬 rc"
+  },
+  "Q1_quality_paired": {
+   "kind": "capability",
+   "primary": true,
+   "need": "有效窗 ≥2 ∧ 配对中位（P − C1 的逐窗用例通过中位差）≥ −2 ∧ 逐窗 D > −15（阈值引 `F_merge.quality.cases_median_truth`=58 与 DoD 面 1）",
+   "fail_action": "有效窗 ∈{0,1} ⇒ `NO_RESOLUTION` + rc=3（**不可判 ≠ 不达 ≠ 通过**）；中位 < −2 或任一窗 ≤ −15 ⇒ 判「不达」（rc=1 档）"
+  },
+  "Q2_all_pass_secondary": {
+   "kind": "capability",
+   "primary": false,
+   "need": "整题全对率 P ≥ C1（引 `F_merge.quality.allpass`）；n=9/档 ⇒ 欠功率，只作并列",
+   "fail_action": "P < C1 ⇒ 次级红（rc=1），**不得**用来宣称增益"
+  },
+  "C_cost_columns": {
+   "kind": "report",
+   "primary": false,
+   "need": "调用数 / 新算 prompt / completion **三列分列**（引 `F_orch.cost.calls_sum`、`F_merge.cost.new_prompt_sum`）＋命中率双口径 v_all/v_incr（引 `F_merge.cache.hit_v_all`）；口径 = 中继 dump 时间轴聚合",
+   "fail_action": "缺 dump / 解析失败 ⇒ 计 `bad_dumps` 并单列；不作 rc，禁跨轮相减"
+  },
+  "W_floor_resolution_floor": {
+   "kind": "resolution",
+   "primary": false,
+   "need": "有效窗 ≥2（引 `F_merge.gate.precondition_rc` 同族纪律）",
+   "fail_action": "<2 ⇒ rc=3 停链（禁下调阈值、禁把不可判读成通过）"
+  },
+  "Y_selfcheck_blind_spot": {
+   "kind": "diagnostic",
+   "primary": false,
+   "need": "同一跑次内「题面公开用例全过 ∧ 隐藏用例有失败」⇒ 计数（公开/隐藏二分按用例 id 后缀）",
+   "fail_action": "诊断列，**不作判据、不进 rc**"
+  },
+  "LD_low_discrimination": {
+   "kind": "diagnostic",
+   "primary": false,
+   "need": "冻结低分辨用例列表命中计数（引 `F_merge.ld.frozen_list`）",
+   "fail_action": "诊断列，不作判据"
+  },
+  "Z_timeout_cause_triage": {
+   "kind": "diagnostic",
+   "primary": false,
+   "need": "R633 单列 VOID 跑次（`w227/agentP-r2`，cli_rc=124）在本轮的**复现率**与形态归类（题面/预算/产物挂死三选一，只读诊断）",
+   "fail_action": "诊断列；**禁**先归因被测（承 R633 候选③）"
+  },
+  "S_scope_policy_face": {
+   "kind": "instrument",
+   "primary": false,
+   "need": "前置器输出 `SCOPE_SOURCE != None ∧ POLICY_ACTIVE=True`（R634 §4 候选① 的机检点）",
+   "fail_action": "任一不成立 ⇒ rc=2 器具/声明面缺陷（如实报，禁事后 `--scope` 翻案）"
+  }
+ },
+ "falsification": [
+  "F1 修正无牙 ⇒ 影子自检 `TRUTH_SELF_FAIL_NOW_VALID.valid != 3`（修正后自败但跑通的窗仍未转为有效）⇒ rc=2 器具缺陷",
+  "F2 修正过宽 ⇒ 影子自检 `TRUTH_VOID.valid != 2` 或 `TRUTH_VOID.unreliable != [\"w232\"]`（真值挂死窗未被剔除）⇒ rc=2 器具缺陷",
+  "F3 修正不解除停链 ⇒ 修正后有效窗仍 < 2 ⇒ 主判据仍判 rc=3，**禁**为此下调阈值或改判",
+  "F4 质量缺口仍承重 ⇒ 若逐窗配对中位 < −2 ⇒ 判「不达」（修正只解除「不可判」，**不得**被读成「达标」）",
+  "F5 声明面未生效 ⇒ 前置器 `SCOPE_SOURCE=None` 或 `POLICY_ACTIVE=False` ⇒ 本轮**不构成** R634 §4 候选① 的闭合（如实记 FAIL，禁手改前置器取值）"
+ ],
+ "aux_carry": {
+  "declared": true,
+  "why": "承 R633 自捕①：派生驱动器必须同批携带 aux 目录（`cases/run_cases_r521.py`，sha d9aecf4d…），否则前置器全臂 `missing_case_script` blocked（测量层假红）；起臂前由 0a 段机检"
+ },
+ "instruments": {
+  "runner": "eval/rover/r635/run_r635.sh",
+  "judge": "eval/rover/r635/judge_r635.py",
+  "helper": "eval/rover/r599/kpi_r599.py",
+  "preconditioner": "eval/rover/r507pre/exec_precondition.py",
+  "selftest": "eval/rover/r635/selftest-r635.json（六态，rc=0 才许起臂）"
+ }
+}

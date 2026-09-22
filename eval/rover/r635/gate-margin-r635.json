@@ -1,0 +1,16 @@
+{
+ "round": "R635",
+ "criterion": "C3 起手闸余量条款（R634 派生版；余量源 = R634 在飞窗实测振幅 75MB）",
+ "clause": "MARGIN := clamp(prev_swing_effective, floor=60, cap=CEIL-GATE-floor); REQ=GATE+MARGIN",
+ "prev_swing_effective": 75,
+ "prev_swing_source": "R634 在飞窗实测振幅 (run-samples.jsonl n=54 min 2772 / max 2847) ⇒ swing=75MB",
+ "ceiling_min_of_3": 2841,
+ "pre_sample_spread_mb": 1,
+ "spread_clause": "<=50MB else fail-closed",
+ "margin": 75,
+ "req": 2725,
+ "cap": 131,
+ "cap_binding": false,
+ "preflight_min_avail_mb": 2725,
+ "note": "cap_binding=true ⇒ 振幅项退化（收紧的是上界而非下界，R590 已登记）"
+}
