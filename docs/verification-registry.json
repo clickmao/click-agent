@@ -1,6 +1,6 @@
 {
  "schema": "verification-registry/v1",
- "updated_round": "R632",
+ "updated_round": "R633",
  "spec": "docs/验证形式规范.md",
  "levels": {
   "L0": "未验证(仅存在)",
@@ -7850,6 +7850,38 @@
    "runs": 0,
    "verdict": "器件面 PASS（D1–D5 全绿 ∧ 负控有牙 ∧ 自身同源律成立）；**能力面未测**（零真机臂 / 零远端 / 零产品源码改动）⇒ 重审 R631 冻结面 rc=3（有效窗<2），该读数**禁当 R632 能力结论**，R631 判决不翻案。",
    "aot": "未跑（零产品源码改动、未构建未发布新产物）⇒ 证据阶梯按实定级 **L2**，不升级；AOT 校验按 registry `aot_check_policy` 仅在【发布 tag】时执行。"
+  },
+  {
+   "id": "r633.mainline-new-window-set",
+   "level": "L3",
+   "owner_round": "R633",
+   "capability": "主线对照轮（**新窗集 w225/w226/w227**，与历史 w184..w224 不相交；产品默认档 ×3/窗 + codex 外部真值 ×1/窗；同一枚 AOT 件 cefd045e8d1d，零产品源码改动）：逐窗配对差 D = +13/+14/+13.5（中位 +13.5）、池化整题全对 6/8 vs 真值 0/3、成本三列 17/11,837/41,229 vs 18/12,545/8,069（中继 dump 时间轴，VOID 单列不进分母）。主判据 **NO_RESOLUTION**（有效窗 0）⇒ rc=3，根因 = 预注册窗有效性判据构造缺陷（自捕 E3，下轮修正、本轮按原文不翻案）。自捕器件缺陷 3 条：E1 派生驱动器缺 aux ⇒ 前置器全臂 blocked 假红（只重跑后处理）；E2 锚面把超时跑次缺 prefix_sha 读成漂移 ⇒ 误抬 rc=2（修：适用面 8/8 == 锚 + 出声弃权）；E3 窗有效性绑真值整题全对 ⇒ 恒不可判。事后复算（零重测）：codex 侧 stdout 优先重判 rc≠0∧stdout 正确 = 0/3 窗 ⇒「判分器严苛低估真值」假设证伪（同时是假阴性负控）。**诚实边界: 铁律 11 前置器 rc=1（验收面 47/58 · VOID · 55/58）⇒ 质量/成本标「参考（未可验收）」；无单变量轴 ⇒ 禁跨轮相减；n=8/3 欠功率。**",
+   "evidence_cmd": "bash eval/rover/r633/run_r633.sh && python3 eval/rover/r633/judge_r633.py --D $HOME/.agentframework/harness/runs/r633 --pd eval/rover/r633 && python3 eval/rover/r507pre/exec_precondition.py --round r633 && python3 eval/rover/r633/codex_stdout_first_r633.py --arms codex && python3 eval/rover/r633/selfcheck_boundary_r633.py",
+   "evidence_path": "docs/evidence/RF0001/R633-mainline-new-windows.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "live",
+    "pin_reason": "worktree-only",
+    "artifact_sha12": null,
+    "instrument": "eval/rover/r633/judge_r633.py",
+    "instrument_sha12": "2e4a678c1867",
+    "binding": "audit-pin",
+    "audited_by_round": "R633"
+   },
+   "covers": [
+    "eval/rover/r633/judge_r633.py",
+    "eval/rover/r633/run_r633.sh",
+    "eval/rover/r633/prereg-r633.json",
+    "eval/rover/r633/selfcheck_boundary_r633.py",
+    "eval/rover/r633/codex_stdout_first_r633.py",
+    "eval/rover/r633/cases/run_cases_r521.py",
+    "eval/rover/r507pre/exec_precondition.py",
+    "docs/evidence/RF0001/R633-mainline-new-windows.md",
+    "冻结题集双钉（文件 sha e0c667c2… + payload sha e7ddce02…）与历史窗集不相交（新窗 w225..w227）",
+    "逐窗配对 D 报告面（P 中位 − codex 中位）与 VOID 跑次单列口径"
+   ],
+   "negative_control": "四组成对/负向控制（全部现场执行，读数入 verdict-r633.json）：① **假阴性负控（最承重）**——冻结判分器为**退出码优先**（`ok = (rc==0) ∧ (stdout==expected)`，`eval/rover/r610/cases/run_cases_r521.py`），故真值侧 13/14/15 条失败**全为 rc=1** ⇒ 假设「真值被低估」；零重测重判（stdout 优先，`codex_stdout_first_r633.py`）得 `rc≠0 ∧ stdout 正确` = **0/3 窗** ⇒ 假设**证伪**、真值 45/44/43 为真；若该数为非零即证明读数是口径产物（两侧样例齐备：判红侧可由注入 nonzero-exit-but-correct 程序构造）。② **VOID 判定的非平凡性**——同质超时（`cli_rc=124` ∧ 58/58 `TimeoutExpired`）判 VOID；反面对照 = 其余 11 跑次失败形态**非**同质（`stdout_mismatch` / `rc=1` 混布）⇒ 判据跨跑次分布**互异**（非恒真门、非恒红）。③ **锚面弃权口径的两侧样例**——有提示面跑次 8/8 == legacy 锚（正控）；缺项跑次仅 1 个且为超时（`cli_rc=124`，结构上无提示面）⇒ 判「缺席」而非「漂移」；若缺项来自**有提示面**跑次，则该 waiver 不成立（代码路径：`anchor_core(..., void_keys)` 要求 `all_missing_are_void_or_timeout=True` 才给适用面 PASS）。④ **前置器 aux 缺陷的双向取证**——缺 aux ⇒ 前置器全 12 臂 `missing_case_script` blocked（假红，复现）；逐字节复制 aux（sha 与冻结源同 `d9aecf4d…`）后**只重跑后处理** ⇒ rc=1 且逐臂读数与冻结面一致（修复不改变被测读数）。",
+   "note": "自捕器件缺陷 3 条（E1 派生驱动器缺 aux / E2 锚面把缺席读成漂移 / E3 预注册窗有效性判据构造缺陷）全部在 verdict-r633.json 与轮志 §5 入档；E3 **按原文不翻案**，修正形态须下轮新预注册。"
   }
  ],
  "aot_check_policy": "release_tag_only",

@@ -1,0 +1,137 @@
+{
+ "round": "R633",
+ "written_before_run": true,
+ "written_at": "2026-09-22T12:55:00+0800",
+ "author": "cron self-check loop (AgentFramework capability cycle)",
+ "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9；本轮 = 主线对照轮（新窗集）⇒ 跳步声明见 skip_steps",
+ "claim": "主线对照轮（**同被测件 + 同冻结题集、只换窗集**）：新窗集 w225..w227 × 每窗（codex 外部真值 ×1 + 产品默认档 ×3）。**零产品源码改动 / 零新增夹具 / 零新增开关 / 零远端新增形态**。行使候选①（造窗，解除 R632 rc=3 的停链条件）＋候选③（文献小步）；候选②（wythoff 冷点集修法）本轮**只做只读自证边界取证**（不改产品码）。",
+ "skip_steps": {
+  "构建/AOT": "跳步 构建/AOT —— 本轮**零产品源码改动**（`git diff --stat src/` 空）；被测件 = R630 AOT 件（sha16 cefd045e8d1d，与 R631 逐字节同），无新二进制可构建。",
+  "理由": "本轮自变量 = **窗集**（只换样本、不换代码/开关）；按 RF0005 §2 步 6 的语义「只在改产品码时需要构建」，故跳步并在此声明（跳步必须写一行原因）。"
+ },
+ "single_variable": {
+  "axis": "无",
+  "why": "主线对照轮：唯一变化量 = **窗集**（新样本），无 env 开关 / 无代码改动 ⇒ 按 RF0005 §1 硬约束 1 **不计为单变量轮**（同 R589/R628 先例），只计为「同件同题集扩窗对照轮」。读数一律与历史轮**并列、禁相减**。"
+ },
+ "arms": {
+  "C1": {
+   "side": "codex",
+   "what": "外部真值（codex-cli，另一套真 agent 框架，同真实模型 deepseek-flash）",
+   "env": {},
+   "note": "同题面 / 同夹具 / 同窗；真值自败窗按 unreliable_policy 单列"
+  },
+  "P": {
+   "side": "agent",
+   "what": "产品默认档（唯一的本侧档位）",
+   "env": {
+    "AGENTFRAMEWORK_R1_CONTRACT": "1",
+    "AGENTFRAMEWORK_R1_ACTION_PROMPT": "legacy",
+    "AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK": "1"
+   },
+   "env_note": "剂量键（MAX_REPAIR / MAX_EXEC_REPAIR / MAX_PROBE_REPAIR / EARLY_STOP_PFAIL / ARTIFACT_CARRYOVER / ACTION_CANDIDATES / ACTION_EXEC）**全部 unset** = 产品缺省；ACTION_PROMPT=legacy 与 PUBLIC_SELFCHECK=1 为 held-constant 上下文（两轮同值，保证与 R617–R631 前缀面可比）。"
+  }
+ },
+ "windows": {
+  "set": ["w225", "w226", "w227"],
+  "disjoint_from_history": true,
+  "history_up_to": "w224（R631 用 w223..w224；本轮起 w225，与历史窗集 w184..w224 不相交）",
+  "note": "窗 = 独立会话命名空间（每跑次 `--session-id <arm>-<win>-<sub>`）⇒ 样本独立；窗集只增不复用。"
+ },
+ "criterion_version": "v4-layer (R621/R631 分层 rc 派生；无轴轮 ⇒ 机制面记 N/A 并单列锚面 M1)",
+ "unreliable_policy": {
+  "declared_before_run": true,
+  "policy_declared_ts": "2026-09-22T12:55:00+0800",
+  "rule": "窗内 codex 真值**全部跑次均非整题全对**（truth_all_pass=0）⇒ 该窗判 `unreliable`：剔除配对（不进 Q1 的 D 列表）、我方读数**单列**不吞、不记我方缺陷；`valid_windows` 相应下降，若 <2 ⇒ rc=3 停链先造窗（**禁下调阈值**）。",
+  "bars": {
+   "B1": "自败窗 ⇒ unreliable + 我方读数单列（机读字段 `Q1_quality_paired.unreliable_windows`）",
+   "B2": "**拒绝追溯套用**：本策略只对本轮（R633）起声明之后产生的窗生效，历史轮既有判决一律不翻案、不改写",
+   "B3": "缺键/背时序 ⇒ 策略不生效（fail-closed，不判绿）"
+  }
+ },
+ "thresholds_cite_baselines": [
+  "F_merge.quality.cases_median_truth",
+  "F_merge.quality.allpass",
+  "F_orch.cost.calls_sum",
+  "F_merge.cost.new_prompt_sum",
+  "F_merge.cache.hit_v_all",
+  "F_merge.gate.precondition_rc",
+  "F_env.prefix.legacy_anchor",
+  "F_orch.wythoff.pass_r606",
+  "F_merge.ld.frozen_list"
+ ],
+ "criteria": {
+  "M1_anchor_premise": {
+   "kind": "instrument",
+   "primary": false,
+   "need": "P 档逐跑次 `prefix_sha256 == F_env.prefix.legacy_anchor`（a9792fdb…）∧ 题集 payload 规范 sha == e7ddce02… ∧ 题集**文件** sha == e0c667c2…（冻结件逐字节）",
+   "fail_action": "锚面/题集不匹配 ⇒ rc=2 器具缺陷（禁作被测结论）；文件 sha 漂移但 payload 相同 ⇒ 记 `claims_violated`（订正「逐字节」宣称），**不**抬 rc"
+  },
+  "Q1_quality_paired": {
+   "kind": "capability",
+   "primary": true,
+   "need": "有效窗 ≥2 ∧ 配对中位（P − C1 的逐窗用例通过中位差）≥ −2 ∧ 逐窗 D > −15（阈值为**现判据口径**，引 `F_merge.quality.cases_median_truth`=58 与 DoD 面 1：中位 ≥ −2）",
+   "fail_action": "有效窗 ∈{0,1} ⇒ `NO_RESOLUTION` + rc=3（**不可判 ≠ 不达 ≠ 通过**）；中位 < −2 或任一窗 ≤ −15 ⇒ 判「不达」（rc=1 档）"
+  },
+  "Q2_all_pass_secondary": {
+   "kind": "capability",
+   "primary": false,
+   "need": "整题全对率 P ≥ C1（引 `F_merge.quality.allpass`）；n=9/档 ⇒ 欠功率，只作并列",
+   "fail_action": "P < C1 ⇒ 次级红（rc=1），**不得**用来宣称增益"
+  },
+  "C_cost_columns": {
+   "kind": "report",
+   "primary": false,
+   "need": "调用数 / 新算 prompt / completion **三列分列**（引 `F_orch.cost.calls_sum`、`F_merge.cost.new_prompt_sum`）＋命中率双口径 v_all/v_incr（引 `F_merge.cache.hit_v_all`）；口径 = 中继 dump 时间轴聚合",
+   "fail_action": "缺 dump / 解析失败 ⇒ 计 `bad_dumps` 并单列；不作 rc，禁跨轮相减"
+  },
+  "W_floor_resolution_floor": {
+   "kind": "resolution",
+   "primary": false,
+   "need": "有效窗 ≥2（引 `F_merge.gate.precondition_rc` 同族纪律）",
+   "fail_action": "<2 ⇒ rc=3 停链（禁下调阈值、禁把不可判读成通过）"
+  },
+  "Y_selfcheck_blind_spot": {
+   "kind": "diagnostic",
+   "primary": false,
+   "need": "同一跑次内「题面公开用例全过 ∧ 隐藏用例有失败」⇒ 计数（公开/隐藏二分按用例 id 后缀 `-public` / `-hidden`）",
+   "fail_action": "诊断列，**不作判据、不进 rc**（把「产物自检盲区」写成硬证据，而非宣称）"
+  },
+  "LD_low_discrimination": {
+   "kind": "diagnostic",
+   "primary": false,
+   "need": "冻结低分辨名单 `F_merge.ld.frozen_list` = [wythoff#43-public, wythoff#57-hidden] 逐跑次命中计数",
+   "fail_action": "诊断列，不作判据、不进 rc"
+  }
+ },
+ "artifacts_required": [
+  "prereg-r633.json（先写后跑闸）",
+  "bins-r633.json（全臂同一枚二进制 + codex 指纹）",
+  "gate-margin-r633.json（起手闸余量条款）",
+  "kpi-table-r633.json（KPI 表）",
+  "verdict-r633.json（判决件）",
+  "report-r633.md（轮志）",
+  "precond-r633.json（铁律 11 前置器读数；named 阻塞）"
+ ],
+ "evidence_scope": {
+  "require": ["w225/agentP-r*", "w226/agentP-r*", "w227/agentP-r*"],
+  "nonrequired": [
+   {"pattern": "*/codex", "reason": "外部真值臂（codex-cli）：真值自身失分窗按 unreliable_policy 单列 unreliable，不作验收面"}
+  ],
+  "note": "本键由 `exec_precondition.py`（project 布局）消费；声明必须在起臂前落盘（先写后跑）。"
+ },
+ "falsification": [
+  "① 前提闸未过（前缀 sha ≠ legacy 锚）⇒ 零臂起跑（rc=5，起臂前机检），本轮不产生被测读数。",
+  "② M1 锚面/题集不匹配 ⇒ rc=2 器具缺陷（禁作被测结论）。",
+  "③ 有效窗 <2（真值自败窗按 unreliable_policy 剔除后）⇒ rc=3 停链、先造窗集，**禁下调阈值**。",
+  "④ 逐窗 D 中位 < −2 或任一窗 ≤ −15 ⇒ 质量面判「不达」（阈值零改动；承 R628 缺口：wythoff 族）。",
+  "⑤ 同臂跨窗极差 ≥ 待测效应（摆动 ≥ 效应）⇒ 本轮只出区间、不作能力结论（承 R571：极差可达 14–15 例）。",
+  "⑥ 本轮**不含**产品源码改动 ⇒ 任何「修复生效」类宣称均不成立；读数一律为同一枚 AOT 件（cefd045e8d1d）下的窗集并列面。",
+  "⑦ 铁律 11 前置器 rc≠0 ⇒ 质量/成本读数一律标「参考（未可验收）」，禁作验收依据。"
+ ],
+ "supersedes": "无（新窗集；与 R585–R631 并列，禁相减）",
+ "honest_bounds": [
+  "无单变量轴 ⇒ 不计为单变量轮；本轮只回答「同件同题集在新窗集上的质量/成本分布」与「有效窗是否恢复 ≥2」",
+  "n=9/档（3 窗 × 3 跑次）⇒ 欠功率；单窗读数一律不作结论",
+  "题集文件 sha 与 R631 件不同（R631 件被改写元数据）：本轮件 = r610 冻结件逐字节复制（文件 sha e0c667c2…），payload 与 R631 逐字节同 ⇒ 输入面可比"
+ ]
+}

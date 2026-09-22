@@ -606,3 +606,25 @@ Semantic Scholar 无 key ⇒ `HTTP 429` ⇒ 引用数**不可用**，如实记�
 - **勘误（同轮自捕，原文保留其位）**：本小节初稿曾写「前缀长度字段当前**未落盘**（`git grep` 无消费者）」——**该断言为假**：
   `prefix_tokens` 确有生产者（`LocalSessionCacheLedger.cs`）与消费者（`eval/rover/r411/verify.py`）。**勘误动作 = 逐字复核后改写该断言**
   （不改机制假设、不改状态栏），因为「有代码行 ≠ 生效」的反面同样成立：**「一次 grep 无命中」≠「不存在」**，判「未实现」前必须按类名/键名双向核。
+
+---
+
+## R633 文献小步（2026-09-22 · 主题：**公开自检面的结构性盲区**）
+
+**检索预算**：arXiv 3 query（2 次走 `search_arxiv.py` 命中面为**日期序噪声**，第 3 次改**原始 API + `abs:"…" AND abs:"…"` 精确式**才拿到相关面，逐条读标题/摘要）· 全文抓取 0 · 间隔 ≥4s。
+**权威性代理（逐条）**：2608.03535v2 = **同行评审 venue**（comment: PROFES 2026）> 2604.10449v1 / 2604.21598v2 = 纯预印本（无 venue）。引用数面：Semantic Scholar 无 key ⇒ **不可用**（如实记，不编造）。
+
+| 日期 | 检索式 | 出处（含版本/采集日） | 逐字引文(≤2 句) | 机制假设 | 改哪一格 KPI(预期方向) | 单变量轴 + 判据(阈值/可证伪点) | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-22 | `abs:"hidden tests" AND abs:"code generation"`（原始 API，relevance 序） | arXiv 2604.10449v1（AdverMCTS，采集日 2026-09-22） | "existing methods typically rely on static, sparse public test cases for verification, leading to pseudo-correctness — where solutions overfit the visible public tests but fail to generalize to hidden test cases." · "the Attacker agent … evolves to generate targeted corner test cases that exploit logical divergences in the current code pool." | **公开用例稀疏 ⇒ 系统性「伪正确」**；对策 = **对抗生成角用例**作动态过滤器（不是加厚题面、不是改判据） | 质量（隐藏面通过率；预期方向 ↑，代价 = 额外调用/生成 token） | 单变量轴 = 自检面来源（题面公开用例 vs **自合成/对抗角用例**）；判据 = 隐藏面整题全对率 ∧ 假阴性族（新增角用例不得把已通过样本判败）；**证伪点** = 角用例面通过而隐藏面不变 ⇒ 该面与隐藏判据面不同源（无预测力） | **候选（受限：禁新增夹具令在效 ∧ 需放行；仅登记，本轮零实施）** |
+| 2026-09-22 | 同上 | arXiv 2604.21598v2（DryRUN，采集日 2026-09-22） | "depending on these public tests creates an "overconfidence gap," leading frameworks to overfit to basic examples and underperform on hidden test suites." · "large language models possess the capability to autonomously construct valid inputs and simulate execution flows for self-correction" | **"overconfidence gap" = 本仓 R544/R545「公开面必要非充分」的独立同义命名**；机制升级 = 自合成输入 + 模拟执行自纠（**且 token 总量下降**） | 质量 + 成本（预期方向：质量持平而 completion/调用 ↓，或质量 ↑） | 单变量轴 = 自检输入来源（题面抽取 vs 自合成）；判据 = 同窗质量不降（中位 ≥ −2）∧ 调用/新算 prompt 不升；**证伪点** = 自合成面判绿而隐藏面判红（自证与判据面不同源） | **候选（受限同上一行）** |
+| 2026-09-22 | 同上 | arXiv 2608.03535v2（CodeAssay，采集日 2026-09-22） | "It combines audited ground truth, public tests for generation and repair, hidden tests for grading, mutation-based test-suite validation … The complete and hidden test suites achieved mutation scores of 82.6% and 74.8%, respectively." | **公开/隐藏二分 + 突变分**是外部可复核的量化框架：**公开面的突变覆盖系统性低于完整面**（82.6% vs 74.8%，差 ~7.8pt）⇒「公开自检必要非充分」有外部量化旁证 | 质量（口径面：公开面读数的**上界**性质） | 不新增轴（旁证）；**可机检点** = 本仓冻结用例集 public=8 / hidden=50（`eval/rover/r633/cases/cases-r521.json` 的 `vis` 字段），公开面 ≤ 8/58 ⇒ 公开面读数**不得**当整题正确 | **采信（外部旁证；支撑既有定论，不立候选）** |
+
+**与本仓现状对照（代码证据，逐条核过）**：
+
+- 公开自检面**已存在且默认关**：`src/agent/r1/R1Options.cs:32` `bool PublicSelfCheck = false,` / `:71` 读 `AGENTFRAMEWORK_R1_PUBLIC_SELFCHECK`；消费点 `src/agent/r1/R1Pipeline.cs:68`（`PublicExampleExtractor.TryExtract`）与 `:243`（`PublicExampleProbe`）⇒ 上表第 1/2 行的机制**同形件已有**，缺的**不是**「公开自检」而是**用例来源**（题面抽取 vs 自合成/对抗生成）。
+- 公开面**规模面**（冻结件）：`cases-r521.json` = **public 8 / hidden 50** ⇒ 公开面覆盖 ≤ 13.8% 的判据面；本仓 R633 实测（同窗）**P 档 6/8 跑次「公开 8/8 全过」**、其中隐藏面同时全过者 6/6 ⇒ **本轮未复现**盲区（详见轮志 §Y 列）。
+- **真缺口（代码面）**：`git grep -l 'Adversar\|SelfSynthes\|self_synth' -- src` ⇒ 仅 1 个**无关**测试文件命中 ⇒ 本仓**无**对抗/自合成用例生成面 ⇒ 第 1/2 行的候选**确为缺口**（不是重复造轮子）。
+- 口径诚实：第 3 行数字（82.6%/74.8%）是**他仓夹具**的突变分，**禁**直引为本仓结论；本仓无突变分读数 ⇒ 该列只作「公开面是上界」的旁证。
+
+**轮小结**：arXiv query 3/3 · 全文抓取 0 · 采信 **3 条（候选 2 + 旁证 1）** · 证伪 0 · 顺延 0 ⇒ **连续 0 采信计数归零**（保持常规频率，不降频）。
