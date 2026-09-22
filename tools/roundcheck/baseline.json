@@ -1,41 +1,6 @@
 {
  "version": 1,
- "updated_by": "R618",
- "max_entries": 5,
- "entries": [
-  {
-   "item": "R2_commit_unique",
-   "subject": "轮号重号",
-   "reason": "R609 两提交同轮号: 已落档提交不可改, 轮号重号是既成事实, 属历史事实非缺陷豁免",
-   "expires_round": "R625",
-   "round": "R609"
-  },
-  {
-   "item": "R7_no_secret_in_commit",
-   "subject": "config/base/models.yaml",
-   "reason": "该行是 env 变量名引用(非密钥值), R7 模式对其假红; 候选修法=排除纯 env 名引用",
-   "expires_round": "R625",
-   "round": "R609"
-  },
-  {
-   "item": "R6_commit_hygiene",
-   "subject": "162 文件 > 40",
-   "reason": "R614 为逐窗归档轮, 裸文件计数不构成面形状判据; 候选修法=R6 面形状分支覆盖归档轮",
-   "expires_round": "R625",
-   "round": "R614"
-  },
-  {
-   "item": "R8_readings_backed",
-   "subject": "build 读数",
-   "reason": "R614 为 harness 轮未构建, build 读数结构性不适用; 候选修法=R8 加 applicability 分支",
-   "expires_round": "R625",
-   "round": "R614"
-  },
-  {
-   "item": "R6_commit_hygiene",
-   "subject": "170 文件 > 40",
-   "reason": "R618 为逐窗归档轮（21 臂 × 3 窗快照 + evidence 派生件 + 登记表/基线两件），裸文件计数不构成面形状判据；与 R614(162)/R617(169) 同形态（本轮含基线文件本身 ⇒ 170），候选修法 = R6 面形状分支覆盖归档轮",
-   "expires_round": "R625"
-  }
- ]
+ "updated_by": "R640",
+ "max_entries": 0,
+ "entries": []
 }

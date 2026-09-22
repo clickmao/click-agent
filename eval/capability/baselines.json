@@ -549,6 +549,70 @@
    "check_cmd": "python3 eval/rover/r637/family_lift_r637.py --selftest; python3 -c \"import io,json;d=json.load(io.open('eval/rover/r637/family-lift-r637-selftest.json'));print(d['pass'],d['S2_detail']['F_lift_min_median'],d['S2_detail']['F_lift_min_worst'])\"",
    "ground_rule": "裁决式取**最差跑次**而非中位（族级归零在构造上被中位掩盖）；判据与被复算数据同源冻结件；只读复算、零重测；不重算任何既有质量列（并列读数）；跨轮禁相减。",
    "negative_control": "五态自检（`family-lift-r637-selftest.json`，全过）：S2 单跑次整族归零 ⇒ 最差式 FAIL 而中位式 PASS（**空心闸两侧成对**）；S3 同数据旁路本判据 ⇒ 聚合口径判过（判决来自判据非数据）；S4 全族一致落后 ⇒ FAIL（非恒绿）；S5 未跨阈 ⇒ PASS（非恒红）。"
+  },
+  {
+   "check_cmd": "python3 eval/rover/r640/wythoff_precheck_r640.py --selfcheck; python3 -c \"import io,json;d=json.load(io.open('eval/rover/r640/out/precheck-r640-v2.json'));print(d['teeth']['pass'],{r['run']:r['rc'] for r in d['readings']})\"",
+   "face": "F_merge",
+   "ground_rule": "谓词面与题面规格同构（`WIN i j` = 各堆取走枚数，语义由冻结样例逐例反解）；25×25 网格独立于 15 例抽样 —— 抽样对系统性违法分辨率不足（实测真值臂 204/625 非法格 vs 用例级 13/15）；预期表**机取**（禁手写）；rc 分层：交付物侧违规=1（逐谓词点名）/ 器具不可解析=2 / 输入缺失=3；只读副本执行、零写入被测树。",
+   "id": "F_merge.gate.wythoff_precheck",
+   "kind": "env_gate",
+   "metric": "缺口族可执行前置步骤（wythoff 7 谓词 × 25×25 网格）四腿齿证与逐跑次 rc",
+   "negative_control": "① v1 器具同面两侧双红留档（`instruments/wythoff_precheck_v1_r640.py` sha16 `f34c1cd7e856cb38`，读数 `out/precheck-r640-v1.json`）⇒ 该判据对「期望表 / 归层」两自由度有牙；② 合成四臂（恒 LOSE rc1 / 超预算 rc1 / 进程自杀 rc2 / 真值树副本 rc0）。",
+   "source_path": "eval/rover/r640/out/precheck-r640-v2.json",
+   "source_sha12": "dd6043e0b7d8",
+   "threshold": "通过跑次（**机取**自 `out/attrib-r640.json.per_run_wythoff`）⇒ rc==0 ∧ 失败跑次 ⇒ rc≠0 ∧ ≥1 失败跑次 rc==1 且逐谓词点名 ∧ 合成四臂 == {POS rc0, 恒 LOSE rc1, 超预算 rc1, 进程自杀 rc2}；任一侧方向错 ⇒ 器具缺陷",
+   "threshold_source": "eval/rover/r640/prereg-r640.json",
+   "unit": "rc",
+   "value": {
+    "teeth_pass": true,
+    "n_pass_runs_rc0": 6,
+    "n_fail_runs_rc1": 6,
+    "v1_disclosed_fail": {
+     "instrument_sha16": "f34c1cd7e856cb38",
+     "reading": "out/precheck-r640-v1.json",
+     "cause": [
+      "手写期望表（把 13/15 的真值臂当全绿）",
+      "超时归 rc=2（实为交付物过慢）"
+     ]
+    },
+    "synthetic_arms_rc": {
+     "SYN/POS_correct_impl": 0,
+     "SYN/NEG_always_lose": 1,
+     "SYN/NEG_over_budget": 1,
+     "SYN/INSTR_dead_process": 2
+    },
+    "predicate_violations": {
+     "w238/agentP-r3": {
+      "P3_legal": 134,
+      "P4_state": 113
+     },
+     "w239/codex": {
+      "P3_legal": 204
+     },
+     "w237/agentP-r3": {
+      "P1_entry": 98,
+      "P5_coldset": 8,
+      "P6_lexmin": 67
+     },
+     "w239/agentP-r1": {
+      "P4_state": 559,
+      "P5_coldset": 26,
+      "P6_lexmin": 5
+     },
+     "w239/agentP-r2": {
+      "P4_state": 592,
+      "P5_coldset": 3
+     },
+     "w237/agentP-r2": {
+      "P4_state": 377,
+      "P5_coldset": 18
+     }
+    },
+    "slow_artifact_sec": {
+     "w239/agentP-r1": 148.18,
+     "budget_s": 300
+    }
+   }
   }
  ],
  "faces": {

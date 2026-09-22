@@ -1,0 +1,146 @@
+{
+  "round": "R640",
+  "written_before_run": true,
+  "written_at": "2026-09-22T22:50:00+08:00",
+  "author": "cron self-check loop (AgentFramework capability cycle)",
+  "protocol": "docs/plans/RF0005-completion-protocol.md §2 固定环 0–9；本轮 = 只读定因轮 + 缺口族可执行前置步骤落地 ⇒ 跳步声明见 skip_steps",
+  "claim": "承 R639 下轮候选 ①②③ **并轮**：① 对 R639 新窗集（w237..w239）12 个冻结跑次做 `wythoff` 族**只读逐例定因**（独立 oracle 四分类 + 25×25 机制探针 + 逐跑次显式缺陷行最小修复实验），判「能力缺陷（产物侧）/ 夹具缺陷 / 交互轮次不足」三态；② 把该族缺口做成**可执行前置步骤**（`wythoff_precheck_r640.py`：题面可机械判定的违规谓词可执行化）—— 即用户令「缺口族优先做可执行前置步骤使其从静默错步变硬证据」的换杠杆动作；③ 判据/器具面收口：`F_lift_min` **分辨力未行使**条款机检化 + `posthoc`（codex stdout 优先重判）**常设件**在 R639 冻结面行使 ⇒ 该诊断列由「不可判」转为可判。零产品源码改动 / 零重测 / 零新臂 / 零远端 / 零新增夹具语义。",
+  "skip_steps": {
+    "构建/AOT": "跳步 构建/AOT —— 本轮**零产品源码改动**（`git diff --stat src/` 空）；被测件 = R630 AOT 件（sha16 cefd045e8d1d），无新二进制可构建。",
+    "产品侧最小改动": "跳步 产品侧最小改动 —— 轮性质 = 只读定因 + 器具面；产品默认档保持缺省 ⇒ 净产品改动 0（未放行的产品分支一律不动）。",
+    "铁律 11 可执行前置器": "跳步 铁律 11 可执行前置器 —— 本轮无对照臂、无真机跑次、**不产生任何 token/调用降幅或质量达标宣称** ⇒ 该前置器不适用（承 R637 先例，此处显式声明）。"
+  },
+  "single_variable": {
+    "axis": "无",
+    "why": "只读复算轮：无 env 开关剂量 / 无产品代码改动 / 无新跑次 ⇒ 按 RF0005 §1 硬约束 1 **不计为单变量轮**（同 R589/R628/R633/R637 先例）；读数只对**冻结面**成立，**跨轮禁相减**。"
+  },
+  "arms": {
+    "FROZEN": {
+      "side": "agent",
+      "what": "R639 冻结快照重放（产品默认档 9 跑次 + codex 真值 3 跑次 = 12 跑次；w237..w239）",
+      "env": {},
+      "note": "**不是新臂**：不产生新读数，只对 R639 落盘产物做事后只读复算（副本上执行，零写入原树）。"
+    },
+    "ORACLE": {
+      "side": "instrument",
+      "what": "独立 oracle（`eval/rover/r622/wythoff_oracle.py`，与判定器/生成器零共享代码；来源 = 题面逐字规格的定义式 DP）",
+      "env": {},
+      "note": "只作**真值参照**，不作被测臂；其自洽性由 J0 正控 + 变异负控两侧证明。"
+    }
+  },
+  "windows": {
+    "set": ["w237", "w238", "w239"],
+    "reused_from": "R639（本轮为**同一窗集的冻结面复算**，不新开窗 ⇒ 无窗集扩张）",
+    "note": "只读面 ⇒ 不满足 RF0005 §1 硬约束 3（窗集不相交）的适用条件（该约束针对新跑次）。"
+  },
+  "criterion_version": "v1-attribution-and-executable-precondition（新件；与 R637 的 `attrib_r637.py` 同族但**扫面与判据不同**，禁与 R637 读数相减）",
+  "thresholds_cite_baselines": [
+    "F_merge.quality.family_block_scan",
+    "F_merge.quality.family_lift_min",
+    "F_merge.quality.cases_median_truth",
+    "F_merge.gate.precondition_rc",
+    "F_merge.ld.frozen_list"
+  ],
+  "criteria": {
+    "J0_oracle_positive_control": {
+      "kind": "instrument",
+      "primary": false,
+      "need": "独立 oracle 逐例复现题集里 `wythoff` 全部期望输出（15/15）∧ **变异负控**（对齐做一处语义变异 ⇒ 必须判红）",
+      "fail_action": "正控 <15/15 或变异负控不红 ⇒ **器具缺陷 rc=2 停链**（禁进入被测面读数）"
+    },
+    "J1_replay_cross_validation": {
+      "kind": "instrument",
+      "primary": false,
+      "need": "重放所得**逐跑次用例通过数**必须与 R639 判决件（`verdict-r639.json` / `kpi-table-r639.json`）的对应读数**逐跑次一致**（12 跑次，mismatch 0）",
+      "fail_action": "不一致 ⇒ 器具读法错 ⇒ rc=2（承 skill「裁决器报 RED 第一假设是器具读法错」）"
+    },
+    "J2_conservation": {
+      "kind": "instrument",
+      "primary": false,
+      "need": "逐例分类**恰好一次**且仅一次 ⇒ Σ分类 == 12 跑次 × 58 例 == 696（逐跑次守恒亦须成立：58）",
+      "fail_action": "不守恒 ⇒ rc=2（器具层）"
+    },
+    "J3_mechanism_probe": {
+      "kind": "capability",
+      "primary": true,
+      "need": "对每个失败跑次的产物树取 25×25 网格的**隐含冷集**，与 oracle 真值冷集比对：机制 ∈ {COLD_SET_EQUAL, COLD_SET_SHIFT, COLD_SET_OTHER, ENTRY_ERROR, NO_ENTRY_OR_CRASH}；并检验 R637 事后判别式 `intersect == 0 ∧ missing == n_truth` 在**本轮窗集**上的迁移（记真阳性 / 假阳计数）",
+      "fail_action": "判别式真阳性 = 0 ⇒ 该判别式**不迁移**（轮内证伪，登记；禁宣称为通用判别式）；机制恒 COLD_SET_EQUAL 而用例判红 ⇒ 分类器与 oracle 冲突 ⇒ rc=2"
+    },
+    "J4_line_level_attribution": {
+      "kind": "capability",
+      "primary": true,
+      "need": "每个**失败跑次**做逐跑次**显式缺陷行**最小修复实验（承 R637 模板：断言替换次数 == 1、锚点缺失即 `ANCHOR_MISS` + rc=2 fail-closed），成对控制 = 目标族 `0/15 → 15/15` ∧ 其它三族**逐例逐字节不变**",
+      "fail_action": "目标族未全绿 ∧ 锚点在位 ⇒ 该跑次归因**未测到**（单列，禁读成「无缺陷」）"
+    },
+    "J5_three_state_verdict": {
+      "kind": "capability",
+      "primary": true,
+      "need": "三态定因：① **能力缺陷（产物侧）** = 可行级归因到产物源码行；② **夹具缺陷** = oracle 与题面期望不一致（J0 已排他）；③ **交互轮次不足** = 产物入口不存在/路径未覆盖（`NO_ENTRY_OR_CRASH`）",
+      "fail_action": "三态均不得为正 ⇒ 判「未定因」并如实入档，禁倒推"
+    },
+    "J5b_negctl": {
+      "kind": "instrument",
+      "primary": false,
+      "need": "三变异负控成对：N1 同字节重写（不得变绿）· N2 换独立 oracle 实现（必须 15/15 全绿）· N3 恒 LOSE（必须大量判红）",
+      "fail_action": "任一负控方向错 ⇒ rc=2（器具无牙）"
+    },
+    "J6_executable_precondition": {
+      "kind": "capability_secondary",
+      "primary": false,
+      "need": "`wythoff_precheck_r640.py` 对**失败跑次**产物树必红 ∧ 对**全绿跑次**（P 与 codex）产物树必绿（两侧齿证；零写入、只读）",
+      "fail_action": "任一侧方向错 ⇒ 器具缺陷 rc=2；该件为「换杠杆」产出（把静默错步变硬证据），**不改任何既有读数**"
+    },
+    "J7_f_lift_resolution_clause": {
+      "kind": "instrument_criterion",
+      "primary": false,
+      "need": "承 R639 候选②：判决件必含机读键 `lift_resolution_exercised`（= worst_form 与 median_form **判决方向是否不同**）；R639 读数应算出 `false`（两式同向）⇒ 条款要求**禁**把 R636 冻结面证据说成真机行使",
+      "fail_action": "两式同向而键为 true（或缺失）⇒ 判红（声明滞后类）"
+    },
+    "J8_posthoc_standing_piece": {
+      "kind": "report",
+      "primary": false,
+      "need": "承 R639 候选③：`posthoc_r640.py`（codex stdout 优先重判）对 R639 冻结面**逐跑次**重判 ⇒ 该诊断列由「未生成 ⇒ 不可判」转为可判；预期 0 条改判（R633 先例 0/3）",
+      "fail_action": "读数缺席 / 解析失败 ⇒ 记 `n/a` 并单列（不按 0 摊）"
+    },
+    "J9_determinism": {
+      "kind": "instrument",
+      "primary": false,
+      "need": "同一重放跑两次 ⇒ 逐例逐字节相同（同族读数**多个量**同时相等：分类 / rc / stdout 前 80 字符）",
+      "fail_action": "不同 ⇒ 输入指纹多类 ⇒ 先查执行面并发度，禁归因被测"
+    }
+  },
+  "falsification": [
+    {
+      "id": "F1",
+      "cond": "J0 oracle 正控 <15/15，或变异负控未判红",
+      "action": "器具缺陷 rc=2 **停链**（不进入被测面读数）；修器具后重取，首跑读数留档不翻案"
+    },
+    {
+      "id": "F2",
+      "cond": "R637 判别式 `intersect == 0 ∧ missing == n_truth` 在本轮窗集上真阳性 = 0",
+      "action": "登记「该判别式**不跨窗迁移**」（轮内证伪），禁把它写进任何通用结论；J3 的机制列仍按五态如实登记"
+    },
+    {
+      "id": "F3",
+      "cond": "同字节重写负控下失败跑次**转绿**",
+      "action": "判据无牙 ⇒ rc=2；禁据此宣称任何「已修复」"
+    },
+    {
+      "id": "F4",
+      "cond": "本轮出现「本侧失败例可由夹具（oracle / 期望输出）不一致解释」的证据",
+      "action": "三态定因改判**夹具缺陷**（与 J0 正控冲突时以 J0 为准并 rc=2 停链）"
+    }
+  ],
+  "teeth_plan": {
+    "synthetic": "J0 变异负控（oracle 语义变异 1 处）+ J5b 三变异负控（同字节重写 / 独立实现 / 恒 LOSE）+ J6 两侧齿证（失败树必红 ∧ 通过树必绿）",
+    "real": "J1 交叉校验（重放读数 vs R639 冻结判决件逐跑次一致）+ J2 守恒式",
+    "negative": "J4 的：目标族转绿 ∧ **其它族逐例不变** ∧ 空重写仍红 —— 三件成对，缺一则「凡改即绿」不可排除"
+  },
+  "honest_bounds": [
+    "只读复算面 ≠ 真机新跑 ⇒ 读数只对冻结面成立，**不宣称生产已修**",
+    "行级定因来自副本上的最小修复实验 ⇒ 只证「缺陷在被改那一行」，不证「生产链路上就这一处」",
+    "无单变量轴 / 无新窗集 ⇒ **跨轮禁相减**（RF0005 §6 红线 4）；n=9（P）/3（真值）欠功率",
+    "铁律 11 前置器**不适用**（无真机臂、无降幅宣称）—— 本条为显式声明，不是跳步掩盖",
+    "三档终局目标读数（32 ms 级 / 快 50× / −95% / 成本 −85~91%）本轮**不动不宣称**"
+  ]
+}

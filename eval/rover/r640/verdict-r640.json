@@ -1,0 +1,466 @@
+{
+ "inputs": {
+  "attrib": true,
+  "precheck": true,
+  "posthoc": true,
+  "prereg": true
+ },
+ "J0_oracle_control": {
+  "positive": "15/15",
+  "positive_pass": true,
+  "mutant_pass": 10,
+  "mutant_teeth": true,
+  "pass": true
+ },
+ "J1_replay_cross_validation": {
+  "mismatch": 0,
+  "pass": true,
+  "detail": []
+ },
+ "J2_conservation": {
+  "total": 696,
+  "expected": 696,
+  "pass": true,
+  "per_run": {
+   "w237/agentP-r1": 58,
+   "w237/agentP-r2": 58,
+   "w237/agentP-r3": 58,
+   "w237/codex": 58,
+   "w238/agentP-r1": 58,
+   "w238/agentP-r2": 58,
+   "w238/agentP-r3": 58,
+   "w238/codex": 58,
+   "w239/agentP-r1": 58,
+   "w239/agentP-r2": 58,
+   "w239/agentP-r3": 58,
+   "w239/codex": 58
+  }
+ },
+ "J3_mechanism_probe": {
+  "mechanism_histogram": {
+   "COLD_SET_EQUAL": 8,
+   "COLD_SET_OTHER": 2,
+   "ENTRY_ERROR": 1,
+   "NO_ENTRY_OR_CRASH": 1
+  },
+  "r637_discriminant_true_positive": 1,
+  "r637_discriminant_false_positive": 0,
+  "r637_discriminant_transfers": true,
+  "by_run": [
+   {
+    "run": "w237/agentP-r1",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w237/agentP-r2",
+    "mechanism": "COLD_SET_OTHER",
+    "n_implied": 0,
+    "n_truth": 18,
+    "intersect": 0,
+    "extra": 0,
+    "missing": 18,
+    "symdiff": 18,
+    "best_shift": [
+     -3,
+     -3
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": true
+   },
+   {
+    "run": "w237/agentP-r3",
+    "mechanism": "ENTRY_ERROR",
+    "n_implied": 10,
+    "n_truth": 18,
+    "intersect": 10,
+    "extra": 0,
+    "missing": 8,
+    "symdiff": 8,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 98,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w237/codex",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w238/agentP-r1",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w238/agentP-r2",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w238/agentP-r3",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w238/codex",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w239/agentP-r1",
+    "mechanism": "NO_ENTRY_OR_CRASH",
+    "detail": "probe_timeout"
+   },
+   {
+    "run": "w239/agentP-r2",
+    "mechanism": "COLD_SET_OTHER",
+    "n_implied": 17,
+    "n_truth": 18,
+    "intersect": 16,
+    "extra": 1,
+    "missing": 2,
+    "symdiff": 3,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w239/agentP-r3",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w239/codex",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   }
+  ]
+ },
+ "J4_line_level_attribution": {
+  "confirmed": {
+   "w237/agentP-r2": [
+    "C1_pm1_window"
+   ],
+   "w237/agentP-r3": [],
+   "w238/agentP-r3": [],
+   "w239/agentP-r1": [],
+   "w239/agentP-r2": []
+  },
+  "states": {
+   "w237/agentP-r2": "能力缺陷（产物侧）",
+   "w237/agentP-r3": "未测到（锚点缺失或候选全不生效）",
+   "w238/agentP-r3": "未测到（锚点缺失或候选全不生效）",
+   "w239/agentP-r1": "未测到（锚点缺失或候选全不生效）",
+   "w239/agentP-r2": "未测到（锚点缺失或候选全不生效）"
+  },
+  "n_failing_runs_analyzed": 5,
+  "all_confirmed": false
+ },
+ "J5_three_state_verdict": {
+  "state_product_defect": [
+   "w237/agentP-r2"
+  ],
+  "state_not_attributed": [
+   "w237/agentP-r3",
+   "w238/agentP-r3",
+   "w239/agentP-r1",
+   "w239/agentP-r2"
+  ],
+  "fixture_defect": [],
+  "note": "夹具缺陷由 J0 正控排他；本态为空 = 未发现夹具侧成因"
+ },
+ "J5b_negctl": {
+  "N1_null_rewrite": {
+   "target_pass": 0,
+   "verdict": "PASS"
+  },
+  "N2_correct_impl": {
+   "target_pass": 15,
+   "verdict": "PASS"
+  },
+  "N3_always_lose": {
+   "target_pass": 4,
+   "verdict": "PASS"
+  },
+  "on_run": "w237/agentP-r2"
+ },
+ "J6_executable_precondition": {
+  "round": "v1(pre-registered)",
+  "pos_all_pass_runs_rc0": false,
+  "neg_all_fail_runs_rc1": false,
+  "pass": false,
+  "per_run_rc": {
+   "w237/agentP-r1": 0,
+   "w238/agentP-r1": 0,
+   "w238/agentP-r2": 0,
+   "w239/agentP-r3": 0,
+   "w237/codex": 0,
+   "w238/codex": 0,
+   "w239/codex": 1,
+   "w237/agentP-r2": 1,
+   "w237/agentP-r3": 1,
+   "w238/agentP-r3": 1,
+   "w239/agentP-r1": 2,
+   "w239/agentP-r2": 1
+  },
+  "failed_predicates": {
+   "w239/codex": [
+    "P3_legal"
+   ],
+   "w237/agentP-r2": [
+    "P4_state",
+    "P5_coldset"
+   ],
+   "w237/agentP-r3": [
+    "P1_entry",
+    "P5_coldset",
+    "P6_lexmin"
+   ],
+   "w238/agentP-r3": [
+    "P3_legal",
+    "P4_state"
+   ],
+   "w239/agentP-r2": [
+    "P4_state",
+    "P5_coldset"
+   ]
+  }
+ },
+ "J6v2_corrected_instrument": {
+  "round": "v2(checks_posthoc; 下轮重注册)",
+  "instrument_sha16": "96cb65d65077ba27",
+  "expectations_machine_derived": true,
+  "source_of_expectations": "/home/agentuser/AgentFramework/eval/rover/r640/out/attrib-r640.json",
+  "pos_all_pass_runs_rc0": true,
+  "neg_all_fail_runs_nongreen": true,
+  "synthetic_arms_rc": {
+   "SYN/POS_correct_impl": 0,
+   "SYN/NEG_always_lose": 1,
+   "SYN/NEG_over_budget": 1,
+   "SYN/INSTR_dead_process": 2
+  },
+  "pass": true,
+  "rc_by_run": {
+   "w237/agentP-r1": 0,
+   "w237/codex": 0,
+   "w238/agentP-r1": 0,
+   "w238/agentP-r2": 0,
+   "w238/codex": 0,
+   "w239/agentP-r3": 0,
+   "w237/agentP-r2": 1,
+   "w237/agentP-r3": 1,
+   "w238/agentP-r3": 1,
+   "w239/agentP-r1": 1,
+   "w239/agentP-r2": 1,
+   "w239/codex": 1
+  },
+  "predicate_violation_counts": {
+   "w237/agentP-r2": {
+    "P4_state": 377,
+    "P5_coldset": 18
+   },
+   "w237/agentP-r3": {
+    "P1_entry": 98,
+    "P5_coldset": 8,
+    "P6_lexmin": 67
+   },
+   "w238/agentP-r3": {
+    "P3_legal": 134,
+    "P4_state": 113
+   },
+   "w239/agentP-r1": {
+    "P4_state": 559,
+    "P5_coldset": 26,
+    "P6_lexmin": 5
+   },
+   "w239/agentP-r2": {
+    "P4_state": 592,
+    "P5_coldset": 3
+   },
+   "w239/codex": {
+    "P3_legal": 204
+   }
+  },
+  "note": "v1 两侧双红 = 器具误规格（手写期望表 + 把「交付物过慢」归 rc=2）⇒ v2 机取期望表 + P0_budget 独立谓词 + 预算 300s；预注册判据照原样判（J6 FAIL），本条为**事后修正**、不改判 v1"
+ },
+ "J7_f_lift_resolution_clause": {
+  "source_round": "R639",
+  "worst_form": -12,
+  "median_form": -9,
+  "threshold": -2,
+  "lift_resolution_exercised": false,
+  "claimed_exercised_ok": true,
+  "pass": true,
+  "rule": "两式同向 ⇒ `lift_resolution_exercised=False` ⇒ **禁**把 R636 冻结面证据说成真机行使；键缺失/为 True ⇒ 判红（声明滞后类）"
+ },
+ "J8_posthoc_standing_piece": {
+  "n_runs": 12,
+  "rc_nonzero_but_stdout_match_total": 0,
+  "may_be_underestimated": false,
+  "by_run": {
+   "w237/agentP-r1": 0,
+   "w237/agentP-r2": 0,
+   "w237/agentP-r3": 0,
+   "w237/codex": 0,
+   "w238/agentP-r1": 0,
+   "w238/agentP-r2": 0,
+   "w238/agentP-r3": 0,
+   "w238/codex": 0,
+   "w239/agentP-r1": 0,
+   "w239/agentP-r2": 0,
+   "w239/agentP-r3": 0,
+   "w239/codex": 0
+  },
+  "pass": true,
+  "note": "该列由「未生成 ⇒ 不可判」转为可判（常设件，`--face` 参数化）"
+ },
+ "J9_determinism": {
+  "pairs": [
+   {
+    "run": "w237/agentP-r2",
+    "identical": true
+   },
+   {
+    "run": "w237/agentP-r3",
+    "identical": true
+   },
+   {
+    "run": "w238/agentP-r3",
+    "identical": true
+   },
+   {
+    "run": "w239/agentP-r1",
+    "identical": true
+   },
+   {
+    "run": "w239/agentP-r2",
+    "identical": true
+   }
+  ],
+  "pass": true
+ },
+ "rc": 2,
+ "rc_semantics": "0 全绿 / 1 能力或次级红 / 2 器具缺陷 / 3 输入缺失",
+ "verdict": {
+  "rc": 2,
+  "hard": [
+   "J6 可执行前置步骤（**v1 预注册器具**）两侧齿证未过 ⇒ 器具缺陷（v2 单列，下轮重注册）"
+  ],
+  "capability_secondary": [
+   "J4 有失败跑次未行级定因（记「未测到」，非「无缺陷」）"
+  ],
+  "label": "器具缺陷"
+ },
+ "round": "R640",
+ "kind": "只读承重缺口定因（wythoff 族；R639 冻结面 12 跑次）+ 缺口族可执行前置步骤落地 + 判据/器具面收口（F 未行使条款 · posthoc 常设件）",
+ "instrument_source": {
+  "attrib": "fdbd267dbc4a",
+  "precheck": "96cb65d65077",
+  "posthoc": "ef5770654589",
+  "judge": "bb7017292234",
+  "prereg_sha256": "3f2b416f889568b358e90e108cf0402efa4718749d970fa7f116c8d8a62da019"
+ },
+ "prereg_declared_before_run": true,
+ "honest_bounds": [
+  "只读复算面 ≠ 真机新跑 ⇒ 读数只对**R639 冻结面**成立；本轮**不宣称生产已修**",
+  "行级定因来自**副本上的最小修复实验** ⇒ 只证「缺陷在被改那一行」，不证生产链路只有这一处",
+  "无单变量轴 / 无新窗集 / 无新跑次 ⇒ **跨轮禁相减**（RF0005 §6 红线 4）；n=9（P）/3（真值）欠功率",
+  "铁律 11 可执行前置器**不适用**（无真机臂、无降幅宣称）—— 显式声明，非跳步掩盖",
+  "J8 posthoc 为 30s 超时口径（冻结跑 10s）⇒ 只作**上界**读数",
+  "三档终局目标读数（32 ms 级 / 快 50× / −95% / 成本 −85~91%）本轮**不动不宣称**"
+ ]
+}

@@ -1,0 +1,1017 @@
+{
+ "round": "R640",
+ "instrument": {
+  "attrib": "fdbd267dbc4ab994",
+  "oracle": "d26ff0fa77cf661b"
+ },
+ "cases": {
+  "path": "/home/agentuser/AgentFramework/eval/rover/r640/cases/cases-r521.json",
+  "sha256": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+  "src_pin": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+  "pin_ok": true
+ },
+ "face": {
+  "n_runs": 12,
+  "runs": [
+   "w237/agentP-r1",
+   "w237/agentP-r2",
+   "w237/agentP-r3",
+   "w237/codex",
+   "w238/agentP-r1",
+   "w238/agentP-r2",
+   "w238/agentP-r3",
+   "w238/codex",
+   "w239/agentP-r1",
+   "w239/agentP-r2",
+   "w239/agentP-r3",
+   "w239/codex"
+  ],
+  "void_excluded": []
+ },
+ "J2_conservation": {
+  "total": 696,
+  "expected": 696,
+  "pass": true,
+  "per_run": {
+   "w237/agentP-r1": 58,
+   "w237/agentP-r2": 58,
+   "w237/agentP-r3": 58,
+   "w237/codex": 58,
+   "w238/agentP-r1": 58,
+   "w238/agentP-r2": 58,
+   "w238/agentP-r3": 58,
+   "w238/codex": 58,
+   "w239/agentP-r1": 58,
+   "w239/agentP-r2": 58,
+   "w239/agentP-r3": 58,
+   "w239/codex": 58
+  }
+ },
+ "J1_replay_cross_validation": {
+  "mismatch": 0,
+  "detail": [],
+  "pass": true,
+  "rows": [
+   {
+    "run": "w237/agentP-r1",
+    "replay_exact_pass": 58,
+    "frozen_cases_pass": 58,
+    "match": true
+   },
+   {
+    "run": "w237/agentP-r2",
+    "replay_exact_pass": 46,
+    "frozen_cases_pass": 46,
+    "match": true
+   },
+   {
+    "run": "w237/agentP-r3",
+    "replay_exact_pass": 55,
+    "frozen_cases_pass": 55,
+    "match": true
+   },
+   {
+    "run": "w237/codex",
+    "replay_exact_pass": 58,
+    "frozen_cases_pass": 58,
+    "match": true
+   },
+   {
+    "run": "w238/agentP-r1",
+    "replay_exact_pass": 58,
+    "frozen_cases_pass": 58,
+    "match": true
+   },
+   {
+    "run": "w238/agentP-r2",
+    "replay_exact_pass": 58,
+    "frozen_cases_pass": 58,
+    "match": true
+   },
+   {
+    "run": "w238/agentP-r3",
+    "replay_exact_pass": 55,
+    "frozen_cases_pass": 55,
+    "match": true
+   },
+   {
+    "run": "w238/codex",
+    "replay_exact_pass": 58,
+    "frozen_cases_pass": 58,
+    "match": true
+   },
+   {
+    "run": "w239/agentP-r1",
+    "replay_exact_pass": 47,
+    "frozen_cases_pass": 47,
+    "match": true
+   },
+   {
+    "run": "w239/agentP-r2",
+    "replay_exact_pass": 46,
+    "frozen_cases_pass": 46,
+    "match": true
+   },
+   {
+    "run": "w239/agentP-r3",
+    "replay_exact_pass": 58,
+    "frozen_cases_pass": 58,
+    "match": true
+   },
+   {
+    "run": "w239/codex",
+    "replay_exact_pass": 56,
+    "frozen_cases_pass": 56,
+    "match": true
+   }
+  ]
+ },
+ "J3_mechanism_probe": {
+  "by_run": [
+   {
+    "run": "w237/agentP-r1",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w237/agentP-r2",
+    "mechanism": "COLD_SET_OTHER",
+    "n_implied": 0,
+    "n_truth": 18,
+    "intersect": 0,
+    "extra": 0,
+    "missing": 18,
+    "symdiff": 18,
+    "best_shift": [
+     -3,
+     -3
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": true
+   },
+   {
+    "run": "w237/agentP-r3",
+    "mechanism": "ENTRY_ERROR",
+    "n_implied": 10,
+    "n_truth": 18,
+    "intersect": 10,
+    "extra": 0,
+    "missing": 8,
+    "symdiff": 8,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 98,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w237/codex",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w238/agentP-r1",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w238/agentP-r2",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w238/agentP-r3",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w238/codex",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w239/agentP-r1",
+    "mechanism": "NO_ENTRY_OR_CRASH",
+    "detail": "probe_timeout"
+   },
+   {
+    "run": "w239/agentP-r2",
+    "mechanism": "COLD_SET_OTHER",
+    "n_implied": 17,
+    "n_truth": 18,
+    "intersect": 16,
+    "extra": 1,
+    "missing": 2,
+    "symdiff": 3,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w239/agentP-r3",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   },
+   {
+    "run": "w239/codex",
+    "mechanism": "COLD_SET_EQUAL",
+    "n_implied": 18,
+    "n_truth": 18,
+    "intersect": 18,
+    "extra": 0,
+    "missing": 0,
+    "symdiff": 0,
+    "best_shift": [
+     0,
+     0
+    ],
+    "n_entry_errors": 0,
+    "r637_discriminant": false
+   }
+  ],
+  "n_failing_runs": 6,
+  "r637_discriminant_true_positive": 1,
+  "r637_discriminant_false_positive": 0,
+  "r637_discriminant_transfers": true,
+  "mechanism_histogram": {
+   "COLD_SET_EQUAL": 8,
+   "COLD_SET_OTHER": 2,
+   "ENTRY_ERROR": 1,
+   "NO_ENTRY_OR_CRASH": 1
+  }
+ },
+ "classification_histogram_wythoff": {
+  "OK": 137,
+  "TRUE_WRONG": 32,
+  "STATE_FLIP": 8,
+  "HARD_CRASH": 2,
+  "LEGAL_NONMIN": 1
+ },
+ "per_run_wythoff": {
+  "w237/agentP-r1": {
+   "pass": 15,
+   "n": 15,
+   "tags": {
+    "OK": 15
+   },
+   "fails": []
+  },
+  "w237/agentP-r2": {
+   "pass": 3,
+   "n": 15,
+   "tags": {
+    "OK": 3,
+    "STATE_FLIP": 4,
+    "TRUE_WRONG": 8
+   },
+   "fails": [
+    {
+     "case": 43,
+     "in": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 12",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,12)"
+    },
+    {
+     "case": 45,
+     "in": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 4 0",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(4,0)"
+    },
+    {
+     "case": 47,
+     "in": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 11",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,11)"
+    },
+    {
+     "case": 48,
+     "in": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 6",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,6)"
+    },
+    {
+     "case": 50,
+     "in": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 9",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,9)"
+    },
+    {
+     "case": 51,
+     "in": "1 2",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "tag": "STATE_FLIP",
+     "detail": "LOSE->WIN"
+    },
+    {
+     "case": 52,
+     "in": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 0 3",
+     "tag": "STATE_FLIP",
+     "detail": "LOSE->WIN"
+    },
+    {
+     "case": 53,
+     "in": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "tag": "STATE_FLIP",
+     "detail": "LOSE->WIN"
+    },
+    {
+     "case": 54,
+     "in": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 6",
+     "tag": "STATE_FLIP",
+     "detail": "LOSE->WIN"
+    },
+    {
+     "case": 55,
+     "in": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 56,
+     "in": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 21",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,21)"
+    },
+    {
+     "case": 57,
+     "in": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 10",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,10)"
+    }
+   ]
+  },
+  "w237/agentP-r3": {
+   "pass": 12,
+   "n": 15,
+   "tags": {
+    "HARD_CRASH": 2,
+    "LEGAL_NONMIN": 1,
+    "OK": 12
+   },
+   "fails": [
+    {
+     "case": 47,
+     "in": "12 18",
+     "exp": "WIN 1 0",
+     "got": "",
+     "tag": "HARD_CRASH",
+     "detail": "rc=1 len=0"
+    },
+    {
+     "case": 48,
+     "in": "11 25",
+     "exp": "WIN 0 7",
+     "got": "",
+     "tag": "HARD_CRASH",
+     "detail": "rc=1 len=0"
+    },
+    {
+     "case": 49,
+     "in": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 16 16",
+     "tag": "LEGAL_NONMIN",
+     "detail": "got=(16,16) min=(0, 6)"
+    }
+   ]
+  },
+  "w237/codex": {
+   "pass": 15,
+   "n": 15,
+   "tags": {
+    "OK": 15
+   },
+   "fails": []
+  },
+  "w238/agentP-r1": {
+   "pass": 15,
+   "n": 15,
+   "tags": {
+    "OK": 15
+   },
+   "fails": []
+  },
+  "w238/agentP-r2": {
+   "pass": 15,
+   "n": 15,
+   "tags": {
+    "OK": 15
+   },
+   "fails": []
+  },
+  "w238/agentP-r3": {
+   "pass": 12,
+   "n": 15,
+   "tags": {
+    "OK": 12,
+    "TRUE_WRONG": 3
+   },
+   "fails": [
+    {
+     "case": 44,
+     "in": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 3 0",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(3,0)"
+    },
+    {
+     "case": 45,
+     "in": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 0 5",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,5)"
+    },
+    {
+     "case": 49,
+     "in": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 6 0",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(6,0)"
+    }
+   ]
+  },
+  "w238/codex": {
+   "pass": 15,
+   "n": 15,
+   "tags": {
+    "OK": 15
+   },
+   "fails": []
+  },
+  "w239/agentP-r1": {
+   "pass": 4,
+   "n": 15,
+   "tags": {
+    "OK": 4,
+    "STATE_FLIP": 3,
+    "TRUE_WRONG": 8
+   },
+   "fails": [
+    {
+     "case": 43,
+     "in": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 17 17",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(17,17)"
+    },
+    {
+     "case": 44,
+     "in": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 4",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,4)"
+    },
+    {
+     "case": 45,
+     "in": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 2 0",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(2,0)"
+    },
+    {
+     "case": 47,
+     "in": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 12",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,12)"
+    },
+    {
+     "case": 48,
+     "in": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 3",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,3)"
+    },
+    {
+     "case": 49,
+     "in": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 8",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,8)"
+    },
+    {
+     "case": 50,
+     "in": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 7",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,7)"
+    },
+    {
+     "case": 52,
+     "in": "3 5",
+     "exp": "LOSE",
+     "got": "WIN 1 1",
+     "tag": "STATE_FLIP",
+     "detail": "LOSE->WIN"
+    },
+    {
+     "case": 53,
+     "in": "4 7",
+     "exp": "LOSE",
+     "got": "WIN 0 5",
+     "tag": "STATE_FLIP",
+     "detail": "LOSE->WIN"
+    },
+    {
+     "case": 54,
+     "in": "6 10",
+     "exp": "LOSE",
+     "got": "WIN 0 7",
+     "tag": "STATE_FLIP",
+     "detail": "LOSE->WIN"
+    },
+    {
+     "case": 56,
+     "in": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 21",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,21)"
+    }
+   ]
+  },
+  "w239/agentP-r2": {
+   "pass": 3,
+   "n": 15,
+   "tags": {
+    "OK": 3,
+    "STATE_FLIP": 1,
+    "TRUE_WRONG": 11
+   },
+   "fails": [
+    {
+     "case": 43,
+     "in": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 44,
+     "in": "10 9",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 45,
+     "in": "18 8",
+     "exp": "WIN 5 0",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 46,
+     "in": "1 5",
+     "exp": "WIN 0 3",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 47,
+     "in": "12 18",
+     "exp": "WIN 1 0",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 48,
+     "in": "11 25",
+     "exp": "WIN 0 7",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 49,
+     "in": "18 17",
+     "exp": "WIN 0 6",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 50,
+     "in": "7 21",
+     "exp": "WIN 0 17",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 51,
+     "in": "1 2",
+     "exp": "LOSE",
+     "got": "WIN 0 1",
+     "tag": "STATE_FLIP",
+     "detail": "LOSE->WIN"
+    },
+    {
+     "case": 55,
+     "in": "1 1",
+     "exp": "WIN 1 1",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 56,
+     "in": "2 25",
+     "exp": "WIN 0 24",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    },
+    {
+     "case": 57,
+     "in": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 0 1",
+     "tag": "TRUE_WRONG",
+     "detail": "nonwinning_move=(0,1)"
+    }
+   ]
+  },
+  "w239/agentP-r3": {
+   "pass": 15,
+   "n": 15,
+   "tags": {
+    "OK": 15
+   },
+   "fails": []
+  },
+  "w239/codex": {
+   "pass": 13,
+   "n": 15,
+   "tags": {
+    "OK": 13,
+    "TRUE_WRONG": 2
+   },
+   "fails": [
+    {
+     "case": 43,
+     "in": "21 25",
+     "exp": "WIN 15 15",
+     "got": "WIN 1 13",
+     "tag": "TRUE_WRONG",
+     "detail": "illegal_move=(1,13)"
+    },
+    {
+     "case": 57,
+     "in": "25 25",
+     "exp": "WIN 25 25",
+     "got": "WIN 2 11",
+     "tag": "TRUE_WRONG",
+     "detail": "illegal_move=(2,11)"
+    }
+   ]
+  }
+ },
+ "J4_minfix": [
+  {
+   "run": "w237/agentP-r2",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 3
+   },
+   "attempts": [
+    {
+     "id": "C1_pm1_window",
+     "why": "冷集判定谓词带 ±1 容差窗口 ⇒ 非冷点被误判为冷点",
+     "replacements": 1,
+     "target_before": 3,
+     "target_after": 15,
+     "other_families_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "other_families_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "CONFIRMED"
+    }
+   ],
+   "confirmed": [
+    "C1_pm1_window"
+   ],
+   "state": "能力缺陷（产物侧）"
+  },
+  {
+   "run": "w237/agentP-r3",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 12
+   },
+   "attempts": [
+    {
+     "id": "C1_idx_window",
+     "why": "冷点索引搜索窗口过宽（±2）",
+     "replacements": 1,
+     "target_before": 12,
+     "target_after": 2,
+     "other_families_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "other_families_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "NO_EFFECT"
+    },
+    {
+     "id": "C2_idx_def",
+     "why": "冷点索引用 (b-a)/phi 而非 (b-a)*phi",
+     "replacements": 1,
+     "target_before": 12,
+     "target_after": 8,
+     "other_families_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "other_families_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "NO_EFFECT"
+    }
+   ],
+   "confirmed": [],
+   "state": "未测到（锚点缺失或候选全不生效）"
+  },
+  {
+   "run": "w238/agentP-r3",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 12
+   },
+   "attempts": [
+    {
+     "id": "C1_dp_settle_0_0",
+     "why": "(0,0) 未显式置为必败 ⇒ DP 初值 True 与传播链不一致",
+     "replacements": 1,
+     "target_before": 12,
+     "target_after": 12,
+     "other_families_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "other_families_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "NO_EFFECT"
+    }
+   ],
+   "confirmed": [],
+   "state": "未测到（锚点缺失或候选全不生效）"
+  },
+  {
+   "run": "w239/agentP-r1",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 4
+   },
+   "attempts": [
+    {
+     "id": "C1_lower_wythoff_base",
+     "why": "floor(n*phi) = n + floor(n/phi)；本实现只算了 floor(n/phi)",
+     "replacements": 1,
+     "target_before": 4,
+     "target_after": 3,
+     "other_families_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "other_families_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "NO_EFFECT"
+    }
+   ],
+   "confirmed": [],
+   "state": "未测到（锚点缺失或候选全不生效）"
+  },
+  {
+   "run": "w239/agentP-r2",
+   "baseline_families": {
+    "life": 14,
+    "sub": 14,
+    "nim": 15,
+    "wythoff": 3
+   },
+   "attempts": [
+    {
+     "id": "C1_box_scan",
+     "why": "冷集自举只扫 a×b 盒且 (0,0) 未入集",
+     "replacements": 1,
+     "target_before": 3,
+     "target_after": 4,
+     "other_families_before": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "other_families_after": {
+      "life": 14,
+      "sub": 14,
+      "nim": 15
+     },
+     "others_unchanged": true,
+     "verdict": "PARTIAL"
+    }
+   ],
+   "confirmed": [],
+   "state": "未测到（锚点缺失或候选全不生效）"
+  }
+ ],
+ "J5b_negctl": {
+  "oracle_positive_control": "15/15",
+  "oracle_positive_pass": true,
+  "oracle_mutant_pass": 10,
+  "oracle_mutant_teeth": true,
+  "N1_null_rewrite": {
+   "target_pass": 0,
+   "verdict": "PASS"
+  },
+  "N2_correct_impl": {
+   "target_pass": 15,
+   "verdict": "PASS"
+  },
+  "N3_always_lose": {
+   "target_pass": 4,
+   "verdict": "PASS"
+  },
+  "_cases": 15,
+  "on_run": "w237/agentP-r2"
+ },
+ "J9_determinism": {
+  "pairs": [
+   {
+    "run": "w237/agentP-r2",
+    "identical": true
+   },
+   {
+    "run": "w237/agentP-r3",
+    "identical": true
+   },
+   {
+    "run": "w238/agentP-r3",
+    "identical": true
+   },
+   {
+    "run": "w239/agentP-r1",
+    "identical": true
+   },
+   {
+    "run": "w239/agentP-r2",
+    "identical": true
+   }
+  ],
+  "pass": true
+ }
+}
