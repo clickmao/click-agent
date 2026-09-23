@@ -105,12 +105,12 @@
   "latest": {
    "bin_sha": "",
    "grid": null,
-   "kind": "R640 遗留「J4 未定因 4/5」**行级定因闭合** ＋ 判据面**分辨率条款**登记（零产品源码改动 / 零重测 / 零新臂 / 零远端 / 零新增夹具语义）；冻结面 = R639 12 跑次，只读副本执行。**决策规则**：合成缺陷须以**联合臂**为实验形态（单行必然 NO_EFFECT/PARTIAL）；器具缺陷**先修再加读数**、v1 未产出读数故无翻案；起手闸 P3 内存 FAIL 如实入档且只读轮未触发其保护对象。",
+   "kind": "器具面收口轮: R4 活行分支修复 + route 轮志小节源 + 三件器具模板化(nim/sub) — 零 src/零臂/零远端",
    "readouts": null,
-   "ts": "2026-09-23T00:20:00+08:00"
+   "ts": "2026-09-24T01:40:00+08:00"
   },
-  "latest_round": "R641",
-  "lines": 174,
+  "latest_round": "R642",
+  "lines": 175,
   "non_round_rows": [
    "EXP1-Q1",
    "EXP1-Q10",
@@ -341,11 +341,12 @@
    "R639",
    "R640",
    "R641",
+   "R642",
    "loop-mechanism",
    "unknown"
   ],
   "rows_missing_kind": 19,
-  "sha12": "95c86fd3ee71"
+  "sha12": "ea1d79193137"
  },
  "plans": [
   {
@@ -409,14 +410,19 @@
   "by_level": {
    "L0": 2,
    "L1": 20,
-   "L2": 145,
+   "L2": 146,
    "L3": 100,
    "L4": 48
   },
-  "rows": 315,
-  "sha12": "93935706c462",
+  "rows": 316,
+  "sha12": "a532f6b13071",
   "updated_round": "R641",
-  "violations": [],
+  "violations": [
+   {
+    "id": "r642.instrument-closeout",
+    "why": "L>=2 缺 negative_control"
+   }
+  ],
   "warnings": [
    {
     "id": "credential.aesgcm",
@@ -516,6 +522,10 @@
    },
    {
     "id": "r631.exec-axis-replication",
+    "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
+   },
+   {
+    "id": "r642.instrument-closeout",
     "why": "L>=2 未登记 covers[] (形式规范未强制, 记为告警)"
    }
   ]

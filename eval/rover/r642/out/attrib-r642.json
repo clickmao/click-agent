@@ -1,0 +1,240 @@
+{
+ "round": "R642",
+ "kind": "instrument-templatization+readonly-faces",
+ "cases_sha256": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+ "r641_reference": {},
+ "replay_cache": {
+  "w237/agentP-r1": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w237/agentP-r2": {
+   "pass": 3,
+   "n": 15,
+   "tags": {
+    "TRUE_WRONG": 8,
+    "STATE_FLIP": 4
+   }
+  },
+  "w237/agentP-r3": {
+   "pass": 12,
+   "n": 15,
+   "tags": {
+    "HARD_CRASH": 2,
+    "LEGAL_NONMIN": 1
+   }
+  },
+  "w237/codex": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w238/agentP-r1": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w238/agentP-r2": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w238/agentP-r3": {
+   "pass": 12,
+   "n": 15,
+   "tags": {
+    "FRAME_TRANSPOSE": 3
+   }
+  },
+  "w238/codex": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w239/agentP-r1": {
+   "pass": 4,
+   "n": 15,
+   "tags": {
+    "TRUE_WRONG": 8,
+    "STATE_FLIP": 3
+   }
+  },
+  "w239/agentP-r2": {
+   "pass": 3,
+   "n": 15,
+   "tags": {
+    "TRUE_WRONG": 10,
+    "FRAME_TRANSPOSE": 1,
+    "STATE_FLIP": 1
+   }
+  },
+  "w239/agentP-r3": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w239/codex": {
+   "pass": 13,
+   "n": 15,
+   "tags": {
+    "ILLEGAL_MOVE": 2
+   }
+  }
+ },
+ "replay": {
+  "w237/agentP-r1": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w237/agentP-r2": {
+   "pass": 3,
+   "n": 15,
+   "tags": {
+    "TRUE_WRONG": 8,
+    "STATE_FLIP": 4
+   }
+  },
+  "w237/agentP-r3": {
+   "pass": 12,
+   "n": 15,
+   "tags": {
+    "HARD_CRASH": 2,
+    "LEGAL_NONMIN": 1
+   }
+  },
+  "w237/codex": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w238/agentP-r1": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w238/agentP-r2": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w238/agentP-r3": {
+   "pass": 12,
+   "n": 15,
+   "tags": {
+    "FRAME_TRANSPOSE": 3
+   }
+  },
+  "w238/codex": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w239/agentP-r1": {
+   "pass": 4,
+   "n": 15,
+   "tags": {
+    "TRUE_WRONG": 8,
+    "STATE_FLIP": 3
+   }
+  },
+  "w239/agentP-r2": {
+   "pass": 3,
+   "n": 15,
+   "tags": {
+    "TRUE_WRONG": 10,
+    "FRAME_TRANSPOSE": 1,
+    "STATE_FLIP": 1
+   }
+  },
+  "w239/agentP-r3": {
+   "pass": 15,
+   "n": 15,
+   "tags": {}
+  },
+  "w239/codex": {
+   "pass": 13,
+   "n": 15,
+   "tags": {
+    "ILLEGAL_MOVE": 2
+   }
+  }
+ },
+ "Z1_zero_regression_wythoff": {
+  "runs": 12,
+  "mismatch": [],
+  "frame_transpose_r642": 4,
+  "frame_transpose_r641_ref": 4,
+  "pass": true
+ },
+ "D3a_family_experiment": {
+  "nim": {
+   "clean_tree": "eval/rover/r639/snapshots/w239/agentP-r3/g1",
+   "base": "15/15",
+   "base_full": true,
+   "single_mutant": "5/15",
+   "single_anchor_miss": [],
+   "joint_mutant": "5/15",
+   "joint_anchor_miss": [],
+   "joint_repair": "15/15",
+   "repair_anchor_miss": [],
+   "repair_restores": true,
+   "mutant_tags": {
+    "TRUE_WRONG": 3,
+    "STATE_FLIP": 7,
+    "OK": 5
+   },
+   "tags_legal_for_family": true,
+   "null_rewrite": {
+    "base": 5,
+    "null_rewrite": 5,
+    "identical": true
+   }
+  },
+  "sub": {
+   "clean_tree": "eval/rover/r639/snapshots/w237/agentP-r1/g1",
+   "base": "14/14",
+   "base_full": true,
+   "single_mutant": "0/14",
+   "single_anchor_miss": [],
+   "joint_mutant": "9/14",
+   "joint_anchor_miss": [],
+   "joint_repair": "14/14",
+   "repair_anchor_miss": [],
+   "repair_restores": true,
+   "mutant_tags": {
+    "STATE_FLIP": 5,
+    "OK": 9
+   },
+   "tags_legal_for_family": true,
+   "null_rewrite": {
+    "base": 9,
+    "null_rewrite": 9,
+    "identical": true
+   }
+  }
+ },
+ "D3b_resolution_clause": {
+  "nim": {
+   "oracle_positive": "15/15",
+   "oracle_pass": true,
+   "sample_face": 15,
+   "spec_face": 1939,
+   "spec_superset_of_sample": true,
+   "sparse_ratio": 0.0077,
+   "note": "采样面是规格面的稀疏子集 ⇒ 采样面通过率不得单独作验收 (分辨率条款)"
+  },
+  "sub": {
+   "oracle_positive": "14/14",
+   "oracle_pass": true,
+   "sample_face": 14,
+   "spec_face": 891,
+   "spec_superset_of_sample": true,
+   "sparse_ratio": 0.0157,
+   "note": "采样面是规格面的稀疏子集 ⇒ 采样面通过率不得单独作验收 (分辨率条款)"
+  }
+ },
+ "D3a_pass": true,
+ "rc": 0
+}

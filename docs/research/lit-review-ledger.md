@@ -891,3 +891,14 @@ Semantic Scholar 无 key ⇒ `HTTP 429` ⇒ 引用数**不可用**，如实记�
 - **采信 = 2**（上两行）⇒ 「连续 0 采信计数」由 1 **归零**；未达 3 ⇒ **维持每轮检索频次**，不降频。
 - 证伪 = 0 · 顺延 = 0（文献小步未被主线吃满）。
 - **检索器缺陷（本轮自捕，记账）**：`scripts/search_arxiv.py` 传**带引号短语**给 `--category` 检索时返回 6 条**全部不相关**结果（实测 `'"fault localization" minimal repair'` rc=0 但命中面为零），改用原始 API `search_query=abs:"…" AND abs:"…"`（quote 后 POST-free GET）后同一查询面命中正常。**判读纪律**：「脚本 rc=0 ∧ 结果数 >0」不得当作「检索有效」——须逐条读标题/摘要（本轮据此作废 1 次 query，未污染台账）。
+
+## 16. R642 文献小步（2026-09-24；出口探针 200 后 1 式检索；采集日 2026-09-24）
+
+检索预算：出口前置探针 1 次（`export.arxiv.org` HTTP 200）｜检索式 1 式｜逐条读摘要 2 件。
+
+| 日期 | 检索式 | 出处（含版本） | 逐字引文（摘要） | 机制假设 | 改哪一格 KPI（方向） | 单变量轴 + 判据 | 状态 |
+|---|---|---|---|---|---|---|---|
+| 2026-09-24 | `all:"agent harness" AND all:"context compaction"`（submittedDate） | **arXiv:2604.20938v1** `HARBOR: Automated Harness Optimization`（纯预印本，无 venue ⇒ 权威性代理低） | "context compaction, tool caching, semantic memory, trajectory reuse, speculative tool prediction" ∧ "automated configuration search dominates manual stacking once the flag space exceeds a handful of bits" | harness 配置面（开关族）超「几个 bit」后，**自动配置搜索优于手工叠加** —— 本仓既有开关已达两位数（R1_* 剂量键/池宽/K 等） | ④ 轮数（减少手工排轮的搜索成本） | 轴 = 开关组合搜索器（离线复算既有冻结跑次）；判据 = 找到非劣组合（质量 D ≥ −2 ∧ 成本不升）所用评测次数 < 逐轮手试 | **候选（未实施；零产品改动可做，待队列）** |
+| 2026-09-24 | 同上 | **arXiv:2609.20519v1** `SoL-Pi: Recursively Scaling Auto-Research Loops`（纯预印本） | "their work expands from isolated predictions into long trajectories of reasoning, tool use, and feedback. Token efficiency therefore becomes important for scaling recursive self-improvement" | 无人值守长程环的**token 效率是 RSI 扩展的前置约束** —— 与本仓「completion 3.5× 真值」读数同向 | ⑤ tokens（↓，scaling 前提） | 已在主线上（prompt 用量分解已交付）；本条不新增轴 | **采信（机制假设，与现有主线对齐，无新增实施面）** |
+
+**反空转计数**：R642 = 采信 **1**（对齐既有主线，无新增实施面）/ 候选 **1**（HARBOR 配置搜索器，入队列）/ 证伪 0 / 顺延 0。

@@ -1,0 +1,44 @@
+{
+ "schema": "n3-r4-samples/v1",
+ "round": "R642",
+ "samples": {
+  "neg_1_frozen_wrong_pin_must_fail": {
+   "rc": 1,
+   "r4_fail": true,
+   "lines": [
+    "[WARN] R4b_instrument_missing   器具不在盘: None",
+    "[PASS] R4a_unpinned_or_live_skipped live/未声明 pin 行不参与字节比对（可见计数）: live=0 unpinned=0",
+    "[FAIL] R4_pin_matches           docs/e.md 声明 000000000000 / 实际 7634afa4e528"
+   ],
+   "verdict": "PASS"
+  },
+  "neg_2_unpinned_counted": {
+   "rc": 1,
+   "r4_fail": false,
+   "lines": [
+    "[PASS] R4a_unpinned_or_live_skipped live/未声明 pin 行不参与字节比对（可见计数）: live=1 unpinned=0",
+    "[PASS] R4_pin_matches           已声明 pin 全部与现盘一致 (live/未声明行 1 条已单列)"
+   ],
+   "verdict": "PASS"
+  },
+  "pos_1_live_null_not_red": {
+   "rc": 1,
+   "r4_fail": false,
+   "lines": [
+    "[PASS] R4a_unpinned_or_live_skipped live/未声明 pin 行不参与字节比对（可见计数）: live=1 unpinned=0",
+    "[PASS] R4_pin_matches           已声明 pin 全部与现盘一致 (live/未声明行 1 条已单列)"
+   ],
+   "verdict": "PASS"
+  },
+  "pos_2_frozen_correct_green": {
+   "rc": 1,
+   "r4_fail": false,
+   "lines": [
+    "[WARN] R4b_instrument_missing   器具不在盘: None",
+    "[PASS] R4a_unpinned_or_live_skipped live/未声明 pin 行不参与字节比对（可见计数）: live=0 unpinned=0",
+    "[PASS] R4_pin_matches           已声明 pin 全部与现盘一致 (live/未声明行 0 条已单列)"
+   ],
+   "verdict": "PASS"
+  }
+ }
+}

@@ -418,13 +418,27 @@ def audit(repo, round_id, baseline_rel=None):
             ("缺/过小: %s" % missing) if missing else ("%d 份证据文件在位" % len(rows)))
 
     # R4 冻结 pin 与现盘字节一致
+    # R642 候选④ 修复（承 R641 下轮候选④；R639 实测恒红假红）: `str(eg.get("artifact_sha12"))`
+    # 把 None 变成字面量 "None" ⇒ 未记 pin 的 live 行恒判红。修法 = **语义三分**:
+    #   pin_status ∈ {live, worktree-only} 或 artifact_sha12 为 null/空 ⇒ **无物可比** ⇒
+    #   记入 R4a 计数（可见的信息项），不参与红绿（禁静默跳过，也禁「无声明即绿」的空心闸:
+    #   比对语义只对**声明了 pin** 的行生效，未声明行单独计数曝光）。
     mism = []
+    skipped_live, skipped_unpinned = [], []
     for r in rows:
         ev = str(r.get("evidence_path", "")).strip()
         full = os.path.join(repo, ev)
         eg = r.get("evidence_generated_with") or {}
-        want = str(eg.get("artifact_sha12", "")).strip()
-        if want and os.path.exists(full):
+        pin_status = str(eg.get("pin_status", "") or r.get("pin_status", "") or "").strip().lower()
+        raw_want = eg.get("artifact_sha12")
+        want = str(raw_want).strip() if raw_want is not None else ""
+        if not want or pin_status in ("live", "worktree-only"):
+            if pin_status in ("live", "worktree-only"):
+                skipped_live.append(ev or r.get("id", "?"))
+            else:
+                skipped_unpinned.append(ev or r.get("id", "?"))
+            continue
+        if os.path.exists(full):
             got = sha12_of_file(full)
             if got != want:
                 mism.append("%s 声明 %s / 实际 %s" % (ev, want, got))
@@ -438,8 +452,12 @@ def audit(repo, round_id, baseline_rel=None):
                     mism.append("%s 声明 %s / 实际 %s" % (inst, want_i, got_i))
             else:
                 rep.add("R4b_instrument_missing", "WARN", "器具不在盘: %s" % inst)
+    rep.add("R4a_unpinned_or_live_skipped", "PASS",
+            "live/未声明 pin 行不参与字节比对（可见计数）: live=%d unpinned=%d"
+            % (len(skipped_live), len(skipped_unpinned)))
     rep.add("R4_pin_matches", "FAIL" if mism else "PASS",
-            (" | ".join(mism)) if mism else "全部 pin 与现盘一致")
+            (" | ".join(mism)) if mism else
+            "已声明 pin 全部与现盘一致 (live/未声明行 %d 条已单列)" % (len(skipped_live) + len(skipped_unpinned)))
 
     # R5 证据文档结构
     problems = []

@@ -7006,9 +7006,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "c5d82feffad0",
     "instrument": "tools/roundcheck/roundcheck.py",
-    "instrument_sha12": "e0cb84aa86ae",
+    "instrument_sha12": "621163349eff",
     "binding": "audit-pin",
-    "audited_by_round": "R616"
+    "audited_by_round": "R642"
    },
    "negative_control": "器具内建 selftest 3 负控: 错 pin ⇒ R4 红 / 提交内 key 面 ⇒ R7 红 / 无提交轮号 ⇒ R2 红;另 2 假红控制: 正常 `task-*` 标识符不得误判为 `sk-` key; P5 在飞执行体探测不得自匹配(旧 `pgrep -c -f` 把调用者自己含 `agenthost` 的命令行算成在飞执行体 ⇒ 假 WARN; R584 起改扫 /proc 按 argv[0]/解释器 argv[1] 匹配)。"
   },
@@ -7063,9 +7063,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "cab29c315a06",
     "instrument": "tools/roundcheck/roundcheck.py",
-    "instrument_sha12": "e0cb84aa86ae",
+    "instrument_sha12": "621163349eff",
     "binding": "audit-pin",
-    "audited_by_round": "R616"
+    "audited_by_round": "R642"
    },
    "negative_control": "6 夹具（正控 1 + 负控 5）: 声明了却提交触碰 `src/` ⇒ R1 红（分支不适用）; 无声明 ⇒ R1 红（旧行为未被改坏）; 声明非法（读数件缺/空）⇒ R1 红且明细出声; 声明面缺「形式门禁」⇒ R8 红; 提交面越界（未声明路径）⇒ R6 红; 还原后 rc=0。（夹具自身首跑假红 —— `allowed_faces` 漏 `docs/` 使正控 R6 红 —— 由自检当场抓出: 修声明完整性, 未放宽判据。）"
   },
@@ -7361,7 +7361,7 @@
    "id": "r616.roundcheck-baseline-governance",
    "level": "L2",
    "owner_round": "R616",
-   "capability": "审计器的「例外治理」面（外部参照采纳 · ZCode `.architecture-baseline.json` 模型；用户令 2026-09-21「按需采纳 zcode 的方案和进行你的下轮计划…只要不偏离主线」）：违例基线 + 过期例外 + 抑制计数 + 轮次作用域。`audit` 新增三闸：R10_baseline（基线形态；**缺失 ⇒ 旧行为逐字节不变**，非法/条目缺 reason·expires_round ⇒ 出声不豁免）/ R11_expired_exception（例外过期未清 ⇒ 红，不接受永久豁免）/ R12_disable_count（`entries > max_entries` ⇒ 红，抑制只许减）；已在册 FAIL 降 `BASELINED`（不计 rc）；条目录必填 item/subject/reason(≥20)/expires_round，可选 round 作用域；唯一抬上限入口 = `baseline --add|--remove`。R8「形式门禁」读数面同步由魔法常量 `14/14` 改**结构判定**（`形式(?:门禁)? x/y`，含 7 断言负控）——真机遇到「闸真不是 14/14」时旧判据会逼出假读数。读数：`--selftest` PASS（负控 3/3 + 正控 1/1 + 假红 2/2 + 对照轮 正控1/1+负控5/5 + 基线 正控4/4+负控7/7）；真树控制：无基线=旧行为（仅 +R10 一行）/ R609 吸收 2 ⇒ rc=0 / R614 吸收 2 ⇒ rc=0 / **同基线跑 R613 吸收 0（作用域外）⇒ rc=1**（精确性负控）/ 过期 ⇒ R11 红 / 偷加 ⇒ R12 红；build 0 error（19.5 s）；形式门禁 **14/14**（窗口内曾 13/14：红为 r580 pin 被 R615 未提交残件改 `tools/r1gen/gen_csharp.py` 所致，已由**行主**在收口提交 `d546c936` 自行消解；本轮未代对侧重钉）；通过率 23/23。R2e 重审：r582/r587 `instrument_sha12` b348eff8dd63→e0cb84aa86ae（中性证据 = R580/R582/R587 三点重跑 diff 仅 +3 行 PASS）。**诚实边界**：基线 4 条全为历史/适用性类（无一条缺陷豁免），全部 `expires_round=R625` 到期回红；R12 只防**静默**增长；豁免粒度 = item × 明细子串 × 可选轮号；`--changed` 与树级结构规则族未采纳（缺面如实标注）；零 src ⇒ 未跑 AOT；未写共享台账 `docs/research/lit-review-ledger.md`（兄弟会话残件未落定，不代提交）。",
+   "capability": "审计器的「例外治理」面（外部参照采纳 · ZCode `.architecture-baseline.json` 模型；用户令 2026-09-21「按需采纳 zcode 的方案和进行你的下轮计划…只要不偏离主线」）：违例基线 + 过期例外 + 抑制计数 + 轮次作用域。`audit` 新增三闸：R10_baseline（基线形态；**缺失 ⇒ 旧行为逐字节不变**，非法/条目缺 reason·expires_round ⇒ 出声不豁免）/ R11_expired_exception（例外过期未清 ⇒ 红，不接受永久豁免）/ R12_disable_count（`entries > max_entries` ⇒ 红，抑制只许减）；已在册 FAIL 降 `BASELINED`（不计 rc）；条目录必填 item/subject/reason(≥20)/expires_round，可选 round 作用域；唯一抬上限入口 = `baseline --add|--remove`。R8「形式门禁」读数面同步由魔法常量 `14/14` 改**结构判定**（`形式(?:门禁)? x/y`，含 7 断言负控）——真机遇到「闸真不是 14/14」时旧判据会逼出假读数。读数：`--selftest` PASS（负控 3/3 + 正控 1/1 + 假红 2/2 + 对照轮 正控1/1+负控5/5 + 基线 正控4/4+负控7/7）；真树控制：无基线=旧行为（仅 +R10 一行）/ R609 吸收 2 ⇒ rc=0 / R614 吸收 2 ⇒ rc=0 / **同基线跑 R613 吸收 0（作用域外）⇒ rc=1**（精确性负控）/ 过期 ⇒ R11 红 / 偷加 ⇒ R12 红；build 0 error（19.5 s）；形式门禁 **14/14**（窗口内曾 13/14：红为 r580 pin 被 R615 未提交残件改 `tools/r1gen/gen_csharp.py` 所致，已由**行主**在收口提交 `d546c936` 自行消解；本轮未代对侧重钉）；通过率 23/23。R2e 重审：r582/r587 `instrument_sha12` b348eff8dd63→e0cb84aa86ae（中性证据 = R580/R582/R587 三点重跑 diff 仅 +3 行 PASS）。**诚实边界**：基线 4 条全为历史/适用性类（无一条缺陷豁免），全部 `expires_round=R625` 到期回红；R12 只防**静默**增长；豁免粒度 = item × 明细子串 × 可选轮号；`--changed` 与树级结构规则族未采纳（缺面如实标注）；零 src ⇒ 未跑 AOT；未写共享台账 `docs/research/lit-review-ledger.md`（兄弟会话残件未落定，不代提交）。 【R642 重审】R4 语义三分修复（live 行不再恒红, R4a 可见计数）+ 轮志小节源 ⇒ instrument_sha12 e0cb84aa86ae→621163349eff, audited_by_round→R642；中性证据 = 历史回放 R637–R641 新旧双器具 diffs 全空（eval/rover/r642/out/n3-replay-r642.json）。不改本行判据语义，非放宽。",
    "evidence_cmd": "python3 tools/roundcheck/roundcheck.py --selftest; python3 tools/roundcheck/roundcheck.py audit --round R609 --baseline tools/roundcheck/baseline.json",
    "evidence_path": "docs/evidence/RF0001/R616-roundcheck-baseline-governance.md",
    "evidence_generated_with": {
@@ -7370,9 +7370,9 @@
     "pin_reason": "archived-per-round",
     "artifact_sha12": "c70e23ee90ad",
     "instrument": "tools/roundcheck/roundcheck.py",
-    "instrument_sha12": "e0cb84aa86ae",
+    "instrument_sha12": "621163349eff",
     "binding": "audit-pin",
-    "audited_by_round": "R616"
+    "audited_by_round": "R642"
    },
    "negative_control": "**R615 复核补登**（对侧 R616 行原缺该字段 ⇒ 共享 L3 门禁红、阻塞同树两写者提交；本侧**自跑器具**取读数后代为补登，**未代改它字段**）：`python3 tools/roundcheck/roundcheck.py --selftest` ⇒ `SELFTEST PASS (负控 3/3 有牙 + 正控 1/1 + 假红控制 2/2 + 对照轮分支 正控 1/1 + 负控 5/5 + 基线分支 正控 4/4 + 负控 7/7)`；真树控制（对侧已登记、本侧并列引用不作我方读数）：无基线=旧行为（仅 +R10 一行）/ R609·R614 吸收 ⇒ rc=0 / 同基线跑 R613 吸收 0（作用域外）⇒ rc=1 / 过期 ⇒ R11 红 / 偷加 ⇒ R12 红。归属 = **foreign（对侧实施 + 本侧复核读数）**。",
    "note": "同仓并发窗口: 本行与 R615 收口同一分钟写同一登记表, 最终随对侧提交 d546c936 一并提交（归属夹带, 已在证据 §6.8 披露）; 复测 R2e/R2f=0 且形式门禁 14/14。"
@@ -8169,6 +8169,25 @@
    ],
    "negative_control": "成对/负向控制（现场执行，读数入 `out/attrib-r641.json` / `out/joint-r641.json`）：① **J0 oracle 两侧有牙** —— 正控 15/15（防恒红）∧ 变异（(6,10) 必败位翻转）13/15 判红（防恒绿）；② **空重写负控 7/7**（v1 未证「凡改即绿」的反面）—— 同字节重写同一文件 ⇒ 三族读数与 base **逐位相同** ∧ 目标族仍 < 15；③ **最小修复实验的差分方向两侧都有** —— 目标族转绿（+）**且**其余三族逐例**不变**（`others_unchanged=True`，排除「凡改必全绿」与「改动外溢」）；④ **J5 分辨率条款两侧样例** —— 见证体（采样面专用解）采样 15/15 ∧ 规格面 610/625 判红（正控：采样面不能自证规格面）∧ 反向控制（去掉 1 个采样位置 ⇒ 采样面 14/15，证明采样面读数**不是恒绿**）；⑤ **J1 期望表两源 fail-closed** —— 主源 R639 判决件族级 ∧ 次源 R640 `per_run_wythoff`，不符即 rc=2 器具层（缺源 rc=3），**禁手写期望表**（承 R640 E1）；⑥ **确定性 ∧ 非平凡性成对** —— J8 12/12 逐位相同（必要条件）**且** J9 跨跑次签名 7 个互异（防恒定输出冒充可复现）；⑦ **增量落盘断点续跑的自证** —— 三次运行（v1 崩 / v2 修 J9 崩 / v3 全绿）中 v2 复用 replay+J4 缓存后仍得**逐位相同**的 J1/J2 读数 ⇒ 缓存不引入漂移。",
    "note": "轮次工件: eval/rover/r641/{dag-r641.md,prereg-r641.json,attrib_r641.py,joint_r641.py} + out/{attrib-r641.json,joint-r641.json,attrib-log-r641.txt} + 断点续跑缓存（.cache-replay-r641.json / .cache-j4-r641.json）。**预注册时序如实标注**：`written_before_run=false`（v2 进程先起）· `declared_before_any_reading=true`（落盘时 out/ 仅存 v1 traceback 日志、盘上读数 0 件）；J4b 联合臂另有 addendum，**先于该臂起臂**落盘。**起手闸 P3 内存读数 FAIL 如实入档**（2550 MB @3000MB / 2605 MB @2900MB；R639 台账 REQ≈2727 MB），本轮为只读轮 ⇒ 该闸保护对象未触发、**未调闸值**。跳步「构建/AOT」（零 src 改动）与「铁律 11 前置器」[covers 叙述（R2c：covers 只许放存在路径，叙述移入本段）] 冻结题集 sha256 270128eb…（与 r610/r639 逐字节一致）；期望表两源机取（r639 verdict.B_family_block ∧ r640 attrib.per_run_wythoff），不符 rc=2 / 缺源 rc=3；行级锚点逐字取自现盘源码且断言替换次数 == 1（缺失 ⇒ ANCHOR_MISS fail-closed）；只读：一切执行在副本上进行，零写入冻结树（PYTHONDONTWRITEBYTECODE=1）。（无真机臂无降幅宣称），显式声明非跳步掩盖。**跨轮禁相减**：本轮零新跑次，不与 R639 `D=[−3,0,−9]` 亦不与 R640 任何读数相减。"
+  },
+  {
+   "id": "r642.instrument-closeout",
+   "level": "L2",
+   "owner_round": "R642",
+   "capability": "器具面收口轮（承 R641 下轮候选 ②③④⑤ 并轮；用户 2026-09-24 放行产品侧修复 ⇒ 本轮先收口器具面，R643 起产品侧单变量）。④ roundcheck R4 活行/None 分支：`str(None)`⇒live 行恒判红的修法 = 语义三分（live/worktree-only/空 sha ⇒ R4a 可见计数，不参与红绿，禁静默跳过）；两侧样例 4/4 （合成最小仓：错 pin 红/live 不红/未声明单列/正确 pin 绿）＋ 历史回放 R637–R641 新旧双器具 diffs 全空（判决中性）＋ selftest 23/23。⑤ route 多源择块：根因比预注册深一层 —— 主报告 §7 后 6 个 `>` 块全是注释引文（fields=0），轮志在 `## R6xx` 小节裸列表 ⇒ v6b 增产轮志小节源与 `>` 块源并列、按轮号最大择源；真仓选到 R642 候选块（section_round=R641, 字段 12, 含下轮候选）；负控 NC1–NC4 全过（含空心闸有牙：首块 438 vs 最大 642）。②③ 三件器具模板化（帧感知分类/最小修复/分辨率条款）迁移 nim·sub 族：wythoff 复算 12/12 逐值一致（零回归）；nim 单点 15→5、联合修复回 15/15、空重写逐位同；sub 14→0→9→14/14、空重写逐位同；分辨率条款落地（稀疏比 0.0077/0.0157）。**诚实边界**：D2 实现面比预注册扩一层（版式形态错配，amendment 已在证据 §3.1 留档）；NC2 的「无字段节」与「节不存在」不可区分（都记缺失）；nim/sub 为合成变异非真机缺陷分布；零真机臂 ⇒ 质量/成本面无读数；文献采信 1（SoL-Pi 对齐既有主线）/候选 1（HARBOR 配置搜索器，入队列）。",
+   "evidence_cmd": "python3 tools/roundcheck/roundcheck.py --selftest; python3 tools/roundcheck/roundcheck.py audit --round R641",
+   "evidence_path": "docs/evidence/RF0001/R642-instrument-closeout-r4-route-templating.md",
+   "evidence_generated_with": {
+    "evidence_kind": "artifact",
+    "pin_status": "frozen",
+    "pin_reason": "archived-per-round",
+    "artifact_sha12": "3649503afc41",
+    "instrument": "tools/roundcheck/roundcheck.py",
+    "instrument_sha12": "621163349eff",
+    "binding": "audit-pin",
+    "audited_by_round": "R642"
+   },
+   "negative_control": "D1: neg_1 冻结行错 pin 须红(实测 FAIL✓) ∧ neg_2 未声明行不进红绿但 R4a 计数可见(实测✓) —— 防两头: 静默跳过(无声明即绿)与误伤 live 行(恒红); D2: NC4 空心闸 = 换回「取首块」旧行为须复现 R438 旧读数(实测 首块438 vs 最大642 ⇒ 有牙); D3: 空重写负控(同字节重写 ⇒ 读数与 base 逐位相同) nim/sub 双族全过"
   }
  ],
  "aot_check_policy": "release_tag_only",

@@ -121,14 +121,17 @@ NEG_WINDOW = 20
 BLOCK_FIELD_MAX = 12
 
 
-def _status_block(txt: str):
-    """§7 内**最新状态块** = `## 7.` 之后第一段 `>` 引用块; 遇**第二个**块内标题即止(其后是历史快照)。
+def _iter_status_blocks(txt: str):
+    """§7 内**所有**块内标题段（新→旧排列由文档自身保证：最新块在最前）。
 
-    块定位**不依赖任何专有词面** ⇒ 报告版式演进时不会静默失配(v4/D7 根因正是「靠固定词面找条目」)。
+    v6/R642: 旧实现只取「第一段」块 —— 当**另一份**状态文档（improvements.md 等）携带
+    更高轮号的候选块时，解析器会静默取到历史块（实测 route.first 停在 R596，滞后 45 轮）。
+    本函数把 §7 内每段 `>` 块产出为 (字段列表, 诊断) 列表；调用方按**轮号最大**择源。
     """
     if "## 7." not in txt:
         return [], {"block_found": False, "block_why": "文档内无 `## 7.` 节"}
     lines = txt.split("## 7.", 1)[1].splitlines()
+    blocks = []
     start = None
     for i, ln in enumerate(lines):
         if ln.strip().startswith(">"):
@@ -141,9 +144,12 @@ def _status_block(txt: str):
         s = ln.strip()
         if not s:
             if block:
-                break
+                blocks.append(block)
+                block = []
             continue
         if not s.startswith(">"):
+            if block:
+                blocks.append(block)
             break
         body = s.lstrip(">").strip()
         if body.startswith("#"):
@@ -153,9 +159,29 @@ def _status_block(txt: str):
             block.append(body)
             continue
         block.append(body)
-    fields = [b for b in block if "**" in b]
-    return fields, {"block_found": bool(block), "block_lines": len(block), "block_fields": len(fields),
-                    "block_why": ""}
+    if block:
+        blocks.append(block)
+    out = []
+    for b in blocks:
+        fields = [x for x in b if "**" in x]
+        out.append((fields, {"block_found": bool(b), "block_lines": len(b),
+                             "block_fields": len(fields), "block_why": ""}))
+    # v6b/R642: **轮志小节形态**（`## R6xx` 节 + `- **…**` 字段）——主报告现版式的轮次状态
+    # 不在 `>` 块里（实测 §7 后 6 个 `>` 块全是注释性引文, fields=0），而在各轮小节的裸列表。
+    # 本源与 `>` 块源**并列产出**，调用方按「轮号最大」择源（禁互斥，防两形态并存时丢源）。
+    for m in re.finditer(r"\n## (R\d{2,5})[^\n]*\n", txt):
+        rnd = int(m.group(1)[1:])
+        end = txt.find("\n## ", m.end())
+        body = txt[m.end():end if end >= 0 else len(txt)]
+        fields = [ln.strip() for ln in body.splitlines()
+                  if ln.strip().startswith("- ") and "**" in ln and len(ln.strip()) > 12]
+        if fields:
+            out.append((fields, {"block_found": True, "source": "round-section",
+                                 "section_round": rnd, "block_fields": len(fields),
+                                 "block_why": ""}))
+    if not out:
+        return [], {"block_found": False, "block_why": "§7 内无 `>` 块也无轮志小节"}
+    return out, (out[0][1] if out else {"block_found": False, "block_why": "块为空"})
 
 
 def _negated(text: str, pos: int) -> bool:
@@ -289,7 +315,26 @@ def master_opens(path: str, legacy: bool = False):
                 "note": "" if hits else "该来源对当前报告版式零命中 ⇒ 视作「缺失」而非「无未完成事项」(v2 显式化)"}
         return hits[:8], diag
 
-    fields, bdiag = _status_block(txt)
+    fields_all, bdiag_all = _iter_status_blocks(txt)
+    # v6/R642 多源择块: 候选块 = 各段块里**字段含轮次状态行**者; 按「轮号最大」取最新。
+    # （块内字段形如 `- **最近一轮（R641, …）**…` / `- **下轮候选 (R642)**…`; 从中机取 R\d+。）
+    def _block_round(fs):
+        best = None
+        for f in fs:
+            for mm in re.finditer(r"R(\d{2,5})", f):
+                r = int(mm.group(1))
+                if best is None or r > best:
+                    best = r
+        return best
+    cand = [( _block_round(fs) or 0, i, fs, dg) for i, (fs, dg) in enumerate(fields_all) if fs]
+    if cand:
+        _, sel_i, fields, bdiag = max(cand, key=lambda t: (t[0], -t[1]))
+        bdiag = dict(bdiag)
+        bdiag["selected_block_index"] = sel_i
+        bdiag["selected_block_round"] = max(cand)[0] if cand else None
+        bdiag["blocks_seen"] = len(fields_all)
+    else:
+        fields, bdiag = [], (fields_all[0][1] if fields_all else bdiag_all)
     hits, fenced, close_fenced, quoted_fenced = [], 0, 0, 0
     for f in fields:
         for marker in HINT_MARKERS:
@@ -691,7 +736,8 @@ def selftest() -> int:
 
     def pre_d9_master_hits(path):
         """**前态口径**复现 (D9 之前: 只有否定围栏, 无闭合/引用围栏) —— 仅用于负控 A/B。"""
-        fields, _ = _status_block(read_text(path))
+        blocks_all, _ = _iter_status_blocks(read_text(path))
+        fields = blocks_all[0][0] if blocks_all else []
         n = 0
         for f in fields:
             for marker in HINT_MARKERS:

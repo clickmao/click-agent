@@ -1,0 +1,101 @@
+{
+ "round": "R642",
+ "title": "器具面收口轮：④ roundcheck R4 活行/None 分支假红修复 ＋ ⑤ route 最新块解析（多源取轮号最大）＋ ②③ 三件器具模板化（帧感知分类/行级+联合最小修复/分辨率条款）与 nim·sub 同形态只读实验（承 R641 下轮候选 ②③④⑤ 并轮；候选 ① 待用户放行）",
+ "kind": "instrument-face-closeout（零产品源码改动 / 零真机臂 / 零远端 / 零新增夹具语义）",
+ "dag": "eval/rover/r642/dag-r642.md",
+ "written_before_run": true,
+ "declared_before_any_reading": true,
+ "generated_by": "手写（阈值与判据处）＋ 读数全部由 eval/rover/r642/*.py 机取；禁手抄读数",
+ "frozen_inputs": {
+  "cases_r521_sha256": "270128eb85c7afc07244c10c8845a22a541a7a60587a870125089e93422fccd7",
+  "cases_path": "eval/rover/r639/cases/cases-r521.json",
+  "snapshots": "eval/rover/r639/snapshots/{w237,w238,w239}/{agentP-r1,agentP-r2,agentP-r3,codex}/g1",
+  "r641_out": "eval/rover/r641/out/attrib-r641.json",
+  "r639_verdict": "eval/rover/r639/verdict-r639.json",
+  "note": "全部冻结件只读；一切执行在副本上进行，零写入冻结树"
+ },
+ "budget": {
+  "prod_src_changes": 0,
+  "new_arms": 0,
+  "remote_calls": 0,
+  "new_fixture_semantics": 0,
+  "instruments_changed": ["tools/roundcheck/roundcheck.py", "scripts/capability_cycle_status.py"],
+  "instrument_change_reason": "两件都是**已知缺陷**（R641 候选 ④⑤）：R4 对 live/None 行结构性假红；route 取到滞后 45 轮的历史块。改后必须 decl_sweep --apply 重钉 + 两侧样例 + 历史回放"
+ },
+ "judgments": {
+  "D1_roundcheck_R4_live_branch": {
+   "claim": "R4 的 artifact 比对必须只作用于**冻结 pin** 行；行声明 live/worktree-only 或 artifact_sha12 为 null/空 ⇒ 无物可比 ⇒ 记信息项不判红；同时必须**可见**（计数 + 行名），禁静默跳过",
+   "thresholds_cite_baselines": ["F_merge.gate.precondition_rc", "F_merge.quality.family_block_scan"],
+   "two_sided_controls": {
+    "neg_1_frozen_wrong_pin_must_fail": "冻结行 artifact_sha12 故意写错 ⇒ R4 判红（沿用既有负控 1，必须仍红）",
+    "neg_2_frozen_missing_sha_informational": "无 pin 声明的行 ⇒ 不计入红也不计入绿，进 `R4a_unpinned_skipped` 计数（防『无声明即绿』的空心闸）",
+    "pos_1_live_null_sha_not_red": "pin_status=live 且 artifact_sha12=null ⇒ R4 必须不红（本轮修复的目标形态）",
+    "pos_2_frozen_correct_pin_green": "冻结行 pin 正确 ⇒ 仍绿（零回归）"
+   },
+   "historical_replay": "对 R637/R638/R639/R640/R641 逐轮跑 audit：除**声明 live/None 的行**之外，R1–R12 全部判定**逐条不变**；R4 允许翻绿的行必须逐行可解释为 live/None 声明行（禁『整体变绿』）"
+  },
+  "D2_route_latest_block": {
+   "claim": "推进对象必须取**轮号最大**的状态源块（跨文档多源），而非首个匹配；取源与滞后量必须可见（route.source / route.source_round / route.lag）",
+   "thresholds_cite_baselines": ["F_merge.gate.precondition_rc"],
+   "negative_controls": {
+    "NC1_single_source_fallback": "只给主报告（无第二源）⇒ 回落旧行为、不崩、route.source 显式标注",
+    "NC2_higher_round_without_candidate": "第二源轮号更高但**无**『下轮候选』行 ⇒ 必须记**缺失**（`first=null`），**禁**从旧块编造候选",
+    "NC3_tie_break_deterministic": "两源同轮号 ⇒ 确定性 tie-break，同输入两次结果逐字节相同",
+    "NC4_hollow_gate": "把解析器替换为『取首个块』（旧行为）⇒ 真仓读数必须回到 R596 旧块 ⇒ 证明新判据有牙（非恒真）"
+   },
+   "zero_regression": "既有 fixture 全绿（T18 权威源优先 / legacy-route 负控 / D9 家族）；`build_report` 不传第二源时行为与旧版**逐字段相同**"
+  },
+  "D3_instrument_templatization": {
+   "claim": "三件器具（帧感知分类 / 行级+联合最小修复 / 分辨率条款）抽为与族无关的框架模块；对 wythoff 面**复算 R641 读数必须逐值一致**（零回归），并在 nim/sub 族完成同形态只读实验",
+   "thresholds_cite_baselines": ["F_merge.quality.family_lift_min", "F_merge.quality.family_block_scan"],
+   "zero_regression_check": "J3 帧感知计数（FRAME_TRANSPOSE 3/3 + 1）/ J4 最小修复 5/5（含联合臂 2/2）/ J5 采样面 15/15 ∧ 规格面 610/625 ∧ 反向控制 14/15 —— 与 R641 登记值逐值比较",
+   "new_face_experiment": {
+    "families": ["nim", "sub"],
+    "form": "取冻结面中该族全对的跑次 → 副本上注入合成缺陷（单行 ∧ 联合两类）⇒ 分类器标注 + 最小修复定位 + 空重写负控仍红 + 分辨率条款（采样面 vs 规格面）",
+    "criteria": "分类器对该族样例产出**族内合法**标签（非法着法/非胜着法/表示面）∧ 最小修复把该族 15/15 恢复 ∧ 空重写负控逐位与 base 相同且仍红 ∧ 分辨率条款在该族给出采样面满绿而规格面判红"
+   }
+  },
+  "D4_literature_step": {
+   "claim": "文献小步：arXiv ≤3 query / 全文 ≤2 篇 / 间隔 ≥4s；每条引用须给出处（含版本）+ 逐字引文 + 采集日；抓不到原文 ⇒ 不采信",
+   "anti_spin": "连续 3 轮 0 采信 ⇒ 降频为每 3 轮一次并如实登记；出口不可达 ⇒ 记顺延，不入 0 采信计数"
+  }
+ },
+ "falsification": [
+  {
+   "id": "F1",
+   "entry": "框架模块对 wythoff 的复算与 R641 登记值**任一值不符**",
+   "action": "判 rc=2 器具层：抽取不等价 ⇒ R641 读数为准，本模块整段作废（不得用『新模块读数』替换既有读数）"
+  },
+  {
+   "id": "F2",
+   "entry": "nim/sub 的合成缺陷无法被分类器标注或最小修复无法定位",
+   "action": "② 如实**收窄**为『模板抽取 + wythoff 复算』，写明『未迁移』，禁宣称已泛化"
+  },
+  {
+   "id": "F3",
+   "entry": "R4 修复使**冻结行**或**非声明 live/None 行**的判定发生变化",
+   "action": "判 rc=2 并**回滚** R4 改动（改判据凑绿）；两版并列留档"
+  },
+  {
+   "id": "F4",
+   "entry": "route 修复后真仓 route.source_round != 641（即仍未取到最新块）",
+   "action": "判 rc=2 器具层，登记『解析器未覆盖当前文档版式』，禁下调判据"
+  }
+ ],
+ "rc_semantics": {
+  "0": "全部预注册判据成立",
+  "1": "机制次级未过（本层无降幅宣称面 ⇒ 不适用时须显式声明）",
+  "2": "器具层缺陷（fail-closed：器具缺陷禁止计入被测读数）",
+  "3": "输入缺失（冻结件 sha 不符 / 缺源）"
+ },
+ "step_skips": [
+  {"step": "构建/AOT", "why": "零 src/ 改动 ⇒ 无新二进制可构建（与 R641 同跳步，显式声明非跳步掩盖）"},
+  {"step": "真机跑", "why": "零新臂 / 零远端；本轮读数全部取自冻结面与器具自身，产品侧未放行"},
+  {"step": "铁律 11 前置器 exec_precondition", "why": "无真机臂 ⇒ 无『两侧产出物可执行且正确』的对照面；本轮不作任何降幅/质量宣称"}
+ ],
+ "claims": {
+  "may_claim": ["器具缺陷修复（两件）＋ 两侧样例/负控/历史回放证据", "框架模块 + nim/sub 同形态只读实验读数", "分辨率条款的族级读数"],
+  "must_not_claim": ["生产已修（产品源码零改动）", "任何质量/成本降幅", "把本轮读数与历史轮相减", "把采样面通过率单独作验收"]
+ },
+ "supersedes": []
+}
